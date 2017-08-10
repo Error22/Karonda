@@ -1,0 +1,16 @@
+apply plugin: 'java-library'
+
+repositories {
+    jcenter()
+    maven {
+        name = "apache"
+        url = "http://repo.maven.apache.org/maven2"
+    }
+}
+
+dependencies {
+    api 'org.ow2.asm:asm-debug-all:5.2'
+    implementation 'com.google.guava:guava:21.0'
+    
+    testImplementation 'junit:junit:4.12'
+}
