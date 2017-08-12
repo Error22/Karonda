@@ -25,4 +25,8 @@ public class KClass implements IType {
 		return methods.get(signature);
 	}
 
+	public String getName() {
+		return name;
+	}
+
 }

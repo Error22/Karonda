@@ -13,6 +13,8 @@ import org.objectweb.asm.TypePath;
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.ClassType;
 import com.error22.karonda.ir.KClass;
+import com.error22.karonda.ir.KMethod;
+import com.error22.karonda.ir.MethodSignature;
 
 public class ClassConverter extends ClassVisitor {
 	private KClass kClass;
@@ -54,14 +56,14 @@ public class ClassConverter extends ClassVisitor {
 
 	@Override
 	public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
-		throw new NotImplementedException("visitTypeAnnotation typeRef=" + typeRef + " typePath=" + typePath + " desc=" + desc
-				+ " visible=" + visible);
+		throw new NotImplementedException("visitTypeAnnotation typeRef=" + typeRef + " typePath=" + typePath + " desc="
+				+ desc + " visible=" + visible);
 	}
 
 	@Override
 	public void visitInnerClass(String name, String outerName, String innerName, int access) {
-		throw new NotImplementedException("visitInnerClass name=" + name + " outerName=" + outerName + " innerName=" + innerName
-				+ " access=" + access);
+		throw new NotImplementedException("visitInnerClass name=" + name + " outerName=" + outerName + " innerName="
+				+ innerName + " access=" + access);
 	}
 
 	@Override
@@ -71,14 +73,21 @@ public class ClassConverter extends ClassVisitor {
 
 	@Override
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-		throw new NotImplementedException("visitField access=" + access + " name=" + name + " desc=" + desc + " signature=" + signature
-				+ " value=" + value);
+		throw new NotImplementedException("visitField access=" + access + " name=" + name + " desc=" + desc
+				+ " signature=" + signature + " value=" + value);
 	}
 
 	@Override
-	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		throw new NotImplementedException("visitMethod access=" + access + " name=" + name + " desc=" + desc + " signature="
-				+ signature + " exceptions=" + Arrays.deepToString(exceptions));
+	public MethodVisitor visitMethod(int access, String name, String desc, String rawSignature, String[] exceptions) {
+		System.out.println("visitMethod access=" + access + " name=" + name + " desc=" + desc + " signature="
+				+ rawSignature + " exceptions=" + Arrays.deepToString(exceptions));
+
+		MethodSignature signature = ConversionUtils.parseMethodSignature(kClass.getName(), name, desc);
+		boolean isSynchronized = (access & Opcodes.ACC_SYNCHRONIZED) == Opcodes.ACC_SYNCHRONIZED;
+		boolean isNative = (access & Opcodes.ACC_NATIVE) == Opcodes.ACC_NATIVE;
+		KMethod method = new KMethod(signature, isSynchronized, isNative);
+		kClass.addMethod(method);
+		return new MethodConverter(method);
 	}
 
 	@Override
