@@ -85,6 +85,13 @@ public class MethodConverter extends InstructionAdapter {
 		throw new NotImplementedException("label " + label);
 	}
 
+	@Override
+	public void visitMaxs(int maxStack, int maxLocals) {
+		System.out.println("max: " + maxStack + " " + maxLocals);
+		kMethod.setMaxStack(maxStack);
+		kMethod.setMaxLocals(maxLocals);
+	}
+
 	private static List<Integer> SUPPORTED_OPS;
 	static {
 		SUPPORTED_OPS = new ArrayList<Integer>();
