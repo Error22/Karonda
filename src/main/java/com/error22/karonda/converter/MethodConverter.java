@@ -8,14 +8,17 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.commons.InstructionAdapter;
 
 import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.ir.KMethod;
 
 public class MethodConverter extends InstructionAdapter {
 	private KMethod kMethod;
+	private ArrayList<IInstruction> instructions;
 
 	public MethodConverter(KMethod kMethod) {
 		super(Opcodes.ASM5, null);
 		this.kMethod = kMethod;
+		instructions = new ArrayList<IInstruction>();
 	}
 
 	@Override
@@ -90,6 +93,12 @@ public class MethodConverter extends InstructionAdapter {
 		System.out.println("max: " + maxStack + " " + maxLocals);
 		kMethod.setMaxStack(maxStack);
 		kMethod.setMaxLocals(maxLocals);
+	}
+
+	@Override
+	public void visitEnd() {
+		System.out.println("instructions: " + instructions.size());
+		kMethod.setInstructions(instructions.toArray(new IInstruction[instructions.size()]));
 	}
 
 	private static List<Integer> SUPPORTED_OPS;
