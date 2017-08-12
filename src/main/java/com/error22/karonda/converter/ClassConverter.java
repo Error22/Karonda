@@ -10,6 +10,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 
+import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.ClassType;
 import com.error22.karonda.ir.KClass;
 
@@ -43,60 +44,46 @@ public class ClassConverter extends ClassVisitor {
 
 	@Override
 	public void visitOuterClass(String owner, String name, String desc) {
-		System.out.println("visitOuterClass owner=" + owner + " name=" + name + " desc=" + desc);
-		super.visitOuterClass(owner, name, desc);
+		throw new NotImplementedException("visitOuterClass owner=" + owner + " name=" + name + " desc=" + desc);
 	}
 
 	@Override
 	public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-		System.out.println("visitAnnotation desc=" + desc + " visible=" + visible);
-		return super.visitAnnotation(desc, visible);
+		throw new NotImplementedException("visitAnnotation desc=" + desc + " visible=" + visible);
 	}
 
 	@Override
 	public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
-		System.out.println("visitTypeAnnotation typeRef=" + typeRef + " typePath=" + typePath + " desc=" + desc
+		throw new NotImplementedException("visitTypeAnnotation typeRef=" + typeRef + " typePath=" + typePath + " desc=" + desc
 				+ " visible=" + visible);
-		return super.visitTypeAnnotation(typeRef, typePath, desc, visible);
 	}
 
 	@Override
 	public void visitInnerClass(String name, String outerName, String innerName, int access) {
-		System.out.println("visitInnerClass name=" + name + " outerName=" + outerName + " innerName=" + innerName
+		throw new NotImplementedException("visitInnerClass name=" + name + " outerName=" + outerName + " innerName=" + innerName
 				+ " access=" + access);
-		super.visitInnerClass(name, outerName, innerName, access);
 	}
 
 	@Override
 	public void visitAttribute(Attribute attr) {
-		System.out.println("visitAttribute attr=" + attr);
-		super.visitAttribute(attr);
+		throw new NotImplementedException("visitAttribute attr=" + attr);
 	}
 
 	@Override
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-		System.out.println("visitField access=" + access + " name=" + name + " desc=" + desc + " signature=" + signature
+		throw new NotImplementedException("visitField access=" + access + " name=" + name + " desc=" + desc + " signature=" + signature
 				+ " value=" + value);
-		return super.visitField(access, name, desc, signature, value);
 	}
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		System.out.println("visitMethod access=" + access + " name=" + name + " desc=" + desc + " signature="
+		throw new NotImplementedException("visitMethod access=" + access + " name=" + name + " desc=" + desc + " signature="
 				+ signature + " exceptions=" + Arrays.deepToString(exceptions));
-		return super.visitMethod(access, name, desc, signature, exceptions);
 	}
 
 	@Override
 	public void visitEnd() {
-		System.out.println("visitEnd");
-		super.visitEnd();
-	}
-
-	@Override
-	public void visitSource(String source, String debug) {
-		System.out.println("visitSource source=" + source + " debug=" + debug);
-		super.visitSource(source, debug);
+		throw new NotImplementedException("visitEnd");
 	}
 
 }
