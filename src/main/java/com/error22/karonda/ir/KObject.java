@@ -1,4 +1,4 @@
-package com.error22.karonda.types;
+package com.error22.karonda.ir;
 
 import java.util.HashMap;
 import java.util.Map;

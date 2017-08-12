@@ -1,4 +1,4 @@
-package com.error22.karonda.types;
+package com.error22.karonda.ir;
 
 public enum PrimitiveType implements IType {
 	Void,

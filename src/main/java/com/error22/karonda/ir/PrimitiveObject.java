@@ -1,4 +1,4 @@
-package com.error22.karonda.types;
+package com.error22.karonda.ir;
 
 public class PrimitiveObject<T> implements IObject {
 	private T value;
