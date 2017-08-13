@@ -28,6 +28,7 @@ import com.error22.karonda.instructions.MathInstruction.MathOp;
 import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.StoreLocalInstruction;
+import com.error22.karonda.instructions.ThrowInstruction;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
@@ -212,7 +213,10 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new ReturnInstruction(PrimitiveType.Void));
 			break;
 		case Opcodes.ARRAYLENGTH:
+			throw new NotImplementedException("OP: " + opcode);
 		case Opcodes.ATHROW:
+			addInstruction(new ThrowInstruction());
+			break;
 		case Opcodes.MONITORENTER:
 		case Opcodes.MONITOREXIT:
 			throw new NotImplementedException("OP: " + opcode);
