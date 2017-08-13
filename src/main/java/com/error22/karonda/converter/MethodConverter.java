@@ -2,7 +2,6 @@ package com.error22.karonda.converter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.objectweb.asm.Label;
@@ -11,7 +10,10 @@ import org.objectweb.asm.Opcodes;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.instructions.IInstruction;
+import com.error22.karonda.instructions.LoadLocalInstruction;
 import com.error22.karonda.ir.KMethod;
+import com.error22.karonda.ir.ObjectType;
+import com.error22.karonda.ir.PrimitiveType;
 
 public class MethodConverter extends MethodVisitor {
 	private KMethod kMethod;
@@ -66,7 +68,32 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitVarInsn(int opcode, int var) {
-		throw new NotImplementedException("OP: " + opcode);
+		switch (opcode) {
+		case Opcodes.ILOAD:
+			addInstruction(new LoadLocalInstruction(PrimitiveType.Int, var));
+			break;
+		case Opcodes.LLOAD:
+			addInstruction(new LoadLocalInstruction(PrimitiveType.Long, var));
+			break;
+		case Opcodes.FLOAD:
+			addInstruction(new LoadLocalInstruction(PrimitiveType.Float, var));
+			break;
+		case Opcodes.DLOAD:
+			addInstruction(new LoadLocalInstruction(PrimitiveType.Double, var));
+			break;
+		case Opcodes.ALOAD:
+			addInstruction(new LoadLocalInstruction(OBJECT_TYPE, var));
+			break;
+		case Opcodes.ISTORE:
+		case Opcodes.LSTORE:
+		case Opcodes.FSTORE:
+		case Opcodes.DSTORE:
+		case Opcodes.ASTORE:
+		case Opcodes.RET:
+			throw new NotImplementedException("OP: " + opcode);
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
@@ -88,4 +115,5 @@ public class MethodConverter extends MethodVisitor {
 		kMethod.setLabelMap(labelMap);
 	}
 
+	private final static ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");
 }
