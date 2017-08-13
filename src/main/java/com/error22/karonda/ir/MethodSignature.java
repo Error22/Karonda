@@ -17,7 +17,7 @@ public class MethodSignature {
 	public boolean isLocalInitializer() {
 		return name.equals("<init>");
 	}
-	
+
 	public boolean isStaticInitializer() {
 		return name.equals("<clinit>");
 	}
@@ -86,4 +86,11 @@ public class MethodSignature {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "MethodSignature [clazz=" + clazz + ", name=" + name + ", returnType=" + returnType + ", arguments="
+				+ Arrays.toString(arguments) + "]";
+	}
+
 }

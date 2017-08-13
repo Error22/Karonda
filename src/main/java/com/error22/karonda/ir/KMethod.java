@@ -56,4 +56,8 @@ public class KMethod {
 		this.labelMap = labelMap;
 	}
 
+	public boolean isNative() {
+		return isNative;
+	}
+
 }
