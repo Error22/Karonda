@@ -26,7 +26,7 @@ public class StackFrame {
 	public void step() {
 		IInstruction instruction = instructions[instructionPointer];
 		instructionPointer++;
-		// instruction.execute(this);
+		instruction.execute(this);
 	}
 
 	public void push(IObject object) {

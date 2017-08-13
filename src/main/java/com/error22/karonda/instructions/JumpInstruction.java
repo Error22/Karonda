@@ -2,6 +2,9 @@ package com.error22.karonda.instructions;
 
 import org.objectweb.asm.Label;
 
+import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.vm.StackFrame;
+
 public class JumpInstruction implements IInstruction {
 	public static enum JumpType {
 		EqualZero,
@@ -30,6 +33,11 @@ public class JumpInstruction implements IInstruction {
 	public JumpInstruction(JumpType type, Label label) {
 		this.type = type;
 		this.label = label;
+	}
+
+	@Override
+	public void execute(StackFrame stackFrame) {
+		throw new NotImplementedException();
 	}
 
 }
