@@ -11,7 +11,9 @@ import org.objectweb.asm.Opcodes;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.instructions.IInstruction;
+import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
+import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
@@ -119,7 +121,26 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-		throw new NotImplementedException("OP: " + opcode);
+		switch (opcode) {
+		case Opcodes.INVOKESPECIAL:
+			addInstruction(new InvokeInstruction(InvokeType.Special,
+					ConversionUtils.parseMethodSignature(owner, name, desc), itf));
+			break;
+		case Opcodes.INVOKEVIRTUAL:
+			addInstruction(new InvokeInstruction(InvokeType.Virtual,
+					ConversionUtils.parseMethodSignature(owner, name, desc), itf));
+			break;
+		case Opcodes.INVOKESTATIC:
+			addInstruction(new InvokeInstruction(InvokeType.Static,
+					ConversionUtils.parseMethodSignature(owner, name, desc), itf));
+			break;
+		case Opcodes.INVOKEINTERFACE:
+			addInstruction(new InvokeInstruction(InvokeType.Interface,
+					ConversionUtils.parseMethodSignature(owner, name, desc), itf));
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
