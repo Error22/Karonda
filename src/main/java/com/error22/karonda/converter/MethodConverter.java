@@ -12,9 +12,10 @@ import org.objectweb.asm.Opcodes;
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
+import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
+import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
-import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
@@ -218,7 +219,18 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitIntInsn(int opcode, int operand) {
-		throw new NotImplementedException("OP: " + opcode);
+		switch (opcode) {
+		case Opcodes.BIPUSH:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand));
+			break;
+		case Opcodes.SIPUSH:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand));
+			break;
+		case Opcodes.NEWARRAY:
+			throw new NotImplementedException("OP: " + opcode);
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
