@@ -27,12 +27,24 @@ public class KMethod {
 		this.maxStack = maxStack;
 	}
 
+	public int getMaxStack() {
+		return maxStack;
+	}
+
 	public void setMaxLocals(int maxLocals) {
 		this.maxLocals = maxLocals;
 	}
 
+	public int getMaxLocals() {
+		return maxLocals;
+	}
+
 	public void setInstructions(IInstruction[] instructions) {
 		this.instructions = instructions;
+	}
+
+	public IInstruction[] getInstructions() {
+		return instructions;
 	}
 
 	public void setLabelMap(Map<Label, Integer> labelMap) {
