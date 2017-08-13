@@ -52,6 +52,8 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.NOP:
 			break;
 		case Opcodes.ACONST_NULL:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Void, null));
+			break;
 		case Opcodes.ICONST_M1:
 		case Opcodes.ICONST_0:
 		case Opcodes.ICONST_1:
@@ -59,13 +61,21 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.ICONST_3:
 		case Opcodes.ICONST_4:
 		case Opcodes.ICONST_5:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, opcode - Opcodes.ICONST_0));
+			break;
 		case Opcodes.LCONST_0:
 		case Opcodes.LCONST_1:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Long, opcode - Opcodes.LCONST_0));
+			break;
 		case Opcodes.FCONST_0:
 		case Opcodes.FCONST_1:
 		case Opcodes.FCONST_2:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Float, opcode - Opcodes.FCONST_0));
+			break;
 		case Opcodes.DCONST_0:
 		case Opcodes.DCONST_1:
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, opcode - Opcodes.DCONST_0));
+			break;
 		case Opcodes.IALOAD:
 		case Opcodes.LALOAD:
 		case Opcodes.FALOAD:
