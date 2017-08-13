@@ -16,6 +16,7 @@ import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
+import com.error22.karonda.instructions.StoreLocalInstruction;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
@@ -201,10 +202,20 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new LoadLocalInstruction(OBJECT_TYPE, var));
 			break;
 		case Opcodes.ISTORE:
+			addInstruction(new StoreLocalInstruction(PrimitiveType.Int, var));
+			break;
 		case Opcodes.LSTORE:
+			addInstruction(new StoreLocalInstruction(PrimitiveType.Long, var));
+			break;
 		case Opcodes.FSTORE:
+			addInstruction(new StoreLocalInstruction(PrimitiveType.Float, var));
+			break;
 		case Opcodes.DSTORE:
+			addInstruction(new StoreLocalInstruction(PrimitiveType.Double, var));
+			break;
 		case Opcodes.ASTORE:
+			addInstruction(new StoreLocalInstruction(OBJECT_TYPE, var));
+			break;
 		case Opcodes.RET:
 			throw new NotImplementedException("OP: " + opcode);
 		default:
