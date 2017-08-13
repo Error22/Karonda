@@ -16,10 +16,12 @@ import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
-import com.error22.karonda.instructions.MathInstruction.MathOp;
+import com.error22.karonda.instructions.JumpInstruction;
+import com.error22.karonda.instructions.JumpInstruction.JumpType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
 import com.error22.karonda.instructions.MathInstruction;
+import com.error22.karonda.instructions.MathInstruction.MathOp;
 import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.StoreLocalInstruction;
@@ -301,7 +303,57 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitJumpInsn(int opcode, Label label) {
-		throw new NotImplementedException("OP: " + opcode);
+		switch (opcode) {
+		case Opcodes.IFEQ:
+			addInstruction(new JumpInstruction(JumpType.EqualZero, label));
+			break;
+		case Opcodes.IFNE:
+			addInstruction(new JumpInstruction(JumpType.NotEqualZero, label));
+			break;
+		case Opcodes.IFLT:
+			addInstruction(new JumpInstruction(JumpType.LessThanZero, label));
+			break;
+		case Opcodes.IFGE:
+			addInstruction(new JumpInstruction(JumpType.GreaterThanEqualZero, label));
+			break;
+		case Opcodes.IFGT:
+			addInstruction(new JumpInstruction(JumpType.GreaterThanZero, label));
+			break;
+		case Opcodes.IFLE:
+			addInstruction(new JumpInstruction(JumpType.LessThanEqualZero, label));
+			break;
+		case Opcodes.IF_ICMPEQ:
+			addInstruction(new JumpInstruction(JumpType.IntsEqual, label));
+			break;
+		case Opcodes.IF_ICMPNE:
+			addInstruction(new JumpInstruction(JumpType.IntsNotEqual, label));
+			break;
+		case Opcodes.IF_ICMPLT:
+			addInstruction(new JumpInstruction(JumpType.IntsLessThan, label));
+			break;
+		case Opcodes.IF_ICMPGE:
+			addInstruction(new JumpInstruction(JumpType.IntsGreaterThanEqual, label));
+			break;
+		case Opcodes.IF_ICMPGT:
+			addInstruction(new JumpInstruction(JumpType.IntsGreaterThan, label));
+			break;
+		case Opcodes.IF_ICMPLE:
+			addInstruction(new JumpInstruction(JumpType.IntsLessThanEqual, label));
+			break;
+		case Opcodes.IF_ACMPEQ:
+			addInstruction(new JumpInstruction(JumpType.ReferenceEqual, label));
+			break;
+		case Opcodes.IF_ACMPNE:
+			addInstruction(new JumpInstruction(JumpType.ReferenceNotEqual, label));
+			break;
+		case Opcodes.GOTO:
+		case Opcodes.JSR:
+		case Opcodes.IFNULL:
+		case Opcodes.IFNONNULL:
+			throw new NotImplementedException("OP: " + opcode);
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
