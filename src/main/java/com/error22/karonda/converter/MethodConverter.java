@@ -16,8 +16,10 @@ import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
+import com.error22.karonda.instructions.MathInstruction.MathOp;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
+import com.error22.karonda.instructions.MathInstruction;
 import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.StoreLocalInstruction;
@@ -100,10 +102,19 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new DuplicateInstruction(DuplicateMode.TwoSpecialFurtherDown));
 			break;
 		case Opcodes.SWAP:
+			throw new NotImplementedException("OP: " + opcode);
 		case Opcodes.IADD:
+			addInstruction(new MathInstruction(MathOp.AddInts));
+			break;
 		case Opcodes.LADD:
+			addInstruction(new MathInstruction(MathOp.AddLongs));
+			break;
 		case Opcodes.FADD:
+			addInstruction(new MathInstruction(MathOp.AddFloats));
+			break;
 		case Opcodes.DADD:
+			addInstruction(new MathInstruction(MathOp.AddDoubles));
+			break;
 		case Opcodes.ISUB:
 		case Opcodes.LSUB:
 		case Opcodes.FSUB:
