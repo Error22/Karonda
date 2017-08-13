@@ -1,4 +1,4 @@
-package com.error22.karonda;
+package com.error22.karonda.vm;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
