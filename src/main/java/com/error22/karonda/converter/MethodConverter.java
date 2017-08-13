@@ -1,7 +1,9 @@
 package com.error22.karonda.converter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -14,11 +16,13 @@ import com.error22.karonda.ir.KMethod;
 public class MethodConverter extends InstructionAdapter {
 	private KMethod kMethod;
 	private ArrayList<IInstruction> instructions;
+	private Map<Label, Integer> labelMap;
 
 	public MethodConverter(KMethod kMethod) {
 		super(Opcodes.ASM5, null);
 		this.kMethod = kMethod;
 		instructions = new ArrayList<IInstruction>();
+		labelMap = new HashMap<Label, Integer>();
 	}
 
 	@Override
@@ -85,7 +89,7 @@ public class MethodConverter extends InstructionAdapter {
 
 	@Override
 	public void visitLabel(Label label) {
-		throw new NotImplementedException("label " + label);
+		labelMap.put(label, instructions.size());
 	}
 
 	@Override
@@ -99,6 +103,7 @@ public class MethodConverter extends InstructionAdapter {
 	public void visitEnd() {
 		System.out.println("instructions: " + instructions.size());
 		kMethod.setInstructions(instructions.toArray(new IInstruction[instructions.size()]));
+		kMethod.setLabelMap(labelMap);
 	}
 
 	private static List<Integer> SUPPORTED_OPS;

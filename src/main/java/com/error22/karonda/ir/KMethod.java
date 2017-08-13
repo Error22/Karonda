@@ -1,5 +1,9 @@
 package com.error22.karonda.ir;
 
+import java.util.Map;
+
+import org.objectweb.asm.Label;
+
 import com.error22.karonda.instructions.IInstruction;
 
 public class KMethod {
@@ -7,6 +11,7 @@ public class KMethod {
 	private boolean isSynchronized, isNative;
 	private int maxStack, maxLocals;
 	private IInstruction[] instructions;
+	private Map<Label, Integer> labelMap;
 
 	public KMethod(MethodSignature signature, boolean isSynchronized, boolean isNative) {
 		this.signature = signature;
@@ -28,6 +33,10 @@ public class KMethod {
 
 	public void setInstructions(IInstruction[] instructions) {
 		this.instructions = instructions;
+	}
+
+	public void setLabelMap(Map<Label, Integer> labelMap) {
+		this.labelMap = labelMap;
 	}
 
 }
