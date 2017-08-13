@@ -357,10 +357,17 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new JumpInstruction(JumpType.ReferenceNotEqual, label));
 			break;
 		case Opcodes.GOTO:
+			addInstruction(new JumpInstruction(JumpType.Goto, label));
+			break;
 		case Opcodes.JSR:
+			addInstruction(new JumpInstruction(JumpType.Subroutine, label));
+			break;
 		case Opcodes.IFNULL:
+			addInstruction(new JumpInstruction(JumpType.Null, label));
+			break;
 		case Opcodes.IFNONNULL:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new JumpInstruction(JumpType.NotNull, label));
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}

@@ -17,7 +17,11 @@ public class JumpInstruction implements IInstruction {
 		IntsGreaterThanEqual,
 		IntsGreaterThan,
 		ReferenceEqual,
-		ReferenceNotEqual
+		ReferenceNotEqual,
+		Subroutine,
+		Goto,
+		Null,
+		NotNull
 	}
 
 	private JumpType type;
