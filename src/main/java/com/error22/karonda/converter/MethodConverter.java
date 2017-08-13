@@ -11,6 +11,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.instructions.CompareInstruction;
+import com.error22.karonda.instructions.CompareInstruction.CompareOp;
 import com.error22.karonda.instructions.DuplicateInstruction;
 import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
 import com.error22.karonda.instructions.IInstruction;
@@ -175,12 +177,22 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.I2B:
 		case Opcodes.I2C:
 		case Opcodes.I2S:
-		case Opcodes.LCMP:
-		case Opcodes.FCMPL:
-		case Opcodes.FCMPG:
-		case Opcodes.DCMPL:
-		case Opcodes.DCMPG:
 			throw new NotImplementedException("OP: " + opcode);
+		case Opcodes.LCMP:
+			addInstruction(new CompareInstruction(CompareOp.Longs));
+			break;
+		case Opcodes.FCMPL:
+			addInstruction(new CompareInstruction(CompareOp.FloatsNegNaN));
+			break;
+		case Opcodes.FCMPG:
+			addInstruction(new CompareInstruction(CompareOp.FloatsPosNaN));
+			break;
+		case Opcodes.DCMPL:
+			addInstruction(new CompareInstruction(CompareOp.DoublesNegNaN));
+			break;
+		case Opcodes.DCMPG:
+			addInstruction(new CompareInstruction(CompareOp.DoublesPosNaN));
+			break;
 		case Opcodes.IRETURN:
 			addInstruction(new ReturnInstruction(PrimitiveType.Int));
 			break;
