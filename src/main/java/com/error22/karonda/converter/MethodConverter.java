@@ -8,6 +8,7 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.instructions.IInstruction;
@@ -15,8 +16,10 @@ import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
+import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.StoreLocalInstruction;
+import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
@@ -180,7 +183,18 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitTypeInsn(int opcode, String type) {
-		throw new NotImplementedException("OP: " + opcode);
+		IType t = ConversionUtils.convertType(Type.getObjectType(type));
+		switch (opcode) {
+		case Opcodes.NEW:
+			addInstruction(new NewInstruction(t));
+			break;
+		case Opcodes.ANEWARRAY:
+		case Opcodes.CHECKCAST:
+		case Opcodes.INSTANCEOF:
+			throw new NotImplementedException("OP: " + opcode);
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
