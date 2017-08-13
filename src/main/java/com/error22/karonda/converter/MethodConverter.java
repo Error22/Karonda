@@ -11,6 +11,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.instructions.DuplicateInstruction;
+import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
@@ -78,12 +80,25 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.SASTORE:
 		case Opcodes.POP:
 		case Opcodes.POP2:
+			throw new NotImplementedException("OP: " + opcode);
 		case Opcodes.DUP:
+			addInstruction(new DuplicateInstruction(DuplicateMode.SingleCat1));
+			break;
 		case Opcodes.DUP_X1:
+			addInstruction(new DuplicateInstruction(DuplicateMode.SingleCat1TwoDown));
+			break;
 		case Opcodes.DUP_X2:
+			addInstruction(new DuplicateInstruction(DuplicateMode.SingleSpecialDown));
+			break;
 		case Opcodes.DUP2:
+			addInstruction(new DuplicateInstruction(DuplicateMode.TwoSpecial));
+			break;
 		case Opcodes.DUP2_X1:
+			addInstruction(new DuplicateInstruction(DuplicateMode.TwoSpecialDown));
+			break;
 		case Opcodes.DUP2_X2:
+			addInstruction(new DuplicateInstruction(DuplicateMode.TwoSpecialFurtherDown));
+			break;
 		case Opcodes.SWAP:
 		case Opcodes.IADD:
 		case Opcodes.LADD:
