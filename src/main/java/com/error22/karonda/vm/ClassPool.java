@@ -9,6 +9,12 @@ public class ClassPool {
 		this.bootstrapClassLoader = bootstrapClassLoader;
 	}
 
+	public KClass getClass(String className, KClass currentClass) {
+		// TODO: check class loader
+		// TODO: cache result
+		return bootstrapResolve(className);
+	}
+
 	public KClass bootstrapResolve(String name) {
 		KClass kClass = bootstrapClassLoader.getClass(name);
 		kClass.bootstrapResolve(this);

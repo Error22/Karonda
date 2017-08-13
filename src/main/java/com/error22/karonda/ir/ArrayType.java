@@ -7,4 +7,9 @@ public class ArrayType implements IType {
 		this.type = type;
 	}
 
+	@Override
+	public boolean isCategoryTwo() {
+		return false;
+	}
+
 }

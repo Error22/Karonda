@@ -6,9 +6,11 @@ import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KMethod;
 
 public class KThread {
+	private ClassPool pool;
 	private Stack<StackFrame> frames;
 
-	public KThread() {
+	public KThread(ClassPool pool) {
+		this.pool = pool;
 		frames = new Stack<StackFrame>();
 	}
 
@@ -27,6 +29,10 @@ public class KThread {
 		if (result != null)
 			if (!frames.isEmpty())
 				frames.peek().push(result);
+	}
+
+	public ClassPool getPool() {
+		return pool;
 	}
 
 }

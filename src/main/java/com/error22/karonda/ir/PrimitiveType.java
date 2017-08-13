@@ -9,5 +9,10 @@ public enum PrimitiveType implements IType {
 	Int,
 	Long,
 	Float,
-	Double
+	Double;
+
+	@Override
+	public boolean isCategoryTwo() {
+		return this == Long || this == Double;
+	}
 }

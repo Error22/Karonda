@@ -6,4 +6,9 @@ public class ObjectType implements IType {
 	public ObjectType(String name) {
 		this.name = name;
 	}
+
+	@Override
+	public boolean isCategoryTwo() {
+		return false;
+	}
 }

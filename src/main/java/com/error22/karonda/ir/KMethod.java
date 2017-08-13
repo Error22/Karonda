@@ -7,6 +7,7 @@ import org.objectweb.asm.Label;
 import com.error22.karonda.instructions.IInstruction;
 
 public class KMethod {
+	private KClass kClass;
 	private MethodSignature signature;
 	private boolean isSynchronized, isNative;
 	private int maxStack, maxLocals;
@@ -17,6 +18,10 @@ public class KMethod {
 		this.signature = signature;
 		this.isSynchronized = isSynchronized;
 		this.isNative = isNative;
+	}
+
+	public KClass getKClass() {
+		return kClass;
 	}
 
 	public MethodSignature getSignature() {
