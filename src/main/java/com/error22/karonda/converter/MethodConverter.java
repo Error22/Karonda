@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.objectweb.asm.Handle;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -37,28 +38,13 @@ public class MethodConverter extends MethodVisitor {
 	}
 
 	@Override
-	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-		throw new NotImplementedException("OP: " + opcode);
+	public void visitLdcInsn(Object cst) {
+		throw new NotImplementedException("OP: ldc");
 	}
 
 	@Override
-	public void visitIntInsn(int opcode, int operand) {
-		throw new NotImplementedException("OP: " + opcode);
-	}
-
-	@Override
-	public void visitJumpInsn(int opcode, Label label) {
-		throw new NotImplementedException("OP: " + opcode);
-	}
-
-	@Override
-	public void visitMethodInsn(int opcode, String owner, String name, String desc) {
-		throw new UnsupportedOperationException("Use new ASM5 visitMethodInsn method");
-	}
-
-	@Override
-	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-		throw new NotImplementedException("OP: " + opcode);
+	public void visitIincInsn(int var, int increment) {
+		throw new NotImplementedException("OP: inc");
 	}
 
 	@Override
@@ -94,6 +80,51 @@ public class MethodConverter extends MethodVisitor {
 		default:
 			throw new IllegalArgumentException();
 		}
+	}
+
+	@Override
+	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
+		throw new NotImplementedException("OP: " + opcode);
+	}
+
+	@Override
+	public void visitIntInsn(int opcode, int operand) {
+		throw new NotImplementedException("OP: " + opcode);
+	}
+
+	@Override
+	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
+		throw new NotImplementedException("OP: lookupswitch");
+	}
+
+	@Override
+	public void visitMultiANewArrayInsn(String desc, int dims) {
+		throw new NotImplementedException("OP: multianewarray");
+	}
+
+	@Override
+	public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
+		throw new NotImplementedException("OP: tableswitch");
+	}
+
+	@Override
+	public void visitJumpInsn(int opcode, Label label) {
+		throw new NotImplementedException("OP: " + opcode);
+	}
+
+	@Override
+	public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+		throw new UnsupportedOperationException("Use new ASM5 visitMethodInsn method");
+	}
+
+	@Override
+	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
+		throw new NotImplementedException("OP: " + opcode);
+	}
+
+	@Override
+	public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs) {
+		throw new NotImplementedException("OP: invokedynamic");
 	}
 
 	@Override
