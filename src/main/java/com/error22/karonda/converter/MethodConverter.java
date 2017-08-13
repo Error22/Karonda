@@ -20,6 +20,7 @@ import com.error22.karonda.instructions.JumpInstruction;
 import com.error22.karonda.instructions.JumpInstruction.JumpType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadLocalInstruction;
+import com.error22.karonda.instructions.LoadStringInstruction;
 import com.error22.karonda.instructions.MathInstruction;
 import com.error22.karonda.instructions.MathInstruction.MathOp;
 import com.error22.karonda.instructions.NewInstruction;
@@ -235,7 +236,7 @@ public class MethodConverter extends MethodVisitor {
 			double val = ((Double) cst).doubleValue();
 			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, val));
 		} else if (cst instanceof String) {
-			throw new NotImplementedException("OP: ldc " + cst);
+			addInstruction(new LoadStringInstruction((String) cst));
 		} else if (cst instanceof Type) {
 			throw new NotImplementedException("OP: ldc " + cst);
 		} else if (cst instanceof Handle) {
