@@ -31,26 +31,22 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitInsn(int opcode) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
 	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
 	public void visitIntInsn(int opcode, int operand) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
 	public void visitJumpInsn(int opcode, Label label) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
@@ -60,20 +56,17 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
 	public void visitTypeInsn(int opcode, String type) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
 	public void visitVarInsn(int opcode, int var) {
-		if (!SUPPORTED_OPS.contains(opcode))
-			throw new NotImplementedException("OP: " + opcode);
+		throw new NotImplementedException("OP: " + opcode);
 	}
 
 	@Override
@@ -95,8 +88,4 @@ public class MethodConverter extends MethodVisitor {
 		kMethod.setLabelMap(labelMap);
 	}
 
-	private static List<Integer> SUPPORTED_OPS;
-	static {
-		SUPPORTED_OPS = new ArrayList<Integer>();
-	}
 }
