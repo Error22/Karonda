@@ -206,12 +206,43 @@ public class MethodConverter extends MethodVisitor {
 		default:
 			throw new IllegalArgumentException();
 		}
-
 	}
 
 	@Override
 	public void visitLdcInsn(Object cst) {
-		throw new NotImplementedException("OP: ldc");
+		if (cst instanceof Integer) {
+			int val = ((Integer) cst).intValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, val));
+		} else if (cst instanceof Byte) {
+			int val = ((Byte) cst).intValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Byte, val));
+		} else if (cst instanceof Character) {
+			int val = ((Character) cst).charValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Char, val));
+		} else if (cst instanceof Short) {
+			int val = ((Short) cst).intValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Short, val));
+		} else if (cst instanceof Boolean) {
+			int val = ((Boolean) cst).booleanValue() ? 1 : 0;
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Boolean, val));
+		} else if (cst instanceof Float) {
+			float val = ((Float) cst).floatValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Float, val));
+		} else if (cst instanceof Long) {
+			long val = ((Long) cst).longValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Long, val));
+		} else if (cst instanceof Double) {
+			double val = ((Double) cst).doubleValue();
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, val));
+		} else if (cst instanceof String) {
+			throw new NotImplementedException("OP: ldc " + cst);
+		} else if (cst instanceof Type) {
+			throw new NotImplementedException("OP: ldc " + cst);
+		} else if (cst instanceof Handle) {
+			throw new NotImplementedException("OP: ldc " + cst);
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override
