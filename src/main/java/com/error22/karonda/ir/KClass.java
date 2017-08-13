@@ -29,7 +29,7 @@ public class KClass {
 			return;
 		resolved = true;
 
-		superClass = pool.bootstrapResolve(superName);
+		superClass = superName != null ? pool.bootstrapResolve(superName) : null;
 
 		interfaces = new KClass[interfaceNames.length];
 		for (int i = 0; i < interfaceNames.length; i++) {
