@@ -30,7 +30,7 @@ public class StackFrame {
 	}
 
 	public void push(IObject object) {
-		System.out.println("push "+object);
+		System.out.println("push " + object);
 		stack[stackPointer] = object;
 		stackPointer++;
 	}
@@ -38,6 +38,14 @@ public class StackFrame {
 	public IObject pop() {
 		stackPointer--;
 		return stack[stackPointer];
+	}
+
+	public void setLocal(int index, IObject object) {
+		locals[index] = object;
+	}
+
+	public IObject getLocal(int index) {
+		return locals[index];
 	}
 
 	public KThread getThread() {
