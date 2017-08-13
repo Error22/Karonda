@@ -41,7 +41,7 @@ public class ClassConverter extends ClassVisitor {
 			type = ClassType.Class;
 
 		boolean specialResolve = (access & Opcodes.ACC_SUPER) == Opcodes.ACC_SUPER;
-		kClass = new KClass(name, type, specialResolve, superName);
+		kClass = new KClass(name, type, specialResolve, superName, interfaces);
 	}
 
 	@Override
@@ -92,7 +92,11 @@ public class ClassConverter extends ClassVisitor {
 
 	@Override
 	public void visitEnd() {
-		throw new NotImplementedException("visitEnd");
+		System.out.println("visitEnd");
+	}
+
+	public KClass getkClass() {
+		return kClass;
 	}
 
 }

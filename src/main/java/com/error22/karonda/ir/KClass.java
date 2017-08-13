@@ -3,18 +3,38 @@ package com.error22.karonda.ir;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class KClass implements IType {
-	private String name, superName;
-	private ClassType type;
-	private boolean specialResolve;
-	private Map<MethodSignature, KMethod> methods;
+import com.error22.karonda.vm.ClassPool;
 
-	public KClass(String name, ClassType type, boolean specialResolve, String superName) {
+public class KClass {
+	private String name, superName;
+	private String[] interfaceNames;
+	private ClassType type;
+	private boolean specialMethodResolve, resolved;
+	private Map<MethodSignature, KMethod> methods;
+	private KClass superClass;
+	private KClass[] interfaces;
+
+	public KClass(String name, ClassType type, boolean specialMethodResolve, String superName,
+			String[] interfaceNames) {
 		this.name = name;
 		this.type = type;
-		this.specialResolve = specialResolve;
+		this.specialMethodResolve = specialMethodResolve;
 		this.superName = superName;
+		this.interfaceNames = interfaceNames;
 		methods = new ConcurrentHashMap<MethodSignature, KMethod>();
+	}
+
+	public void bootstrapResolve(ClassPool pool) {
+		if (resolved)
+			return;
+		resolved = true;
+
+		superClass = pool.bootstrapResolve(superName);
+
+		interfaces = new KClass[interfaceNames.length];
+		for (int i = 0; i < interfaceNames.length; i++) {
+			interfaces[i] = pool.bootstrapResolve(interfaceNames[i]);
+		}
 	}
 
 	public void addMethod(KMethod method) {
