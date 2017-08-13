@@ -1,5 +1,6 @@
 package com.error22.karonda.instructions;
 
+import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.PrimitiveObject;
 import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.StackFrame;
@@ -44,7 +45,7 @@ public class LoadConstantInstruction implements IInstruction {
 			stackFrame.push(new PrimitiveObject(type, ((Number) value).doubleValue()));
 			break;
 		default:
-			break;
+			throw new NotImplementedException();
 		}
 	}
 }
