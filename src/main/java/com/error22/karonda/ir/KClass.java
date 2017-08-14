@@ -11,6 +11,7 @@ public class KClass {
 	private ClassType type;
 	private boolean specialMethodResolve, resolved;
 	private Map<MethodSignature, KMethod> methods;
+	private Map<FieldSignature, KField> fields;
 	private KClass superClass;
 	private KClass[] interfaces;
 
@@ -22,6 +23,7 @@ public class KClass {
 		this.superName = superName;
 		this.interfaceNames = interfaceNames;
 		methods = new ConcurrentHashMap<MethodSignature, KMethod>();
+		fields = new ConcurrentHashMap<FieldSignature, KField>();
 	}
 
 	public void bootstrapResolve(ClassPool pool) {
@@ -43,6 +45,14 @@ public class KClass {
 
 	public KMethod getMethod(MethodSignature signature) {
 		return methods.get(signature);
+	}
+
+	public void addField(KField field) {
+		fields.put(field.getSignature(), field);
+	}
+
+	public KField getField(FieldSignature signature) {
+		return fields.get(signature);
 	}
 
 	public String getName() {

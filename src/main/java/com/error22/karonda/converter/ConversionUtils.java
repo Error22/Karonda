@@ -3,6 +3,7 @@ package com.error22.karonda.converter;
 import org.objectweb.asm.Type;
 
 import com.error22.karonda.ir.ArrayType;
+import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.MethodSignature;
 import com.error22.karonda.ir.ObjectType;
@@ -14,6 +15,10 @@ public class ConversionUtils {
 		IType returnType = convertType(Type.getReturnType(desc));
 		IType[] arguments = convertTypes(Type.getArgumentTypes(desc));
 		return new MethodSignature(parent, name, returnType, arguments);
+	}
+
+	public static FieldSignature parseFieldSignature(String owner, String name, String desc) {
+		return new FieldSignature(owner, name, ConversionUtils.convertType(Type.getType(desc)));
 	}
 
 	public static IType[] convertTypes(Type[] types) {

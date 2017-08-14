@@ -12,7 +12,9 @@ import org.objectweb.asm.TypePath;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.ClassType;
+import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.KClass;
+import com.error22.karonda.ir.KField;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
 
@@ -72,9 +74,15 @@ public class ClassConverter extends ClassVisitor {
 	}
 
 	@Override
-	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-		throw new NotImplementedException("visitField access=" + access + " name=" + name + " desc=" + desc
-				+ " signature=" + signature + " value=" + value);
+	public FieldVisitor visitField(int access, String name, String desc, String rawSignature, Object value) {
+		System.out.println("visitField access=" + access + " name=" + name + " desc=" + desc + " signature="
+				+ rawSignature + " value=" + value);
+
+		FieldSignature signature = ConversionUtils.parseFieldSignature(kClass.getName(), name, desc);
+		boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
+		KField field = new KField(signature, isStatic);
+		kClass.addField(field);
+		return new FieldConverter(field);
 	}
 
 	@Override
