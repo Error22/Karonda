@@ -21,13 +21,13 @@ import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.instructions.JumpInstruction;
 import com.error22.karonda.instructions.JumpInstruction.JumpType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
-import com.error22.karonda.instructions.LoadLocalInstruction;
 import com.error22.karonda.instructions.LoadStringInstruction;
+import com.error22.karonda.instructions.LocalInstruction;
+import com.error22.karonda.instructions.LocalInstruction.LocalOperation;
 import com.error22.karonda.instructions.MathInstruction;
 import com.error22.karonda.instructions.MathInstruction.MathOp;
 import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
-import com.error22.karonda.instructions.StoreLocalInstruction;
 import com.error22.karonda.instructions.ThrowInstruction;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KMethod;
@@ -287,34 +287,34 @@ public class MethodConverter extends MethodVisitor {
 	public void visitVarInsn(int opcode, int var) {
 		switch (opcode) {
 		case Opcodes.ILOAD:
-			addInstruction(new LoadLocalInstruction(PrimitiveType.Int, var));
+			addInstruction(new LocalInstruction(LocalOperation.Load, PrimitiveType.Int, var));
 			break;
 		case Opcodes.LLOAD:
-			addInstruction(new LoadLocalInstruction(PrimitiveType.Long, var));
+			addInstruction(new LocalInstruction(LocalOperation.Load, PrimitiveType.Long, var));
 			break;
 		case Opcodes.FLOAD:
-			addInstruction(new LoadLocalInstruction(PrimitiveType.Float, var));
+			addInstruction(new LocalInstruction(LocalOperation.Load, PrimitiveType.Float, var));
 			break;
 		case Opcodes.DLOAD:
-			addInstruction(new LoadLocalInstruction(PrimitiveType.Double, var));
+			addInstruction(new LocalInstruction(LocalOperation.Load, PrimitiveType.Double, var));
 			break;
 		case Opcodes.ALOAD:
-			addInstruction(new LoadLocalInstruction(OBJECT_TYPE, var));
+			addInstruction(new LocalInstruction(LocalOperation.Load, OBJECT_TYPE, var));
 			break;
 		case Opcodes.ISTORE:
-			addInstruction(new StoreLocalInstruction(PrimitiveType.Int, var));
+			addInstruction(new LocalInstruction(LocalOperation.Store, PrimitiveType.Int, var));
 			break;
 		case Opcodes.LSTORE:
-			addInstruction(new StoreLocalInstruction(PrimitiveType.Long, var));
+			addInstruction(new LocalInstruction(LocalOperation.Store, PrimitiveType.Long, var));
 			break;
 		case Opcodes.FSTORE:
-			addInstruction(new StoreLocalInstruction(PrimitiveType.Float, var));
+			addInstruction(new LocalInstruction(LocalOperation.Store, PrimitiveType.Float, var));
 			break;
 		case Opcodes.DSTORE:
-			addInstruction(new StoreLocalInstruction(PrimitiveType.Double, var));
+			addInstruction(new LocalInstruction(LocalOperation.Store, PrimitiveType.Double, var));
 			break;
 		case Opcodes.ASTORE:
-			addInstruction(new StoreLocalInstruction(OBJECT_TYPE, var));
+			addInstruction(new LocalInstruction(LocalOperation.Store, OBJECT_TYPE, var));
 			break;
 		case Opcodes.RET:
 			throw new NotImplementedException("OP: " + opcode);
