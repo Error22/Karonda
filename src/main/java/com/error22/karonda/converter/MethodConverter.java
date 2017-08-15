@@ -134,17 +134,41 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new MathInstruction(MathOp.AddDoubles));
 			break;
 		case Opcodes.ISUB:
+			addInstruction(new MathInstruction(MathOp.SubtractInts));
+			break;
 		case Opcodes.LSUB:
+			addInstruction(new MathInstruction(MathOp.SubtractLongs));
+			break;
 		case Opcodes.FSUB:
+			addInstruction(new MathInstruction(MathOp.SubtractFloats));
+			break;
 		case Opcodes.DSUB:
+			addInstruction(new MathInstruction(MathOp.SubtractDoubles));
+			break;
 		case Opcodes.IMUL:
+			addInstruction(new MathInstruction(MathOp.MultiplyInts));
+			break;
 		case Opcodes.LMUL:
+			addInstruction(new MathInstruction(MathOp.MultiplyLongs));
+			break;
 		case Opcodes.FMUL:
+			addInstruction(new MathInstruction(MathOp.MultiplyFloats));
+			break;
 		case Opcodes.DMUL:
+			addInstruction(new MathInstruction(MathOp.MultiplyDoubles));
+			break;
 		case Opcodes.IDIV:
+			addInstruction(new MathInstruction(MathOp.DivideInts));
+			break;
 		case Opcodes.LDIV:
+			addInstruction(new MathInstruction(MathOp.DivideLongs));
+			break;
 		case Opcodes.FDIV:
+			addInstruction(new MathInstruction(MathOp.DivideFloats));
+			break;
 		case Opcodes.DDIV:
+			addInstruction(new MathInstruction(MathOp.DivideDoubles));
+			break;
 		case Opcodes.IREM:
 		case Opcodes.LREM:
 		case Opcodes.FREM:
