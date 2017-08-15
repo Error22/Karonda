@@ -21,28 +21,20 @@ public class LoadConstantInstruction implements IInstruction {
 			stackFrame.push(new PrimitiveObject(type, null));
 			break;
 		case Byte:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).intValue()));
-			break;
 		case Boolean:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).intValue()));
-			break;
 		case Char:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).intValue()));
-			break;
 		case Short:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).intValue()));
-			break;
 		case Int:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).intValue()));
+			stackFrame.push(new PrimitiveObject(PrimitiveType.Int, ((Number) value).intValue()));
 			break;
 		case Long:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).longValue()));
+			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, ((Number) value).longValue()));
 			break;
 		case Float:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).floatValue()));
+			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, ((Number) value).floatValue()));
 			break;
 		case Double:
-			stackFrame.push(new PrimitiveObject(type, ((Number) value).doubleValue()));
+			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, ((Number) value).doubleValue()));
 			break;
 		default:
 			throw new NotImplementedException();

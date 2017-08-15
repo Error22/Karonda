@@ -36,6 +36,8 @@ public class ConversionUtils {
 			return PrimitiveType.Boolean;
 		} else if (type == Type.CHAR_TYPE) {
 			return PrimitiveType.Char;
+		} else if (type == Type.SHORT_TYPE) {
+			return PrimitiveType.Short;
 		} else if (type == Type.INT_TYPE) {
 			return PrimitiveType.Int;
 		} else if (type == Type.LONG_TYPE) {

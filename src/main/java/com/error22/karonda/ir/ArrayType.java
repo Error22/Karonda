@@ -19,4 +19,14 @@ public class ArrayType implements IType {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public IObject fieldWrap(IObject value) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public IObject fieldUnwrap(IObject value) {
+		throw new NotImplementedException();
+	}
+
 }

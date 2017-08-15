@@ -1,6 +1,7 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.ir.FieldSignature;
+import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
@@ -33,7 +34,8 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			stackFrame.push(instancePool.getStaticField(clazz, signature));
+			IObject value = signature.getType().fieldUnwrap(instancePool.getStaticField(clazz, signature));
+			stackFrame.push(value);
 			break;
 		}
 		case StoreStatic: {
@@ -41,12 +43,12 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			instancePool.setStaticField(clazz, signature, stackFrame.pop());
+			IObject value = signature.getType().fieldWrap(stackFrame.pop());
+			instancePool.setStaticField(clazz, signature, value);
 			break;
 		}
 		default:
 			throw new IllegalArgumentException();
 		}
-
 	}
 }

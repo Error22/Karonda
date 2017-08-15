@@ -18,4 +18,14 @@ public class ObjectType implements IType {
 	public IObject getDefaultValue() {
 		throw new NotImplementedException();
 	}
+
+	@Override
+	public IObject fieldWrap(IObject value) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public IObject fieldUnwrap(IObject value) {
+		throw new NotImplementedException();
+	}
 }

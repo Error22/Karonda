@@ -6,4 +6,8 @@ public interface IType {
 
 	boolean isCategoryTwo();
 
+	IObject fieldWrap(IObject value);
+
+	IObject fieldUnwrap(IObject value);
+
 }
