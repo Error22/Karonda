@@ -38,11 +38,11 @@ public class InvokeInstruction implements IInstruction {
 		if (isInterface)
 			throw new NotImplementedException();
 
+		KClass clazz = pool.getClass(signature.getClazz(), currentClass);
+		KMethod method = clazz.getMethod(signature);
+
 		switch (type) {
 		case Static: {
-			KClass clazz = pool.getClass(signature.getClazz(), currentClass);
-			KMethod method = clazz.getMethod(signature);
-
 			IType[] arguments = method.getSignature().getArguments();
 			int size = 0;
 			for (IType type : arguments) {
@@ -59,9 +59,6 @@ public class InvokeInstruction implements IInstruction {
 			break;
 		}
 		case Special: {
-			KClass clazz = pool.getClass(signature.getClazz(), currentClass);
-			KMethod method = clazz.getMethod(signature);
-
 			IType[] arguments = method.getSignature().getArguments();
 			int size = 1;
 			for (IType type : arguments) {
@@ -89,6 +86,28 @@ public class InvokeInstruction implements IInstruction {
 				resolved = method;
 
 			System.out.println("InvokeInstruction: special: " + resolved.getSignature());
+			thread.initAndCall(resolved, false, args);
+			break;
+		}
+		case Virtual: {
+			IType[] arguments = method.getSignature().getArguments();
+			int size = 1;
+			for (IType type : arguments) {
+				size += type.isCategoryTwo() ? 2 : 1;
+			}
+
+			IObject[] args = new IObject[size];
+			int pos = args.length;
+			for (int i = arguments.length - 1; i >= 0; i--) {
+				pos -= arguments[i].isCategoryTwo() ? 2 : 1;
+				args[pos] = stackFrame.pop();
+			}
+
+			ObjectReference reference = (ObjectReference) stackFrame.pop();
+			KClass targetClass = reference.getKClass();
+			args[0] = reference;
+
+			KMethod resolved = targetClass.findMethod(signature);
 			thread.initAndCall(resolved, false, args);
 			break;
 		}

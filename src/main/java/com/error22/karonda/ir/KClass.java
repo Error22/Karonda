@@ -49,7 +49,18 @@ public class KClass {
 			return true;
 		return superClass.isParent(clazz);
 	}
-	
+
+	public KMethod findMethod(MethodSignature signature) {
+		for (KMethod method : methods.values()) {
+			if (method.getSignature().matches(signature)) {
+				return method;
+			}
+		}
+		if (superClass == null)
+			throw new RuntimeException("Failed to find method " + signature);
+		return superClass.findMethod(signature);
+	}
+
 	public boolean shouldSpecialMethodResolve() {
 		return specialMethodResolve;
 	}
