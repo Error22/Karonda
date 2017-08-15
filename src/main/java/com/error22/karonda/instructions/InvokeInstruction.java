@@ -54,7 +54,7 @@ public class InvokeInstruction implements IInstruction {
 				pos -= arguments[i].isCategoryTwo() ? 2 : 1;
 				args[pos] = stackFrame.pop();
 			}
-			thread.callMethod(method, args);
+			thread.initAndCall(method, false, args);
 			break;
 		}
 		default:

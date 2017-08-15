@@ -19,9 +19,9 @@ public class KThread {
 		frames = new Stack<StackFrame>();
 	}
 
-	public void initAndCall(KMethod method, boolean instructionPushBack) {
+	public void initAndCall(KMethod method, boolean instructionPushBack, IObject... arguments) {
 		boolean pushed = staticInit(method.getKClass(), instructionPushBack);
-		callMethod(method, pushed);
+		callMethod(method, pushed, arguments);
 	}
 
 	public boolean staticInit(KClass clazz, boolean instructionPushBack) {
