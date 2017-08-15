@@ -18,6 +18,11 @@ public class PrimitiveObject implements IObject {
 	}
 
 	@Override
+	public IObject duplicate() {
+		return new PrimitiveObject(type, value);
+	}
+
+	@Override
 	public String toString() {
 		return "PrimitiveObject [type=" + type + ", value=" + value + "]";
 	}

@@ -19,4 +19,9 @@ public class ObjectReference implements IObject {
 		return kClass;
 	}
 
+	@Override
+	public IObject duplicate() {
+		return new ObjectReference(kClass, instance);
+	}
+
 }
