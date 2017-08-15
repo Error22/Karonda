@@ -329,7 +329,7 @@ public class MethodConverter extends MethodVisitor {
 		IType t = ConversionUtils.convertType(Type.getObjectType(type));
 		switch (opcode) {
 		case Opcodes.NEW:
-			addInstruction(new NewInstruction(t));
+			addInstruction(new NewInstruction((ObjectType) t));
 			break;
 		case Opcodes.ANEWARRAY:
 		case Opcodes.CHECKCAST:

@@ -9,6 +9,10 @@ public class ObjectType implements IType {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public boolean isCategoryTwo() {
 		return false;

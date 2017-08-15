@@ -9,16 +9,6 @@ public class PrimitiveObject implements IObject {
 		this.value = value;
 	}
 
-	@Override
-	public IObject getField(String name) {
-		throw new UnsupportedOperationException("Unable to get field on primitive object");
-	}
-
-	@Override
-	public void setField(String name, IObject value) {
-		throw new UnsupportedOperationException("Unable to set field on primitive object");
-	}
-
 	public PrimitiveType getType() {
 		return type;
 	}

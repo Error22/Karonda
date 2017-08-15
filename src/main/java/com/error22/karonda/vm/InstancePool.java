@@ -2,6 +2,7 @@ package com.error22.karonda.vm;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.error22.karonda.ir.FieldSignature;
@@ -10,15 +11,18 @@ import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
+import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.ir.PrimitiveType;
 
 public class InstancePool {
 	private Map<KClass, Boolean> staticInitMap;
 	private Map<FieldSignature, IObject> staticFields;
+	private Map<UUID, ObjectInstance> objects;
 
 	public InstancePool() {
 		staticInitMap = new ConcurrentHashMap<KClass, Boolean>();
 		staticFields = new HashMap<FieldSignature, IObject>();
+		objects = new HashMap<UUID, ObjectInstance>();
 	}
 
 	public KMethod staticInit(KClass clazz) {
@@ -50,6 +54,13 @@ public class InstancePool {
 		if (!hasStaticInit(clazz))
 			throw new IllegalStateException("Class has not been staticly initialized");
 		return staticFields.get(field);
+	}
+
+	public ObjectReference createInstance(KClass clazz) {
+		UUID id = UUID.randomUUID();
+		ObjectInstance instance = new ObjectInstance(id, clazz);
+		objects.put(id, instance);
+		return instance.makeReference();
 	}
 
 }
