@@ -3,6 +3,7 @@ package com.error22.karonda.vm;
 import java.util.Stack;
 
 import com.error22.karonda.ir.IObject;
+import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
 
 public class KThread {
@@ -18,7 +19,27 @@ public class KThread {
 		frames = new Stack<StackFrame>();
 	}
 
+	public void initAndCall(KMethod method, boolean instructionPushBack) {
+		boolean pushed = staticInit(method.getKClass(), instructionPushBack);
+		callMethod(method, pushed);
+	}
+
+	public boolean staticInit(KClass clazz, boolean instructionPushBack) {
+		KMethod sinit = instancePool.staticInit(clazz);
+		if (sinit != null) {
+			if (instructionPushBack && !frames.isEmpty())
+				frames.peek().moveInstructionPointer(-1);
+			callMethod(sinit);
+			return true;
+		}
+		return false;
+	}
+
 	public void callMethod(KMethod method, IObject... arguments) {
+		callMethod(method, false, arguments);
+	}
+
+	public void callMethod(KMethod method, boolean pushBack, IObject... arguments) {
 		if (!instancePool.hasStaticInit(method.getKClass()))
 			throw new IllegalStateException("Class has not been staticly initialized");
 
@@ -28,7 +49,13 @@ public class KThread {
 		}
 		StackFrame frame = new StackFrame(this, method);
 		frame.init(arguments);
-		frames.push(frame);
+		if (pushBack) {
+			StackFrame top = frames.pop();
+			frames.push(frame);
+			frames.push(top);
+		} else
+			frames.push(frame);
+
 	}
 
 	public void step() {

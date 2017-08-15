@@ -1,6 +1,5 @@
 package com.error22.karonda.instructions;
 
-import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.vm.ClassPool;
@@ -32,16 +31,16 @@ public class FieldInstruction implements IInstruction {
 		switch (operation) {
 		case LoadStatic: {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
-			if(instancePool.staticInit(clazz))
-				throw new NotImplementedException();
+			if (thread.staticInit(clazz, true))
+				return;
 			stackFrame.push(instancePool.getStaticField(clazz, signature));
 			break;
 		}
-		case StoreStatic:{
+		case StoreStatic: {
 			// TODO: check types compatible
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
-			if(instancePool.staticInit(clazz))
-				throw new NotImplementedException();
+			if (thread.staticInit(clazz, true))
+				return;
 			instancePool.setStaticField(clazz, signature, stackFrame.pop());
 			break;
 		}
