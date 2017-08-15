@@ -43,7 +43,7 @@ public enum PrimitiveType implements IType {
 		case Short:
 			return new PrimitiveObject(this, ((Number) pvalue).shortValue());
 		case Int:
-			return new PrimitiveObject(this, ((Number) pvalue).byteValue());
+			return new PrimitiveObject(this, ((Number) pvalue).intValue());
 		case Long:
 			return new PrimitiveObject(this, ((Number) pvalue).longValue());
 		case Float:
