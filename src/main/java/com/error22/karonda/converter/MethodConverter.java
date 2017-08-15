@@ -392,8 +392,13 @@ public class MethodConverter extends MethodVisitor {
 					ConversionUtils.parseFieldSignature(owner, name, desc)));
 			break;
 		case Opcodes.GETFIELD:
+			addInstruction(new FieldInstruction(FieldOperation.LoadLocal,
+					ConversionUtils.parseFieldSignature(owner, name, desc)));
+			break;
 		case Opcodes.PUTFIELD:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new FieldInstruction(FieldOperation.StoreLocal,
+					ConversionUtils.parseFieldSignature(owner, name, desc)));
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}

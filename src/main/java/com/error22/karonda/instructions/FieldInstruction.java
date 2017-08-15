@@ -3,6 +3,7 @@ package com.error22.karonda.instructions;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
+import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
@@ -11,7 +12,9 @@ import com.error22.karonda.vm.StackFrame;
 public class FieldInstruction implements IInstruction {
 	public static enum FieldOperation {
 		LoadStatic,
-		StoreStatic
+		StoreStatic,
+		LoadLocal,
+		StoreLocal
 	}
 
 	private FieldOperation operation;
@@ -45,6 +48,27 @@ public class FieldInstruction implements IInstruction {
 				return;
 			IObject value = signature.getType().fieldWrap(stackFrame.pop());
 			instancePool.setStaticField(clazz, signature, value);
+			break;
+		}
+		case LoadLocal: {
+			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
+			if (thread.staticInit(clazz, true))
+				return;
+			ObjectReference reference = (ObjectReference) stackFrame.pop();
+			IObject fieldValue = reference.getInstance().getField(signature);
+			IObject value = signature.getType().fieldUnwrap(fieldValue);
+			stackFrame.push(value);
+			break;
+		}
+		case StoreLocal: {
+			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
+			if (thread.staticInit(clazz, true))
+				return;
+
+			IObject value = stackFrame.pop();
+			IObject fieldValue = signature.getType().fieldWrap(value);
+			ObjectReference reference = (ObjectReference) stackFrame.pop();
+			reference.getInstance().setField(signature, fieldValue);
 			break;
 		}
 		default:
