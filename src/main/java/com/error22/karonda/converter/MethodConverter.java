@@ -13,6 +13,7 @@ import org.objectweb.asm.Type;
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.instructions.CompareInstruction;
 import com.error22.karonda.instructions.CompareInstruction.CompareOp;
+import com.error22.karonda.instructions.ConvertInstruction;
 import com.error22.karonda.instructions.DuplicateInstruction;
 import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
 import com.error22.karonda.instructions.FieldInstruction;
@@ -189,22 +190,52 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.LOR:
 		case Opcodes.IXOR:
 		case Opcodes.LXOR:
-		case Opcodes.I2L:
-		case Opcodes.I2F:
-		case Opcodes.I2D:
-		case Opcodes.L2I:
-		case Opcodes.L2F:
-		case Opcodes.L2D:
-		case Opcodes.F2I:
-		case Opcodes.F2L:
-		case Opcodes.F2D:
-		case Opcodes.D2I:
-		case Opcodes.D2L:
-		case Opcodes.D2F:
-		case Opcodes.I2B:
-		case Opcodes.I2C:
-		case Opcodes.I2S:
 			throw new NotImplementedException("OP: " + opcode);
+		case Opcodes.I2L:
+			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Long));
+			break;
+		case Opcodes.I2F:
+			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Float));
+			break;
+		case Opcodes.I2D:
+			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Double));
+			break;
+		case Opcodes.L2I:
+			addInstruction(new ConvertInstruction(PrimitiveType.Long, PrimitiveType.Int));
+			break;
+		case Opcodes.L2F:
+			addInstruction(new ConvertInstruction(PrimitiveType.Long, PrimitiveType.Float));
+			break;
+		case Opcodes.L2D:
+			addInstruction(new ConvertInstruction(PrimitiveType.Long, PrimitiveType.Double));
+			break;
+		case Opcodes.F2I:
+			addInstruction(new ConvertInstruction(PrimitiveType.Float, PrimitiveType.Int));
+			break;
+		case Opcodes.F2L:
+			addInstruction(new ConvertInstruction(PrimitiveType.Float, PrimitiveType.Long));
+			break;
+		case Opcodes.F2D:
+			addInstruction(new ConvertInstruction(PrimitiveType.Float, PrimitiveType.Double));
+			break;
+		case Opcodes.D2I:
+			addInstruction(new ConvertInstruction(PrimitiveType.Double, PrimitiveType.Int));
+			break;
+		case Opcodes.D2L:
+			addInstruction(new ConvertInstruction(PrimitiveType.Double, PrimitiveType.Long));
+			break;
+		case Opcodes.D2F:
+			addInstruction(new ConvertInstruction(PrimitiveType.Double, PrimitiveType.Float));
+			break;
+		case Opcodes.I2B:
+			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Byte));
+			break;
+		case Opcodes.I2C:
+			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Char));
+			break;
+		case Opcodes.I2S:
+			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Short));
+			break;
 		case Opcodes.LCMP:
 			addInstruction(new CompareInstruction(CompareOp.Longs));
 			break;
