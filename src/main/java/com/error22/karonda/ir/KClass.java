@@ -40,6 +40,20 @@ public class KClass {
 		}
 	}
 
+	public boolean isParent(KClass clazz) {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+		if (superClass == null)
+			return clazz == null;
+		if (clazz.equals(superClass))
+			return true;
+		return superClass.isParent(clazz);
+	}
+	
+	public boolean shouldSpecialMethodResolve() {
+		return specialMethodResolve;
+	}
+
 	public void addMethod(KMethod method) {
 		methods.put(method.getSignature(), method);
 	}
