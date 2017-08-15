@@ -14,7 +14,8 @@ public class KMethod {
 	private IInstruction[] instructions;
 	private Map<Label, Integer> labelMap;
 
-	public KMethod(MethodSignature signature, boolean isSynchronized, boolean isNative) {
+	public KMethod(KClass kClass, MethodSignature signature, boolean isSynchronized, boolean isNative) {
+		this.kClass = kClass;
 		this.signature = signature;
 		this.isSynchronized = isSynchronized;
 		this.isNative = isNative;

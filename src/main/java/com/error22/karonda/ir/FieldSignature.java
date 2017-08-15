@@ -59,4 +59,9 @@ public class FieldSignature {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "FieldSignature [clazz=" + clazz + ", name=" + name + ", type=" + type + "]";
+	}
+
 }

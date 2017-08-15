@@ -15,6 +15,8 @@ import com.error22.karonda.instructions.CompareInstruction;
 import com.error22.karonda.instructions.CompareInstruction.CompareOp;
 import com.error22.karonda.instructions.DuplicateInstruction;
 import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
+import com.error22.karonda.instructions.FieldInstruction;
+import com.error22.karonda.instructions.FieldInstruction.FieldOperation;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
@@ -325,7 +327,21 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitFieldInsn(int opcode, String owner, String name, String desc) {
-		throw new NotImplementedException("OP: " + opcode);
+		switch (opcode) {
+		case Opcodes.GETSTATIC:
+			addInstruction(new FieldInstruction(FieldOperation.LoadStatic,
+					ConversionUtils.parseFieldSignature(owner, name, desc)));
+			break;
+		case Opcodes.PUTSTATIC:
+			addInstruction(new FieldInstruction(FieldOperation.StoreStatic,
+					ConversionUtils.parseFieldSignature(owner, name, desc)));
+			break;
+		case Opcodes.GETFIELD:
+		case Opcodes.PUTFIELD:
+			throw new NotImplementedException("OP: " + opcode);
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	@Override

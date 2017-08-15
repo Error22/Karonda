@@ -1,5 +1,6 @@
 package com.error22.karonda.ir;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,6 +50,10 @@ public class KClass {
 
 	public void addField(KField field) {
 		fields.put(field.getSignature(), field);
+	}
+
+	public Collection<KField> getFields() {
+		return fields.values();
 	}
 
 	public KField getField(FieldSignature signature) {

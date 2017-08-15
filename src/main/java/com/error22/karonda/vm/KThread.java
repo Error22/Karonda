@@ -6,17 +6,22 @@ import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KMethod;
 
 public class KThread {
-	private ClassPool pool;
+	private ClassPool classPool;
+	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private Stack<StackFrame> frames;
 
-	public KThread(ClassPool pool, NativeManager nativeManager) {
-		this.pool = pool;
+	public KThread(ClassPool classPool, InstancePool instancePool, NativeManager nativeManager) {
+		this.classPool = classPool;
+		this.instancePool = instancePool;
 		this.nativeManager = nativeManager;
 		frames = new Stack<StackFrame>();
 	}
 
 	public void callMethod(KMethod method, IObject... arguments) {
+		if (!instancePool.hasStaticInit(method.getKClass()))
+			throw new IllegalStateException("Class has not been staticly initialized");
+
 		if (method.isNative()) {
 			nativeManager.invokeNative(method.getSignature(), this, arguments);
 			return;
@@ -37,8 +42,12 @@ public class KThread {
 				frames.peek().push(result);
 	}
 
-	public ClassPool getPool() {
-		return pool;
+	public ClassPool getClassPool() {
+		return classPool;
+	}
+
+	public InstancePool getInstancePool() {
+		return instancePool;
 	}
 
 }

@@ -32,7 +32,7 @@ public class InvokeInstruction implements IInstruction {
 	public void execute(StackFrame stackFrame) {
 		KThread thread = stackFrame.getThread();
 		KClass currentClass = stackFrame.getMethod().getKClass();
-		ClassPool pool = thread.getPool();
+		ClassPool pool = thread.getClassPool();
 
 		if (isInterface)
 			throw new NotImplementedException();
