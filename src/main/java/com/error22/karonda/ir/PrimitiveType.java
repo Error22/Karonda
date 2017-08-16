@@ -35,9 +35,8 @@ public enum PrimitiveType implements IType {
 		Object pvalue = ((PrimitiveObject) value).getValue();
 		switch (this) {
 		case Byte:
-			return new PrimitiveObject(this, ((Number) pvalue).byteValue());
 		case Boolean:
-			return new PrimitiveObject(this, ((Number) pvalue).intValue() != 0);
+			return new PrimitiveObject(this, ((Number) pvalue).byteValue());
 		case Char:
 			return new PrimitiveObject(this, (char) ((Number) pvalue).intValue());
 		case Short:
