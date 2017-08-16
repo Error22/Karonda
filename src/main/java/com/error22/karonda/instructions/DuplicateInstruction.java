@@ -22,9 +22,17 @@ public class DuplicateInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
-		IObject value = stackFrame.pop();
-		stackFrame.push(value);
-		stackFrame.push(value.duplicate());
+		switch (mode) {
+		case SingleCat1: {
+			IObject value = stackFrame.pop();
+			stackFrame.push(value);
+			stackFrame.push(value.duplicate());
+			break;
+		}
+		default:
+			throw new NotImplementedException();
+		}
+
 	}
 
 }
