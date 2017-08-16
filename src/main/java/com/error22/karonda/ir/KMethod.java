@@ -9,14 +9,15 @@ import com.error22.karonda.instructions.IInstruction;
 public class KMethod {
 	private KClass kClass;
 	private MethodSignature signature;
-	private boolean isSynchronized, isNative;
+	private boolean isAbstract, isSynchronized, isNative;
 	private int maxStack, maxLocals;
 	private IInstruction[] instructions;
 	private Map<Label, Integer> labelMap;
 
-	public KMethod(KClass kClass, MethodSignature signature, boolean isSynchronized, boolean isNative) {
+	public KMethod(KClass kClass, MethodSignature signature, boolean isAbstract,  boolean isSynchronized, boolean isNative) {
 		this.kClass = kClass;
 		this.signature = signature;
+		this.isAbstract = isAbstract;
 		this.isSynchronized = isSynchronized;
 		this.isNative = isNative;
 	}
@@ -55,6 +56,10 @@ public class KMethod {
 
 	public void setLabelMap(Map<Label, Integer> labelMap) {
 		this.labelMap = labelMap;
+	}
+	
+	public boolean isAbstract() {
+		return isAbstract;
 	}
 
 	public boolean isNative() {

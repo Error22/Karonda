@@ -80,9 +80,10 @@ public class ClassConverter extends ClassVisitor {
 				+ rawSignature + " exceptions=" + Arrays.deepToString(exceptions));
 
 		MethodSignature signature = ConversionUtils.parseMethodSignature(kClass.getName(), name, desc);
+		boolean isAbstract = (access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT;
 		boolean isSynchronized = (access & Opcodes.ACC_SYNCHRONIZED) == Opcodes.ACC_SYNCHRONIZED;
 		boolean isNative = (access & Opcodes.ACC_NATIVE) == Opcodes.ACC_NATIVE;
-		KMethod method = new KMethod(kClass, signature, isSynchronized, isNative);
+		KMethod method = new KMethod(kClass, signature, isAbstract, isSynchronized, isNative);
 		kClass.addMethod(method);
 		return new MethodConverter(method);
 	}

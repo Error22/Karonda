@@ -108,7 +108,7 @@ public class InvokeInstruction implements IInstruction {
 			KClass targetClass = reference.getKClass();
 			args[0] = reference;
 
-			KMethod resolved = targetClass.findMethod(signature);
+			KMethod resolved = targetClass.findMethod(signature, true, true);
 			thread.initAndCall(resolved, false, args);
 			break;
 		}

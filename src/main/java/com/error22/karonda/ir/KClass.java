@@ -1,5 +1,6 @@
 package com.error22.karonda.ir;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class KClass {
 		return superClass.isParent(clazz);
 	}
 
-	public KMethod findMethod(MethodSignature signature) {
+	public KMethod findMethod(MethodSignature signature, boolean checkInterfaces, boolean throwException) {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
 
@@ -60,9 +61,47 @@ public class KClass {
 				return method;
 			}
 		}
-		if (superClass == null)
+
+		if (superClass != null) {
+			KMethod method = superClass.findMethod(signature, false, false);
+			if (method != null)
+				return method;
+		}
+
+		if (checkInterfaces) {
+			ArrayList<KMethod> interfaceMethods = new ArrayList<KMethod>();
+			findDefaultInterfaceMethods(interfaceMethods, signature);
+			if (interfaceMethods.size() > 0) {
+				if (interfaceMethods.size() != 1)
+					throw new IllegalArgumentException("More than one default interface member found");
+				return interfaceMethods.get(0);
+			}
+		}
+
+		if (throwException)
 			throw new RuntimeException("Failed to find method " + signature);
-		return superClass.findMethod(signature);
+		else
+			return null;
+	}
+
+	public void findDefaultInterfaceMethods(List<KMethod> list, MethodSignature signature) {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+
+		if (type == ClassType.Interface) {
+			for (KMethod method : methods.values()) {
+				if (method.getSignature().matches(signature) && !method.isAbstract()) {
+					list.add(method);
+				}
+			}
+		}
+
+		for (KClass i : interfaces) {
+			i.findDefaultInterfaceMethods(list, signature);
+		}
+
+		if (superClass != null)
+			superClass.findDefaultInterfaceMethods(list, signature);
 	}
 
 	public KField findField(FieldSignature signature) {
