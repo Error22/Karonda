@@ -47,11 +47,6 @@ public class ClassConverter extends ClassVisitor {
 	}
 
 	@Override
-	public void visitOuterClass(String owner, String name, String desc) {
-		throw new NotImplementedException("visitOuterClass owner=" + owner + " name=" + name + " desc=" + desc);
-	}
-
-	@Override
 	public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
 		throw new NotImplementedException("visitAnnotation desc=" + desc + " visible=" + visible);
 	}
@@ -60,12 +55,6 @@ public class ClassConverter extends ClassVisitor {
 	public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
 		throw new NotImplementedException("visitTypeAnnotation typeRef=" + typeRef + " typePath=" + typePath + " desc="
 				+ desc + " visible=" + visible);
-	}
-
-	@Override
-	public void visitInnerClass(String name, String outerName, String innerName, int access) {
-		throw new NotImplementedException("visitInnerClass name=" + name + " outerName=" + outerName + " innerName="
-				+ innerName + " access=" + access);
 	}
 
 	@Override
