@@ -29,9 +29,11 @@ import com.error22.karonda.instructions.LocalInstruction;
 import com.error22.karonda.instructions.LocalInstruction.LocalOperation;
 import com.error22.karonda.instructions.MathInstruction;
 import com.error22.karonda.instructions.MathInstruction.MathOp;
+import com.error22.karonda.instructions.NewArrayInstruction;
 import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.ThrowInstruction;
+import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
@@ -332,6 +334,8 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new NewInstruction((ObjectType) t));
 			break;
 		case Opcodes.ANEWARRAY:
+			addInstruction(new NewArrayInstruction(new ArrayType(t, 1), 1));
+			break;
 		case Opcodes.CHECKCAST:
 		case Opcodes.INSTANCEOF:
 			throw new NotImplementedException("OP: " + opcode);
@@ -414,7 +418,35 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand));
 			break;
 		case Opcodes.NEWARRAY:
-			throw new NotImplementedException("OP: " + opcode);
+			switch (operand) {
+			case Opcodes.T_BOOLEAN:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Boolean, 1), 1));
+				break;
+			case Opcodes.T_CHAR:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Char, 1), 1));
+				break;
+			case Opcodes.T_BYTE:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Byte, 1), 1));
+				break;
+			case Opcodes.T_SHORT:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Short, 1), 1));
+				break;
+			case Opcodes.T_INT:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Int, 1), 1));
+				break;
+			case Opcodes.T_FLOAT:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Float, 1), 1));
+				break;
+			case Opcodes.T_LONG:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Long, 1), 1));
+				break;
+			case Opcodes.T_DOUBLE:
+				addInstruction(new NewArrayInstruction(new ArrayType(PrimitiveType.Double, 1), 1));
+				break;
+			default:
+				throw new IllegalArgumentException();
+			}
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
@@ -427,7 +459,7 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitMultiANewArrayInsn(String desc, int dims) {
-		throw new NotImplementedException("OP: multianewarray");
+		addInstruction(new NewArrayInstruction((ArrayType) ConversionUtils.convertType(Type.getType(desc)), dims));
 	}
 
 	@Override

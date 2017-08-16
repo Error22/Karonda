@@ -49,7 +49,7 @@ public class ConversionUtils {
 		} else if (type.getSort() == Type.OBJECT) {
 			return new ObjectType(type.getClassName().replaceAll("\\.", "/"));
 		} else if (type.getSort() == Type.ARRAY) {
-			return new ArrayType(convertType(type.getElementType()));
+			return new ArrayType(convertType(type.getElementType()), type.getDimensions());
 		} else {
 			throw new IllegalArgumentException(type.toString() + " sort=" + type.getSort());
 		}

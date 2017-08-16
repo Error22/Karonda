@@ -62,5 +62,12 @@ public class InstancePool {
 		objects.put(id, instance);
 		return instance.makeReference();
 	}
+	
+	public ObjectReference createArray(int size) {
+		UUID id = UUID.randomUUID();
+		ObjectInstance instance = new ObjectInstance(id, size);
+		objects.put(id, instance);
+		return instance.makeReference();
+	}
 
 }

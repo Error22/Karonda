@@ -15,7 +15,9 @@ public class ObjectInstance {
 	private UUID id;
 	private KClass kClass;
 	private Map<FieldSignature, IObject> fields;
-
+	private int arraySize;
+	private IObject[] arrayData;
+	
 	public ObjectInstance(UUID id, KClass kClass) {
 		this.id = id;
 		this.kClass = kClass;
@@ -25,6 +27,12 @@ public class ObjectInstance {
 		for (KField field : classFields) {
 			fields.put(field.getSignature(), field.getSignature().getType().getDefaultValue());
 		}
+	}
+	
+	public ObjectInstance(UUID id, int arraySize) {
+		this.id = id;
+		this.arraySize = arraySize;
+		this.arrayData = new IObject[arraySize];
 	}
 
 	public IObject getField(FieldSignature name) {
@@ -37,6 +45,18 @@ public class ObjectInstance {
 		if (!fields.containsKey(name))
 			throw new IllegalArgumentException("Field not found! " + name);
 		fields.put(name, value);
+	}
+	
+	public int getArraySize() {
+		return arraySize;
+	}
+	
+	public IObject getArrayElement(int index) {
+		return arrayData[index];
+	}
+	
+	public void setArrayElement(int index, IObject data) {
+		arrayData[index] = data;
 	}
 
 	public ObjectReference makeReference() {
