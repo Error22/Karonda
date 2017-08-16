@@ -35,7 +35,7 @@ public class InvokeInstruction implements IInstruction {
 		KClass currentClass = stackFrame.getMethod().getKClass();
 		ClassPool pool = thread.getClassPool();
 
-		if (isInterface)
+		if (isInterface && type != InvokeType.Interface)
 			throw new NotImplementedException();
 
 		KClass clazz = pool.getClass(signature.getClazz(), currentClass);
@@ -89,6 +89,7 @@ public class InvokeInstruction implements IInstruction {
 			thread.initAndCall(resolved, false, args);
 			break;
 		}
+		case Interface:
 		case Virtual: {
 			IType[] arguments = method.getSignature().getArguments();
 			int size = 1;
