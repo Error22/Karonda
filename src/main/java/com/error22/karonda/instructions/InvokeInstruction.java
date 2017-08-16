@@ -1,6 +1,7 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.ir.ClassType;
 import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
@@ -35,8 +36,8 @@ public class InvokeInstruction implements IInstruction {
 		KClass currentClass = stackFrame.getMethod().getKClass();
 		ClassPool pool = thread.getClassPool();
 
-		if (isInterface && type != InvokeType.Interface)
-			throw new NotImplementedException();
+		// if (isInterface && type != InvokeType.Interface)
+		// throw new NotImplementedException();
 
 		KClass clazz = pool.getClass(signature.getClazz(), currentClass);
 		KMethod method = clazz.getMethod(signature);
@@ -73,19 +74,26 @@ public class InvokeInstruction implements IInstruction {
 			}
 
 			ObjectReference reference = (ObjectReference) stackFrame.pop();
-			KClass targetClass = reference.getKClass();
+			// KClass targetClass = reference.getKClass();
 			args[0] = reference;
 
-			boolean specialResolve = targetClass.shouldSpecialMethodResolve() && targetClass.isParent(clazz)
-					&& !signature.isLocalInitializer();
+			KMethod resolved;
 
-			KMethod resolved = null;
-			if (specialResolve)
-				throw new NotImplementedException();
-			else
+			if (isInterface) {
 				resolved = method;
+				System.out.println(
+						"InvokeInstruction: specialResolve:  INTERFACE OVERRIDE  special: " + resolved.getSignature());
+			} else {
+				boolean specialResolve = currentClass.shouldSpecialMethodResolve()
+						&& (clazz.getType() == ClassType.Interface || currentClass.isParent(clazz))
+						&& !signature.isLocalInitializer();
 
-			System.out.println("InvokeInstruction: special: " + resolved.getSignature());
+				KClass scanClass = specialResolve ? currentClass.getSuperClass() : clazz;
+				resolved = scanClass.findMethod(signature, true);
+				System.out.println("InvokeInstruction: specialResolve: " + specialResolve + " resolved: "
+						+ resolved.getSignature());
+			}
+
 			thread.initAndCall(resolved, false, args);
 			break;
 		}
@@ -108,7 +116,7 @@ public class InvokeInstruction implements IInstruction {
 			KClass targetClass = reference.getKClass();
 			args[0] = reference;
 
-			KMethod resolved = targetClass.findMethod(signature, true, true);
+			KMethod resolved = targetClass.findMethod(signature, true);
 			thread.initAndCall(resolved, false, args);
 			break;
 		}

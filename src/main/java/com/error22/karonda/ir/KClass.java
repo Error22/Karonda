@@ -52,56 +52,37 @@ public class KClass {
 		return superClass.isParent(clazz);
 	}
 
-	public KMethod findMethod(MethodSignature signature, boolean checkInterfaces, boolean throwException) {
+	public KMethod findMethod(MethodSignature signature, boolean throwException) {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
 
 		for (KMethod method : methods.values()) {
-			if (method.getSignature().matches(signature)) {
+			if (method.getSignature().matches(signature) & !method.isAbstract()) {
 				return method;
 			}
 		}
 
 		if (superClass != null) {
-			KMethod method = superClass.findMethod(signature, false, false);
+			KMethod method = superClass.findMethod(signature, false);
 			if (method != null)
 				return method;
 		}
 
-		if (checkInterfaces) {
-			ArrayList<KMethod> interfaceMethods = new ArrayList<KMethod>();
-			findDefaultInterfaceMethods(interfaceMethods, signature);
-			if (interfaceMethods.size() > 0) {
-				if (interfaceMethods.size() != 1)
-					throw new IllegalArgumentException("More than one default interface member found");
-				return interfaceMethods.get(0);
-			}
+		ArrayList<KMethod> interfaceMethods = new ArrayList<KMethod>();
+		for (KClass iface : interfaces) {
+			interfaceMethods.add(iface.findMethod(signature, false));
+		}
+
+		if (interfaceMethods.size() > 0) {
+			if (interfaceMethods.size() != 1)
+				throw new IllegalArgumentException("More than one default interface member found");
+			return interfaceMethods.get(0);
 		}
 
 		if (throwException)
 			throw new RuntimeException("Failed to find method " + signature);
 		else
 			return null;
-	}
-
-	public void findDefaultInterfaceMethods(List<KMethod> list, MethodSignature signature) {
-		if (!resolved)
-			throw new IllegalStateException("Class has not been resolved");
-
-		if (type == ClassType.Interface) {
-			for (KMethod method : methods.values()) {
-				if (method.getSignature().matches(signature) && !method.isAbstract()) {
-					list.add(method);
-				}
-			}
-		}
-
-		for (KClass i : interfaces) {
-			i.findDefaultInterfaceMethods(list, signature);
-		}
-
-		if (superClass != null)
-			superClass.findDefaultInterfaceMethods(list, signature);
 	}
 
 	public KField findField(FieldSignature signature) {
@@ -149,6 +130,16 @@ public class KClass {
 
 	public KField getField(FieldSignature signature) {
 		return fields.get(signature);
+	}
+
+	public KClass getSuperClass() {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+		return superClass;
+	}
+
+	public ClassType getType() {
+		return type;
 	}
 
 	public String getName() {
