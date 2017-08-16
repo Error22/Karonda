@@ -3,6 +3,7 @@ package com.error22.karonda.instructions;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
+import com.error22.karonda.ir.KField;
 import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
@@ -55,7 +56,8 @@ public class FieldInstruction implements IInstruction {
 			if (thread.staticInit(clazz, true))
 				return;
 			ObjectReference reference = (ObjectReference) stackFrame.pop();
-			IObject fieldValue = reference.getInstance().getField(signature);
+			KField target = clazz.findField(signature);
+			IObject fieldValue = reference.getInstance().getField(target.getSignature());
 			IObject value = signature.getType().fieldUnwrap(fieldValue);
 			stackFrame.push(value);
 			break;
@@ -68,7 +70,8 @@ public class FieldInstruction implements IInstruction {
 			IObject value = stackFrame.pop();
 			IObject fieldValue = signature.getType().fieldWrap(value);
 			ObjectReference reference = (ObjectReference) stackFrame.pop();
-			reference.getInstance().setField(signature, fieldValue);
+			KField target = clazz.findField(signature);
+			reference.getInstance().setField(target.getSignature(), fieldValue);
 			break;
 		}
 		default:

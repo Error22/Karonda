@@ -22,6 +22,10 @@ public class FieldSignature {
 		return type;
 	}
 
+	public boolean matches(FieldSignature signature) {
+		return name.equals(signature.name) && type.equals(signature.type);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

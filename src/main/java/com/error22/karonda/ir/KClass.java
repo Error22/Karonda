@@ -1,6 +1,7 @@
 package com.error22.karonda.ir;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -51,6 +52,9 @@ public class KClass {
 	}
 
 	public KMethod findMethod(MethodSignature signature) {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+
 		for (KMethod method : methods.values()) {
 			if (method.getSignature().matches(signature)) {
 				return method;
@@ -59,6 +63,29 @@ public class KClass {
 		if (superClass == null)
 			throw new RuntimeException("Failed to find method " + signature);
 		return superClass.findMethod(signature);
+	}
+
+	public KField findField(FieldSignature signature) {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+
+		for (KField field : fields.values()) {
+			if (field.getSignature().matches(signature)) {
+				return field;
+			}
+		}
+		if (superClass == null)
+			throw new RuntimeException("Failed to find field " + signature);
+		return superClass.findField(signature);
+	}
+
+	public void getAllFields(List<KField> fields) {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+
+		if (superClass != null)
+			superClass.getAllFields(fields);
+		fields.addAll(this.fields.values());
 	}
 
 	public boolean shouldSpecialMethodResolve() {
