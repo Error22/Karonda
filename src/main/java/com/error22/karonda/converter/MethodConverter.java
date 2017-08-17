@@ -21,6 +21,7 @@ import com.error22.karonda.instructions.DuplicateInstruction.DuplicateMode;
 import com.error22.karonda.instructions.FieldInstruction;
 import com.error22.karonda.instructions.FieldInstruction.FieldOperation;
 import com.error22.karonda.instructions.IInstruction;
+import com.error22.karonda.instructions.IncrementInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.instructions.JumpInstruction;
@@ -358,7 +359,7 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitIincInsn(int var, int increment) {
-		throw new NotImplementedException("OP: inc");
+		addInstruction(new IncrementInstruction(var, increment));
 	}
 
 	@Override
