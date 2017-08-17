@@ -30,6 +30,7 @@ import com.error22.karonda.instructions.JumpInstruction;
 import com.error22.karonda.instructions.JumpInstruction.JumpType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadStringInstruction;
+import com.error22.karonda.instructions.LoadTypeInstruction;
 import com.error22.karonda.instructions.LocalInstruction;
 import com.error22.karonda.instructions.LocalInstruction.LocalOperation;
 import com.error22.karonda.instructions.MathInstruction;
@@ -404,7 +405,7 @@ public class MethodConverter extends MethodVisitor {
 		} else if (cst instanceof String) {
 			addInstruction(new LoadStringInstruction((String) cst));
 		} else if (cst instanceof Type) {
-			throw new NotImplementedException("OP: ldc " + cst);
+			addInstruction(new LoadTypeInstruction(ConversionUtils.convertType((Type) cst)));
 		} else if (cst instanceof Handle) {
 			throw new NotImplementedException("OP: ldc " + cst);
 		} else {
