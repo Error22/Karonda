@@ -306,7 +306,8 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new ReturnInstruction(PrimitiveType.Void));
 			break;
 		case Opcodes.ARRAYLENGTH:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new ArrayInstruction(ArrayOperation.Length));
+			break;
 		case Opcodes.ATHROW:
 			addInstruction(new ThrowInstruction());
 			break;
