@@ -17,11 +17,11 @@ public class NativeManager {
 		hooks.put(signature, hook);
 	}
 
-	public void invokeNative(MethodSignature signature, KThread thread, IObject[] arguments) {
+	public void invokeNative(MethodSignature signature, KThread thread, StackFrame stackFrame, IObject[] arguments) {
 		IMethodHook hook = hooks.get(signature);
 		if (hook == null)
 			throw new RuntimeException("Missing hook " + signature);
-		hook.invoke(thread, arguments);
+		hook.invoke(thread, stackFrame, arguments);
 	}
 
 }

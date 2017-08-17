@@ -43,10 +43,6 @@ public class KThread {
 		if (!instancePool.hasStaticInit(method.getKClass()))
 			throw new IllegalStateException("Class has not been staticly initialized");
 
-		if (method.isNative()) {
-			nativeManager.invokeNative(method.getSignature(), this, arguments);
-			return;
-		}
 		StackFrame frame = new StackFrame(this, method);
 		frame.init(arguments);
 		if (pushBack) {
@@ -69,12 +65,20 @@ public class KThread {
 				frames.peek().push(result);
 	}
 
+	public StackFrame getCurrentFrame() {
+		return frames.peek();
+	}
+
 	public ClassPool getClassPool() {
 		return classPool;
 	}
 
 	public InstancePool getInstancePool() {
 		return instancePool;
+	}
+
+	public NativeManager getNativeManager() {
+		return nativeManager;
 	}
 
 }

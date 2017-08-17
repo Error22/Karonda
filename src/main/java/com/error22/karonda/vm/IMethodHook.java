@@ -4,6 +4,6 @@ import com.error22.karonda.ir.IObject;
 
 public interface IMethodHook {
 
-	void invoke(KThread thread, IObject[] arguments);
+	void invoke(KThread thread, StackFrame stackFrame, IObject[] arguments);
 
 }

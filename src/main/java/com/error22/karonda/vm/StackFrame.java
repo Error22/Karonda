@@ -15,6 +15,7 @@ public class StackFrame {
 	private Map<Label, Integer> labelMap;
 	private int instructionPointer, stackPointer;
 	private IObject[] locals, stack;
+	private boolean nativeRan;
 
 	public StackFrame(KThread thread, KMethod method) {
 		this.thread = thread;
@@ -24,12 +25,24 @@ public class StackFrame {
 	}
 
 	public void init(IObject[] arguments) {
+		if (method.isNative()) {
+			locals = arguments.clone();
+			return;
+		}
 		locals = new IObject[method.getMaxLocals()];
 		stack = new IObject[method.getMaxStack()];
 		System.arraycopy(arguments, 0, locals, 0, arguments.length);
 	}
 
 	public void step() {
+		if (method.isNative()) {
+			if (nativeRan)
+				throw new IllegalStateException();
+			thread.getNativeManager().invokeNative(method.getSignature(), thread, this, locals);
+			nativeRan = true;
+			return;
+		}
+
 		IInstruction instruction = instructions[instructionPointer];
 		instructionPointer++;
 		instruction.execute(this);
@@ -72,6 +85,10 @@ public class StackFrame {
 
 	public void setInstructionPointer(int instructionPointer) {
 		this.instructionPointer = instructionPointer;
+	}
+
+	public void exit() {
+		exit(null);
 	}
 
 	public void exit(IObject result) {
