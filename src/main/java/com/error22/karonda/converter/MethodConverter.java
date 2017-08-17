@@ -208,26 +208,65 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new MathInstruction(MathOp.DivideDoubles));
 			break;
 		case Opcodes.IREM:
+			addInstruction(new MathInstruction(MathOp.RemainderInts));
+			break;
 		case Opcodes.LREM:
+			addInstruction(new MathInstruction(MathOp.RemainderLongs));
+			break;
 		case Opcodes.FREM:
+			addInstruction(new MathInstruction(MathOp.RemainderFloats));
+			break;
 		case Opcodes.DREM:
+			addInstruction(new MathInstruction(MathOp.RemainderDoubles));
+			break;
 		case Opcodes.INEG:
+			addInstruction(new MathInstruction(MathOp.NegateInt));
+			break;
 		case Opcodes.LNEG:
+			addInstruction(new MathInstruction(MathOp.NegateLong));
+			break;
 		case Opcodes.FNEG:
+			addInstruction(new MathInstruction(MathOp.NegateFloat));
+			break;
 		case Opcodes.DNEG:
+			addInstruction(new MathInstruction(MathOp.NegateDouble));
+			break;
 		case Opcodes.ISHL:
+			addInstruction(new MathInstruction(MathOp.ShiftLeftInt));
+			break;
 		case Opcodes.LSHL:
+			addInstruction(new MathInstruction(MathOp.ShiftLeftLong));
+			break;
 		case Opcodes.ISHR:
+			addInstruction(new MathInstruction(MathOp.ArithmeticShiftRightInt));
+			break;
 		case Opcodes.LSHR:
+			addInstruction(new MathInstruction(MathOp.ArithmeticShiftRightLong));
+			break;
 		case Opcodes.IUSHR:
+			addInstruction(new MathInstruction(MathOp.LogicalShiftRightInt));
+			break;
 		case Opcodes.LUSHR:
+			addInstruction(new MathInstruction(MathOp.LogicalShiftRightLong));
+			break;
 		case Opcodes.IAND:
+			addInstruction(new MathInstruction(MathOp.AndInts));
+			break;
 		case Opcodes.LAND:
+			addInstruction(new MathInstruction(MathOp.AndInts));
+			break;
 		case Opcodes.IOR:
+			addInstruction(new MathInstruction(MathOp.OrInts));
+			break;
 		case Opcodes.LOR:
+			addInstruction(new MathInstruction(MathOp.OrLongs));
+			break;
 		case Opcodes.IXOR:
+			addInstruction(new MathInstruction(MathOp.XOrInts));
+			break;
 		case Opcodes.LXOR:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new MathInstruction(MathOp.XOrLongs));
+			break;
 		case Opcodes.I2L:
 			addInstruction(new ConvertInstruction(PrimitiveType.Int, PrimitiveType.Long));
 			break;
