@@ -36,6 +36,8 @@ import com.error22.karonda.instructions.MonitorInstruction;
 import com.error22.karonda.instructions.MonitorInstruction.MonitorOperation;
 import com.error22.karonda.instructions.NewArrayInstruction;
 import com.error22.karonda.instructions.NewInstruction;
+import com.error22.karonda.instructions.PopInstruction;
+import com.error22.karonda.instructions.PopInstruction.PopMode;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.ThrowInstruction;
 import com.error22.karonda.ir.ArrayType;
@@ -139,8 +141,11 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Short));
 			break;
 		case Opcodes.POP:
+			addInstruction(new PopInstruction(PopMode.Single));
+			break;
 		case Opcodes.POP2:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new PopInstruction(PopMode.Double));
+			break;
 		case Opcodes.DUP:
 			addInstruction(new DuplicateInstruction(DuplicateMode.SingleCat1));
 			break;

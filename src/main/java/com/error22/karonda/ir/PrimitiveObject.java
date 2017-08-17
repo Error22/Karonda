@@ -9,6 +9,7 @@ public class PrimitiveObject implements IObject {
 		this.value = value;
 	}
 
+	@Override
 	public PrimitiveType getType() {
 		return type;
 	}

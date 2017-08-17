@@ -24,4 +24,9 @@ public class ObjectReference implements IObject {
 		return new ObjectReference(kClass, instance);
 	}
 
+	@Override
+	public ObjectType getType() {
+		return new ObjectType(kClass.getName());
+	}
+
 }
