@@ -40,6 +40,8 @@ import com.error22.karonda.instructions.PopInstruction;
 import com.error22.karonda.instructions.PopInstruction.PopMode;
 import com.error22.karonda.instructions.ReturnInstruction;
 import com.error22.karonda.instructions.ThrowInstruction;
+import com.error22.karonda.instructions.TypeInstruction;
+import com.error22.karonda.instructions.TypeInstruction.TypeOperation;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KMethod;
@@ -422,8 +424,11 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new NewArrayInstruction(new ArrayType(t, 1), 1));
 			break;
 		case Opcodes.CHECKCAST:
+			addInstruction(new TypeInstruction(TypeOperation.CheckCast, t));
+			break;
 		case Opcodes.INSTANCEOF:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new TypeInstruction(TypeOperation.InstanceOf, t));
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
