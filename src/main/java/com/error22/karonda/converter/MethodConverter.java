@@ -41,6 +41,8 @@ import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.PopInstruction;
 import com.error22.karonda.instructions.PopInstruction.PopMode;
 import com.error22.karonda.instructions.ReturnInstruction;
+import com.error22.karonda.instructions.SwitchInstruction;
+import com.error22.karonda.instructions.TableInstruction;
 import com.error22.karonda.instructions.ThrowInstruction;
 import com.error22.karonda.instructions.TypeInstruction;
 import com.error22.karonda.instructions.TypeInstruction.TypeOperation;
@@ -546,7 +548,7 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
-		throw new NotImplementedException("OP: lookupswitch");
+		addInstruction(new SwitchInstruction(dflt, keys, labels));
 	}
 
 	@Override
@@ -556,7 +558,7 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
-		throw new NotImplementedException("OP: tableswitch");
+		addInstruction(new TableInstruction(min, max, dflt, labels));
 	}
 
 	@Override
