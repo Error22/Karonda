@@ -56,4 +56,9 @@ public class ObjectType implements IType {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "ObjectType [name=" + name + "]";
+	}
+
 }
