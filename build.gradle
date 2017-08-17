@@ -11,6 +11,7 @@ repositories {
 dependencies {
     api 'org.ow2.asm:asm-debug-all:5.2'
     implementation 'com.google.guava:guava:21.0'
+    implementation 'org.javatuples:javatuples:1.2'
     
     testImplementation 'junit:junit:4.12'
 }
