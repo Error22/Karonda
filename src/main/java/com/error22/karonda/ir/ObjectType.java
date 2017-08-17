@@ -1,7 +1,5 @@
 package com.error22.karonda.ir;
 
-import com.error22.karonda.NotImplementedException;
-
 public class ObjectType implements IType {
 	private String name;
 
@@ -25,12 +23,12 @@ public class ObjectType implements IType {
 
 	@Override
 	public IObject fieldWrap(IObject value) {
-		throw new NotImplementedException();
+		return value.duplicate();
 	}
 
 	@Override
 	public IObject fieldUnwrap(IObject value) {
-		throw new NotImplementedException();
+		return value.duplicate();
 	}
 
 	@Override

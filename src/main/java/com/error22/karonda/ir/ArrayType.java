@@ -1,7 +1,5 @@
 package com.error22.karonda.ir;
 
-import com.error22.karonda.NotImplementedException;
-
 public class ArrayType implements IType {
 	private IType type;
 	private int dimensions;
@@ -29,12 +27,12 @@ public class ArrayType implements IType {
 
 	@Override
 	public IObject fieldWrap(IObject value) {
-		throw new NotImplementedException();
+		return value.duplicate();
 	}
 
 	@Override
 	public IObject fieldUnwrap(IObject value) {
-		throw new NotImplementedException();
+		return value.duplicate();
 	}
 
 	@Override
