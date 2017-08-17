@@ -11,6 +11,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.instructions.ArrayInstruction;
+import com.error22.karonda.instructions.ArrayInstruction.ArrayOperation;
 import com.error22.karonda.instructions.CompareInstruction;
 import com.error22.karonda.instructions.CompareInstruction.CompareOp;
 import com.error22.karonda.instructions.ConvertInstruction;
@@ -86,21 +88,53 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, opcode - Opcodes.DCONST_0));
 			break;
 		case Opcodes.IALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Int));
+			break;
 		case Opcodes.LALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Long));
+			break;
 		case Opcodes.FALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Float));
+			break;
 		case Opcodes.DALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Double));
+			break;
 		case Opcodes.AALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, OBJECT_TYPE));
+			break;
 		case Opcodes.BALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Byte));
+			break;
 		case Opcodes.CALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Char));
+			break;
 		case Opcodes.SALOAD:
+			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Short));
+			break;
 		case Opcodes.IASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Int));
+			break;
 		case Opcodes.LASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Long));
+			break;
 		case Opcodes.FASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Float));
+			break;
 		case Opcodes.DASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Double));
+			break;
 		case Opcodes.AASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, OBJECT_TYPE));
+			break;
 		case Opcodes.BASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Byte));
+			break;
 		case Opcodes.CASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Char));
+			break;
 		case Opcodes.SASTORE:
+			addInstruction(new ArrayInstruction(ArrayOperation.Store, PrimitiveType.Short));
+			break;
 		case Opcodes.POP:
 		case Opcodes.POP2:
 			throw new NotImplementedException("OP: " + opcode);
