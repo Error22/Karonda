@@ -24,7 +24,7 @@ public class ArrayType implements IType {
 
 	@Override
 	public IObject getDefaultValue() {
-		throw new NotImplementedException();
+		return new PrimitiveObject(PrimitiveType.Void, null);
 	}
 
 	@Override

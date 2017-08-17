@@ -21,10 +21,21 @@ public enum PrimitiveType implements IType {
 	@Override
 	public IObject getDefaultValue() {
 		switch (this) {
+		case Byte:
+		case Boolean:
+			return new PrimitiveObject(this, (byte) 0);
+		case Char:
+			return new PrimitiveObject(Char, (char) 0);
 		case Short:
 			return new PrimitiveObject(Short, (short) 0);
 		case Int:
 			return new PrimitiveObject(Int, 0);
+		case Long:
+			return new PrimitiveObject(Long, (long) 0);
+		case Float:
+			return new PrimitiveObject(Float, (float) 0);
+		case Double:
+			return new PrimitiveObject(Double, (double) 0);
 		default:
 			throw new NotImplementedException();
 		}
