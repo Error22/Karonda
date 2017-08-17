@@ -5,24 +5,31 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.javatuples.Pair;
+
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IObject;
+import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
 import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.ir.PrimitiveType;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 public class InstancePool {
 	private Map<KClass, Boolean> staticInitMap;
 	private Map<FieldSignature, IObject> staticFields;
 	private Map<UUID, ObjectInstance> objects;
+	private BiMap<Pair<IType, Object>, UUID> runtimeClasses;
 
 	public InstancePool() {
 		staticInitMap = new ConcurrentHashMap<KClass, Boolean>();
 		staticFields = new HashMap<FieldSignature, IObject>();
 		objects = new HashMap<UUID, ObjectInstance>();
+		runtimeClasses = HashBiMap.create();
 	}
 
 	public KMethod staticInit(KClass clazz) {
@@ -62,11 +69,25 @@ public class InstancePool {
 		objects.put(id, instance);
 		return instance.makeReference();
 	}
-	
+
 	public ObjectReference createArray(int size) {
 		UUID id = UUID.randomUUID();
 		ObjectInstance instance = new ObjectInstance(id, size);
 		objects.put(id, instance);
+		return instance.makeReference();
+	}
+
+	public ObjectReference getRuntimeClass(ClassPool pool, IType type, KClass clazz) {
+		Pair<IType, Object> key = new Pair<IType, Object>(type, null);
+		if (runtimeClasses.containsKey(key)) {
+			return objects.get(runtimeClasses.get(key)).makeReference();
+		}
+
+		KClass classClass = pool.getClass("java/lang/Class", null);
+		UUID id = UUID.randomUUID();
+		ObjectInstance instance = new ObjectInstance(id, classClass);
+		objects.put(id, instance);
+		runtimeClasses.put(key, id);
 		return instance.makeReference();
 	}
 
