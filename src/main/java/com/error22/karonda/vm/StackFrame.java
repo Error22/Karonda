@@ -1,5 +1,9 @@
 package com.error22.karonda.vm;
 
+import java.util.Map;
+
+import org.objectweb.asm.Label;
+
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KMethod;
@@ -8,6 +12,7 @@ public class StackFrame {
 	private KThread thread;
 	private KMethod method;
 	private IInstruction[] instructions;
+	private Map<Label, Integer> labelMap;
 	private int instructionPointer, stackPointer;
 	private IObject[] locals, stack;
 
@@ -15,6 +20,7 @@ public class StackFrame {
 		this.thread = thread;
 		this.method = method;
 		instructions = method.getInstructions();
+		labelMap = method.getLabelMap();
 	}
 
 	public void init(IObject[] arguments) {
@@ -27,6 +33,10 @@ public class StackFrame {
 		IInstruction instruction = instructions[instructionPointer];
 		instructionPointer++;
 		instruction.execute(this);
+	}
+
+	public void jump(Label label) {
+		instructionPointer = labelMap.get(label);
 	}
 
 	public void push(IObject object) {
@@ -67,4 +77,5 @@ public class StackFrame {
 	public void exit(IObject result) {
 		thread.exitFrame(result);
 	}
+
 }

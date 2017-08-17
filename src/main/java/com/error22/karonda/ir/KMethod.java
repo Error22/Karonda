@@ -58,6 +58,10 @@ public class KMethod {
 		this.labelMap = labelMap;
 	}
 	
+	public Map<Label, Integer> getLabelMap() {
+		return labelMap;
+	}
+	
 	public boolean isAbstract() {
 		return isAbstract;
 	}
