@@ -32,6 +32,8 @@ public class ConversionUtils {
 	public static IType convertType(Type type) {
 		if (type == Type.VOID_TYPE) {
 			return PrimitiveType.Void;
+		} else if (type == Type.BYTE_TYPE) {
+			return PrimitiveType.Byte;
 		} else if (type == Type.BOOLEAN_TYPE) {
 			return PrimitiveType.Boolean;
 		} else if (type == Type.CHAR_TYPE) {
