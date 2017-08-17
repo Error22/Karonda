@@ -32,6 +32,8 @@ import com.error22.karonda.instructions.LocalInstruction;
 import com.error22.karonda.instructions.LocalInstruction.LocalOperation;
 import com.error22.karonda.instructions.MathInstruction;
 import com.error22.karonda.instructions.MathInstruction.MathOp;
+import com.error22.karonda.instructions.MonitorInstruction;
+import com.error22.karonda.instructions.MonitorInstruction.MonitorOperation;
 import com.error22.karonda.instructions.NewArrayInstruction;
 import com.error22.karonda.instructions.NewInstruction;
 import com.error22.karonda.instructions.ReturnInstruction;
@@ -352,8 +354,11 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new ThrowInstruction());
 			break;
 		case Opcodes.MONITORENTER:
+			addInstruction(new MonitorInstruction(MonitorOperation.Enter));
+			break;
 		case Opcodes.MONITOREXIT:
-			throw new NotImplementedException("OP: " + opcode);
+			addInstruction(new MonitorInstruction(MonitorOperation.Exit));
+			break;
 		default:
 			throw new IllegalArgumentException();
 		}
