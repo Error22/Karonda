@@ -1,6 +1,7 @@
 package com.error22.karonda.converter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.error22.karonda.instructions.FieldInstruction;
 import com.error22.karonda.instructions.FieldInstruction.FieldOperation;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.IncrementInstruction;
+import com.error22.karonda.instructions.InvokeDynamicInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.instructions.JumpInstruction;
@@ -650,7 +652,9 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs) {
-		throw new NotImplementedException("OP: invokedynamic");
+		System.out.println("OP: invokedynamic name=" + name + " desc=" + desc + " bsm=" + bsm + " args="
+				+ Arrays.deepToString(bsmArgs));
+		addInstruction(new InvokeDynamicInstruction());
 	}
 
 	@Override
