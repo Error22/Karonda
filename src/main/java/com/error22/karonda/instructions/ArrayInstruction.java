@@ -34,7 +34,8 @@ public class ArrayInstruction implements IInstruction {
 			int index = ((Number) ((PrimitiveObject) stackFrame.pop()).getValue()).intValue();
 			ObjectInstance inst = ((ObjectReference) stackFrame.pop()).getInstance();
 			// TODO: check types compatible
-			stackFrame.push(inst.getArrayElement(index).duplicate());
+
+			stackFrame.push(inst.getArrayType().getType().fieldUnwrap(inst.getArrayElement(index).duplicate()));
 			break;
 		}
 		case Store: {
@@ -42,7 +43,7 @@ public class ArrayInstruction implements IInstruction {
 			int index = ((Number) ((PrimitiveObject) stackFrame.pop()).getValue()).intValue();
 			ObjectInstance inst = ((ObjectReference) stackFrame.pop()).getInstance();
 			// TODO: check types compatible
-			inst.setArrayElement(index, value);
+			inst.setArrayElement(index, inst.getArrayType().getType().fieldWrap(value));
 			break;
 		}
 		case Length: {

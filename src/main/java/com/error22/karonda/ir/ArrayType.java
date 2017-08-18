@@ -63,6 +63,14 @@ public class ArrayType implements IType {
 		return true;
 	}
 
+	public IType getType() {
+		return type;
+	}
+
+	public int getDimensions() {
+		return dimensions;
+	}
+
 	@Override
 	public String toString() {
 		return "ArrayType [type=" + type + ", dimensions=" + dimensions + "]";
