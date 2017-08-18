@@ -4,12 +4,19 @@ import org.objectweb.asm.Type;
 
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
+import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.MethodSignature;
+import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.ir.ObjectType;
+import com.error22.karonda.ir.PrimitiveObject;
 import com.error22.karonda.ir.PrimitiveType;
+import com.error22.karonda.vm.ObjectInstance;
 
 public class ConversionUtils {
+	private static final String STRING_CLASS = "java/lang/String";
+	private static final FieldSignature VALUE_FIELD = new FieldSignature(STRING_CLASS, "value",
+			new ArrayType(PrimitiveType.Char, 1));
 
 	public static MethodSignature parseMethodSignature(String parent, String name, String desc) {
 		IType returnType = convertType(Type.getReturnType(desc));
@@ -57,4 +64,16 @@ public class ConversionUtils {
 		}
 	}
 
+	public static String parseString(IObject obj) {
+		ObjectInstance inst = ((ObjectReference) ((ObjectReference) obj).getInstance().getField(VALUE_FIELD))
+				.getInstance();
+		int size = inst.getArraySize();
+		char[] chars = new char[size];
+
+		for (int i = 0; i < size; i++) {
+			chars[i] = (char) ((PrimitiveObject) inst.getArrayElement(i)).getValue();
+		}
+
+		return new String(chars);
+	}
 }
