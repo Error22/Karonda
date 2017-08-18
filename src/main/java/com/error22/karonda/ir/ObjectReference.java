@@ -3,11 +3,9 @@ package com.error22.karonda.ir;
 import com.error22.karonda.vm.ObjectInstance;
 
 public class ObjectReference implements IObject {
-	private KClass kClass;
 	private ObjectInstance instance;
 
-	public ObjectReference(KClass kClass, ObjectInstance instance) {
-		this.kClass = kClass;
+	public ObjectReference(ObjectInstance instance) {
 		this.instance = instance;
 	}
 
@@ -16,17 +14,17 @@ public class ObjectReference implements IObject {
 	}
 
 	public KClass getKClass() {
-		return kClass;
+		return instance.getKClass();
 	}
 
 	@Override
 	public IObject duplicate() {
-		return new ObjectReference(kClass, instance);
+		return new ObjectReference(instance);
 	}
 
 	@Override
-	public ObjectType getType() {
-		return new ObjectType(kClass.getName());
+	public IType getType() {
+		return instance.isArray() ? instance.getArrayType() : new ObjectType(instance.getKClass().getName());
 	}
 
 }

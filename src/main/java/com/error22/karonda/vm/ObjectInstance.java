@@ -14,6 +14,7 @@ import com.error22.karonda.ir.ObjectReference;
 
 public class ObjectInstance {
 	private UUID id;
+	private boolean isArray;
 	private KClass kClass;
 	private Map<FieldSignature, IObject> fields;
 	private ArrayType arrayType;
@@ -21,6 +22,7 @@ public class ObjectInstance {
 	private IObject[] arrayData;
 
 	public ObjectInstance(UUID id, KClass kClass) {
+		isArray = false;
 		this.id = id;
 		this.kClass = kClass;
 		fields = new HashMap<FieldSignature, IObject>();
@@ -32,6 +34,7 @@ public class ObjectInstance {
 	}
 
 	public ObjectInstance(ArrayType arrayType, UUID id, int arraySize) {
+		isArray = true;
 		this.arrayType = arrayType;
 		this.id = id;
 		this.arraySize = arraySize;
@@ -48,6 +51,10 @@ public class ObjectInstance {
 		if (!fields.containsKey(name))
 			throw new IllegalArgumentException("Field not found! " + name);
 		fields.put(name, value);
+	}
+
+	public boolean isArray() {
+		return isArray;
 	}
 	
 	public ArrayType getArrayType() {
@@ -67,9 +74,13 @@ public class ObjectInstance {
 	}
 
 	public ObjectReference makeReference() {
-		return new ObjectReference(kClass, this);
+		return new ObjectReference(this);
 	}
 
+	public KClass getKClass(){
+		return kClass;
+	}
+	
 	public UUID getId() {
 		return id;
 	}
