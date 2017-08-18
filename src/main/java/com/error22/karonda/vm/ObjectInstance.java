@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
@@ -15,6 +16,7 @@ public class ObjectInstance {
 	private UUID id;
 	private KClass kClass;
 	private Map<FieldSignature, IObject> fields;
+	private ArrayType arrayType;
 	private int arraySize;
 	private IObject[] arrayData;
 
@@ -29,7 +31,8 @@ public class ObjectInstance {
 		}
 	}
 
-	public ObjectInstance(UUID id, int arraySize) {
+	public ObjectInstance(ArrayType arrayType, UUID id, int arraySize) {
+		this.arrayType = arrayType;
 		this.id = id;
 		this.arraySize = arraySize;
 		this.arrayData = new IObject[arraySize];
@@ -45,6 +48,10 @@ public class ObjectInstance {
 		if (!fields.containsKey(name))
 			throw new IllegalArgumentException("Field not found! " + name);
 		fields.put(name, value);
+	}
+	
+	public ArrayType getArrayType() {
+		return arrayType;
 	}
 
 	public int getArraySize() {

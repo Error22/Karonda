@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.javatuples.Pair;
 
+import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
@@ -70,9 +71,9 @@ public class InstancePool {
 		return instance.makeReference();
 	}
 
-	public ObjectReference createArray(int size) {
+	public ObjectReference createArray(ArrayType type, int size) {
 		UUID id = UUID.randomUUID();
-		ObjectInstance instance = new ObjectInstance(id, size);
+		ObjectInstance instance = new ObjectInstance(type, id, size);
 		objects.put(id, instance);
 		return instance.makeReference();
 	}

@@ -31,7 +31,7 @@ public class LoadStringInstruction implements IInstruction {
 
 		char[] chars = value.toCharArray();
 
-		ObjectReference valueRef = instancePool.createArray(chars.length);
+		ObjectReference valueRef = instancePool.createArray(CharArray, chars.length);
 		ObjectInstance valueInst = valueRef.getInstance();
 
 		for (int i = 0; i < chars.length; i++) {
@@ -44,6 +44,6 @@ public class LoadStringInstruction implements IInstruction {
 	}
 
 	private static final String StringClass = "java/lang/String";
-	private static final FieldSignature ValueField = new FieldSignature(StringClass, "value",
-			new ArrayType(PrimitiveType.Char, 1));
+	private static final ArrayType CharArray = new ArrayType(PrimitiveType.Char, 1);
+	private static final FieldSignature ValueField = new FieldSignature(StringClass, "value", CharArray);
 }
