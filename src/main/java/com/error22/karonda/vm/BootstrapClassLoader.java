@@ -22,11 +22,11 @@ public class BootstrapClassLoader {
 	}
 
 	public KClass getClass(String className) {
-		System.out.println("BootstrapClassLoader: get " + className);
 		if (loadedMap.containsKey(className))
 			return loadedMap.get(className);
 
 		try {
+			System.out.println("BootstrapClassLoader: load " + className);
 			KClass kClass = loadFile(new File(searchDir, className + ".class"));
 			loadedMap.put(className, kClass);
 			return kClass;

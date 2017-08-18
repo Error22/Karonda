@@ -53,7 +53,6 @@ public class StackFrame {
 	}
 
 	public void push(IObject object) {
-		System.out.println("push " + object);
 		stack[stackPointer] = object;
 		stackPointer++;
 	}
