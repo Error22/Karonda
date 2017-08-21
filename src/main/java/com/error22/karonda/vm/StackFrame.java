@@ -82,6 +82,10 @@ public class StackFrame {
 		this.instructionPointer += delta;
 	}
 
+	public int getInstructionPointer() {
+		return instructionPointer;
+	}
+
 	public void setInstructionPointer(int instructionPointer) {
 		this.instructionPointer = instructionPointer;
 	}
