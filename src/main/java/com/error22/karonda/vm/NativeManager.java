@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.MethodSignature;
 
@@ -30,7 +29,7 @@ public class NativeManager {
 		unboundHooks.put(result, hook);
 	}
 
-	public void invokeNative(MethodSignature signature, KThread thread, StackFrame stackFrame, IObject[] arguments) {
+	public void invokeNative(MethodSignature signature, KThread thread, StackFrame stackFrame, int[] arguments) {
 		IMethodHook hook = boundHooks.get(signature);
 		if (hook == null) {
 			final int prime = 31;
