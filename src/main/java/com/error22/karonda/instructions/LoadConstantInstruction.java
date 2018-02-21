@@ -1,43 +1,56 @@
 package com.error22.karonda.instructions;
 
+import java.util.Arrays;
+
 import com.error22.karonda.NotImplementedException;
-import com.error22.karonda.ir.PrimitiveObject;
 import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.StackFrame;
 
 public class LoadConstantInstruction implements IInstruction {
-	private PrimitiveType type;
-	private Object value;
+	private int[] data;
 
 	public LoadConstantInstruction(PrimitiveType type, Object value) {
-		this.type = type;
-		this.value = value;
-	}
-
-	@Override
-	public void execute(StackFrame stackFrame) {
 		switch (type) {
 		case Void:
-			stackFrame.push(new PrimitiveObject(type, null));
+			data = new int[] { 0 };
 			break;
 		case Byte:
 		case Boolean:
 		case Char:
 		case Short:
 		case Int:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Int, ((Number) value).intValue()));
+			data = new int[] { ((Number) value).intValue() };
 			break;
-		case Long:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, ((Number) value).longValue()));
+		case Long: {
+			long lval = ((Number) value).longValue();
+			data = new int[] { (int) (lval >> 32), (int) lval };
 			break;
-		case Float:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, ((Number) value).floatValue()));
+		}
+		case Float: {
+			float fval = ((Number) value).floatValue();
+			int ival = Float.floatToRawIntBits(fval);
+			data = new int[] { ival };
 			break;
-		case Double:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, ((Number) value).doubleValue()));
+		}
+		case Double: {
+			double dval = ((Number) value).doubleValue();
+			long lval = Double.doubleToRawLongBits(dval);
+			data = new int[] { (int) (lval >> 32), (int) lval };
 			break;
+		}
 		default:
 			throw new NotImplementedException();
 		}
 	}
+
+	@Override
+	public void execute(StackFrame stackFrame) {
+		stackFrame.push(data);
+	}
+
+	@Override
+	public String toString() {
+		return "LoadConstantInstruction [data=" + Arrays.toString(data) + "]";
+	}
+
 }
