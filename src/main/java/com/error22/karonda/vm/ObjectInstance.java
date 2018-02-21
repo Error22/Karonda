@@ -3,29 +3,26 @@ package com.error22.karonda.vm;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
-import com.error22.karonda.ir.ObjectReference;
 
 public class ObjectInstance {
-	private UUID id;
+	private int id;
 	private boolean isArray;
 	private KClass kClass;
-	private Map<FieldSignature, IObject> fields;
+	private Map<FieldSignature, int[]> fields;
 	private ArrayType arrayType;
 	private int arraySize;
-	private IObject[] arrayData;
+	private int[][] arrayData;
 
-	public ObjectInstance(UUID id, KClass kClass) {
+	public ObjectInstance(int id, KClass kClass) {
 		isArray = false;
 		this.id = id;
 		this.kClass = kClass;
-		fields = new HashMap<FieldSignature, IObject>();
+		fields = new HashMap<FieldSignature, int[]>();
 		ArrayList<KField> classFields = new ArrayList<KField>();
 		kClass.getAllFields(classFields);
 		for (KField field : classFields) {
@@ -33,21 +30,21 @@ public class ObjectInstance {
 		}
 	}
 
-	public ObjectInstance(ArrayType arrayType, UUID id, int arraySize) {
+	public ObjectInstance(ArrayType arrayType, int id, int arraySize) {
 		isArray = true;
 		this.arrayType = arrayType;
 		this.id = id;
 		this.arraySize = arraySize;
-		this.arrayData = new IObject[arraySize];
+		this.arrayData = new int[arraySize][];
 	}
 
-	public IObject getField(FieldSignature name) {
+	public int[] getField(FieldSignature name) {
 		if (!fields.containsKey(name))
 			throw new IllegalArgumentException("Field not found! " + name);
 		return fields.get(name);
 	}
 
-	public void setField(FieldSignature name, IObject value) {
+	public void setField(FieldSignature name, int[] value) {
 		if (!fields.containsKey(name))
 			throw new IllegalArgumentException("Field not found! " + name);
 		fields.put(name, value);
@@ -56,7 +53,7 @@ public class ObjectInstance {
 	public boolean isArray() {
 		return isArray;
 	}
-	
+
 	public ArrayType getArrayType() {
 		return arrayType;
 	}
@@ -65,23 +62,19 @@ public class ObjectInstance {
 		return arraySize;
 	}
 
-	public IObject getArrayElement(int index) {
+	public int[] getArrayElement(int index) {
 		return arrayData[index];
 	}
 
-	public void setArrayElement(int index, IObject data) {
+	public void setArrayElement(int index, int[] data) {
 		arrayData[index] = data;
 	}
 
-	public ObjectReference makeReference() {
-		return new ObjectReference(this);
-	}
-
-	public KClass getKClass(){
+	public KClass getKClass() {
 		return kClass;
 	}
-	
-	public UUID getId() {
+
+	public int getId() {
 		return id;
 	}
 
