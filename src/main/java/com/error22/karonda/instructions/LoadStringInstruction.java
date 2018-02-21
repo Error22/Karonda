@@ -3,8 +3,6 @@ package com.error22.karonda.instructions;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.KClass;
-import com.error22.karonda.ir.ObjectReference;
-import com.error22.karonda.ir.PrimitiveObject;
 import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
@@ -27,18 +25,18 @@ public class LoadStringInstruction implements IInstruction {
 		InstancePool instancePool = thread.getInstancePool();
 
 		KClass targetClass = classPool.getClass(StringClass, currentClass);
-		ObjectReference reference = instancePool.createInstance(targetClass);
+		int reference = instancePool.createInstance(targetClass);
 
 		char[] chars = value.toCharArray();
 
-		ObjectReference valueRef = instancePool.createArray(CharArray, chars.length);
-		ObjectInstance valueInst = valueRef.getInstance();
+		int valueRef = instancePool.createArray(CharArray, chars.length);
+		ObjectInstance valueInst = instancePool.getObject(valueRef);
 
 		for (int i = 0; i < chars.length; i++) {
-			valueInst.setArrayElement(i, new PrimitiveObject(PrimitiveType.Char, chars[i]));
+			valueInst.setArrayElement(i, new int[] { chars[i] });
 		}
 
-		reference.getInstance().setField(ValueField, valueRef);
+		instancePool.getObject(reference).setField(ValueField, new int[] { valueRef });
 
 		stackFrame.push(reference);
 	}
