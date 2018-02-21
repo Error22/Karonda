@@ -3,15 +3,7 @@ package com.error22.karonda.ir;
 import com.error22.karonda.NotImplementedException;
 
 public enum PrimitiveType implements IType {
-	Void,
-	Byte,
-	Boolean,
-	Char,
-	Short,
-	Int,
-	Long,
-	Float,
-	Double;
+	Void, Byte, Boolean, Char, Short, Int, Long, Float, Double;
 
 	@Override
 	public boolean isCategoryTwo() {
@@ -19,71 +11,53 @@ public enum PrimitiveType implements IType {
 	}
 
 	@Override
-	public IObject getDefaultValue() {
+	public int[] getDefaultValue() {
 		switch (this) {
 		case Byte:
 		case Boolean:
-			return new PrimitiveObject(this, (byte) 0);
 		case Char:
-			return new PrimitiveObject(Char, (char) 0);
 		case Short:
-			return new PrimitiveObject(Short, (short) 0);
 		case Int:
-			return new PrimitiveObject(Int, 0);
-		case Long:
-			return new PrimitiveObject(Long, (long) 0);
 		case Float:
-			return new PrimitiveObject(Float, (float) 0);
+			return new int[1];
+		case Long:
 		case Double:
-			return new PrimitiveObject(Double, (double) 0);
+			return new int[2];
 		default:
 			throw new NotImplementedException();
 		}
 	}
 
 	@Override
-	public IObject fieldWrap(IObject value) {
-		Object pvalue = ((PrimitiveObject) value).getValue();
+	public int[] fieldWrap(int[] value) {
 		switch (this) {
 		case Byte:
 		case Boolean:
-			return new PrimitiveObject(this, ((Number) pvalue).byteValue());
+			if (value.length != 1)
+				throw new IllegalArgumentException("Incorrect data size");
+			return new int[] { value[0] & 0xff };
 		case Char:
-			return new PrimitiveObject(this, (char) ((Number) pvalue).intValue());
 		case Short:
-			return new PrimitiveObject(this, ((Number) pvalue).shortValue());
+			if (value.length != 1)
+				throw new IllegalArgumentException("Incorrect data size");
+			return new int[] { value[0] & 0xffff };
 		case Int:
-			return new PrimitiveObject(this, ((Number) pvalue).intValue());
-		case Long:
-			return new PrimitiveObject(this, ((Number) pvalue).longValue());
 		case Float:
-			return new PrimitiveObject(this, ((Number) pvalue).floatValue());
+			if (value.length != 1)
+				throw new IllegalArgumentException("Incorrect data size");
+			return new int[] { value[0] };
+		case Long:
 		case Double:
-			return new PrimitiveObject(this, ((Number) pvalue).doubleValue());
+			if (value.length != 2)
+				throw new IllegalArgumentException("Incorrect data size");
+			return new int[] { value[0], value[1] };
 		default:
 			throw new NotImplementedException();
 		}
 	}
 
 	@Override
-	public IObject fieldUnwrap(IObject value) {
-		Object pvalue = ((PrimitiveObject) value).getValue();
-		switch (this) {
-		case Byte:
-		case Boolean:
-		case Short:
-		case Int:
-			return new PrimitiveObject(this, ((Number) pvalue).intValue());
-		case Char:
-			return new PrimitiveObject(this, (int) ((Character) pvalue));
-		case Long:
-			return new PrimitiveObject(this, ((Number) pvalue).longValue());
-		case Float:
-			return new PrimitiveObject(this, ((Number) pvalue).floatValue());
-		case Double:
-			return new PrimitiveObject(this, ((Number) pvalue).doubleValue());
-		default:
-			throw new NotImplementedException();
-		}
+	public int[] fieldUnwrap(int[] value) {
+		return fieldWrap(value);
 	}
 }
