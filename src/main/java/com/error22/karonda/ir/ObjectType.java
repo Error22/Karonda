@@ -17,18 +17,22 @@ public class ObjectType implements IType {
 	}
 
 	@Override
-	public IObject getDefaultValue() {
-		return new PrimitiveObject(PrimitiveType.Void, null);
+	public int[] getDefaultValue() {
+		return new int[] { 0 };
 	}
 
 	@Override
-	public IObject fieldWrap(IObject value) {
-		return value.duplicate();
+	public int[] fieldWrap(int[] value) {
+		if (value.length != 1)
+			throw new IllegalArgumentException("Incorrect data size");
+		return new int[] { value[0] };
 	}
 
 	@Override
-	public IObject fieldUnwrap(IObject value) {
-		return value.duplicate();
+	public int[] fieldUnwrap(int[] value) {
+		if (value.length != 1)
+			throw new IllegalArgumentException("Incorrect data size");
+		return new int[] { value[0] };
 	}
 
 	@Override
