@@ -119,10 +119,10 @@ public class StackFrame {
 	}
 
 	public void exit() {
-		exit(null);
+		thread.exitFrame();
 	}
 
-	public void exit(IObject result) {
+	public void exit(int[] result) {
 		thread.exitFrame(result);
 	}
 
