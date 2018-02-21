@@ -5,8 +5,7 @@ import com.error22.karonda.vm.StackFrame;
 
 public class LocalInstruction implements IInstruction {
 	public static enum LocalOperation {
-		Load,
-		Store
+		Load, Store
 	}
 
 	private LocalOperation operation;
@@ -23,17 +22,25 @@ public class LocalInstruction implements IInstruction {
 	public void execute(StackFrame stackFrame) {
 		switch (operation) {
 		case Load:
-			// TODO: check types compatible
+			if (type.isCategoryTwo()) {
+				stackFrame.push(stackFrame.getLocal(index + 1));
+			}
 			stackFrame.push(stackFrame.getLocal(index));
 			break;
 		case Store:
-			// TODO: check types compatible
 			stackFrame.setLocal(index, stackFrame.pop());
+			if (type.isCategoryTwo()) {
+				stackFrame.setLocal(index + 1, stackFrame.pop());
+			}
 			break;
-
 		default:
 			throw new IllegalArgumentException();
 		}
-
 	}
+
+	@Override
+	public String toString() {
+		return "LocalInstruction [operation=" + operation + ", type=" + type + ", index=" + index + "]";
+	}
+
 }
