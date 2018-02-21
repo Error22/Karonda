@@ -1,10 +1,8 @@
 package com.error22.karonda.instructions;
 
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
-import com.error22.karonda.ir.ObjectReference;
-import com.error22.karonda.ir.PrimitiveObject;
-import com.error22.karonda.ir.PrimitiveType;
+import com.error22.karonda.vm.InstancePool;
+import com.error22.karonda.vm.KThread;
 import com.error22.karonda.vm.ObjectInstance;
 import com.error22.karonda.vm.StackFrame;
 
@@ -29,26 +27,28 @@ public class ArrayInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
+		KThread thread = stackFrame.getThread();
+		InstancePool instancePool = thread.getInstancePool();
+
 		switch (operation) {
 		case Load: {
-			int index = ((Number) ((PrimitiveObject) stackFrame.pop()).getValue()).intValue();
-			ObjectInstance inst = ((ObjectReference) stackFrame.pop()).getInstance();
+			int index = stackFrame.pop();
+			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
 			// TODO: check types compatible
-
-			stackFrame.push(inst.getArrayType().getType().fieldUnwrap(inst.getArrayElement(index).duplicate()));
+			stackFrame.push(inst.getArrayType().getType().fieldUnwrap(inst.getArrayElement(index)));
 			break;
 		}
 		case Store: {
-			IObject value = stackFrame.pop();
-			int index = ((Number) ((PrimitiveObject) stackFrame.pop()).getValue()).intValue();
-			ObjectInstance inst = ((ObjectReference) stackFrame.pop()).getInstance();
+			int[] value = stackFrame.pop(type.isCategoryTwo() ? 2 : 1);
+			int index = stackFrame.pop();
+			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
 			// TODO: check types compatible
 			inst.setArrayElement(index, inst.getArrayType().getType().fieldWrap(value));
 			break;
 		}
 		case Length: {
-			ObjectInstance inst = ((ObjectReference) stackFrame.pop()).getInstance();
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Int, inst.getArraySize()));
+			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
+			stackFrame.push(inst.getArraySize());
 			break;
 		}
 		default:
