@@ -4,13 +4,11 @@ import org.objectweb.asm.Type;
 
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.MethodSignature;
-import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.ir.ObjectType;
-import com.error22.karonda.ir.PrimitiveObject;
 import com.error22.karonda.ir.PrimitiveType;
+import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.ObjectInstance;
 
 public class ConversionUtils {
@@ -64,14 +62,17 @@ public class ConversionUtils {
 		}
 	}
 
-	public static String parseString(IObject obj) {
-		ObjectInstance inst = ((ObjectReference) ((ObjectReference) obj).getInstance().getField(VALUE_FIELD))
-				.getInstance();
+	public static long parseLong(int[] data, int index) {
+		return (long) data[0] << 32 | data[1] & 0xFFFFFFFFL;
+	}
+
+	public static String parseString(InstancePool pool, int obj) {
+		ObjectInstance inst = pool.getObject(pool.getObject(obj).getField(VALUE_FIELD)[0]);
 		int size = inst.getArraySize();
 		char[] chars = new char[size];
 
 		for (int i = 0; i < size; i++) {
-			chars[i] = (char) ((PrimitiveObject) inst.getArrayElement(i)).getValue();
+			chars[i] = (char) inst.getArrayElement(i)[0];
 		}
 
 		return new String(chars);
