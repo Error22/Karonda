@@ -1,8 +1,6 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.NotImplementedException;
-import com.error22.karonda.ir.PrimitiveObject;
-import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.StackFrame;
 
 public class MathInstruction implements IInstruction {
@@ -53,124 +51,216 @@ public class MathInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
-		PrimitiveObject rhsObj = (PrimitiveObject) stackFrame.pop();
-		Number rhs = (Number) rhsObj.getValue();
-
 		switch (op) {
 		case NegateInt:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), -rhs.intValue()));
+			stackFrame.push(-stackFrame.pop());
 			return;
 		case NegateLong:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, -rhs.longValue()));
+			stackFrame.push(-stackFrame.popLong());
 			return;
 		case NegateFloat:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, -rhs.floatValue()));
+			stackFrame.push(Float.floatToIntBits(-Float.intBitsToFloat(stackFrame.pop())));
 			return;
 		case NegateDouble:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, -rhs.doubleValue()));
+			stackFrame.push(Double.doubleToRawLongBits(-Double.longBitsToDouble(stackFrame.popLong())));
 			return;
 		default:
 			break;
 		}
 
-		Number lhs = (Number) ((PrimitiveObject) stackFrame.pop()).getValue();
 		switch (op) {
-		case AddInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() + rhs.intValue()));
+		case AddInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs + rhs);
 			break;
-		case AddLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() + rhs.longValue()));
+		}
+		case AddLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs + lhs);
 			break;
-		case AddFloats:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, lhs.floatValue() + rhs.floatValue()));
+		}
+		case AddFloats: {
+			float rhs = Float.intBitsToFloat(stackFrame.pop());
+			float lhs = Float.intBitsToFloat(stackFrame.pop());
+			stackFrame.push(Float.floatToRawIntBits(lhs + rhs));
 			break;
-		case AddDoubles:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, lhs.doubleValue() + rhs.doubleValue()));
+		}
+		case AddDoubles: {
+			double rhs = Double.longBitsToDouble(stackFrame.popLong());
+			double lhs = Double.longBitsToDouble(stackFrame.popLong());
+			stackFrame.push(Double.doubleToRawLongBits(lhs + rhs));
 			break;
-		case SubtractInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() - rhs.intValue()));
+		}
+		case SubtractInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs - rhs);
 			break;
-		case SubtractLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() - rhs.longValue()));
+		}
+		case SubtractLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs - lhs);
 			break;
-		case SubtractFloats:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, lhs.floatValue() - rhs.floatValue()));
+		}
+		case SubtractFloats: {
+			float rhs = Float.intBitsToFloat(stackFrame.pop());
+			float lhs = Float.intBitsToFloat(stackFrame.pop());
+			stackFrame.push(Float.floatToRawIntBits(lhs - rhs));
 			break;
-		case SubtractDoubles:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, lhs.doubleValue() - rhs.doubleValue()));
+		}
+		case SubtractDoubles: {
+			double rhs = Double.longBitsToDouble(stackFrame.popLong());
+			double lhs = Double.longBitsToDouble(stackFrame.popLong());
+			stackFrame.push(Double.doubleToRawLongBits(lhs - rhs));
 			break;
-		case MultiplyInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() * rhs.intValue()));
+		}
+		case MultiplyInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs * rhs);
 			break;
-		case MultiplyLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() * rhs.longValue()));
+		}
+		case MultiplyLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs * lhs);
 			break;
-		case MultiplyFloats:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, lhs.floatValue() * rhs.floatValue()));
+		}
+		case MultiplyFloats: {
+			float rhs = Float.intBitsToFloat(stackFrame.pop());
+			float lhs = Float.intBitsToFloat(stackFrame.pop());
+			stackFrame.push(Float.floatToRawIntBits(lhs * rhs));
 			break;
-		case MultiplyDoubles:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, lhs.doubleValue() * rhs.doubleValue()));
+		}
+		case MultiplyDoubles: {
+			double rhs = Double.longBitsToDouble(stackFrame.popLong());
+			double lhs = Double.longBitsToDouble(stackFrame.popLong());
+			stackFrame.push(Double.doubleToRawLongBits(lhs * rhs));
 			break;
-		case DivideInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() / rhs.intValue()));
+		}
+		case DivideInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs / rhs);
 			break;
-		case DivideLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() / rhs.longValue()));
+		}
+		case DivideLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs / lhs);
 			break;
-		case DivideFloats:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, lhs.floatValue() / rhs.floatValue()));
+		}
+		case DivideFloats: {
+			float rhs = Float.intBitsToFloat(stackFrame.pop());
+			float lhs = Float.intBitsToFloat(stackFrame.pop());
+			stackFrame.push(Float.floatToRawIntBits(lhs / rhs));
 			break;
-		case DivideDoubles:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, lhs.doubleValue() / rhs.doubleValue()));
+		}
+		case DivideDoubles: {
+			double rhs = Double.longBitsToDouble(stackFrame.popLong());
+			double lhs = Double.longBitsToDouble(stackFrame.popLong());
+			stackFrame.push(Double.doubleToRawLongBits(lhs / rhs));
 			break;
-		case RemainderInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() % rhs.intValue()));
+		}
+		case RemainderInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs % rhs);
 			break;
-		case RemainderLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() % rhs.longValue()));
+		}
+		case RemainderLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs % lhs);
 			break;
-		case RemainderFloats:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Float, lhs.floatValue() % rhs.floatValue()));
+		}
+		case RemainderFloats: {
+			float rhs = Float.intBitsToFloat(stackFrame.pop());
+			float lhs = Float.intBitsToFloat(stackFrame.pop());
+			stackFrame.push(Float.floatToRawIntBits(lhs % rhs));
 			break;
-		case RemainderDoubles:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Double, lhs.doubleValue() % rhs.doubleValue()));
+		}
+		case RemainderDoubles: {
+			double rhs = Double.longBitsToDouble(stackFrame.popLong());
+			double lhs = Double.longBitsToDouble(stackFrame.popLong());
+			stackFrame.push(Double.doubleToRawLongBits(lhs % rhs));
 			break;
-		case ShiftLeftInt:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() << rhs.intValue()));
+		}
+		case ShiftLeftInt: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs << rhs);
 			break;
-		case ShiftLeftLong:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() << rhs.intValue()));
+		}
+		case ShiftLeftLong: {
+			int rhs = stackFrame.pop();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(lhs << rhs);
 			break;
-		case ArithmeticShiftRightInt:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() >> rhs.intValue()));
+		}
+		case ArithmeticShiftRightInt: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs >> rhs);
 			break;
-		case ArithmeticShiftRightLong:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() >> rhs.intValue()));
+		}
+		case ArithmeticShiftRightLong: {
+			int rhs = stackFrame.pop();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(lhs >> rhs);
 			break;
-		case LogicalShiftRightInt:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() >>> rhs.intValue()));
+		}
+		case LogicalShiftRightInt: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs >>> rhs);
 			break;
-		case LogicalShiftRightLong:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() >>> rhs.intValue()));
+		}
+		case LogicalShiftRightLong: {
+			int rhs = stackFrame.pop();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(lhs >>> rhs);
 			break;
-		case OrInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() | rhs.intValue()));
+		}
+		case OrInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs | rhs);
 			break;
-		case OrLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() | rhs.longValue()));
+		}
+		case OrLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs | lhs);
 			break;
-		case XOrInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() ^ rhs.intValue()));
+		}
+		case XOrInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs ^ rhs);
 			break;
-		case XOrLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() ^ rhs.longValue()));
+		}
+		case XOrLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs ^ lhs);
 			break;
-		case AndInts:
-			stackFrame.push(new PrimitiveObject(rhsObj.getType(), lhs.intValue() & rhs.intValue()));
+		}
+		case AndInts: {
+			int rhs = stackFrame.pop();
+			int lhs = stackFrame.pop();
+			stackFrame.push(lhs & rhs);
 			break;
-		case AndLongs:
-			stackFrame.push(new PrimitiveObject(PrimitiveType.Long, lhs.longValue() & rhs.longValue()));
+		}
+		case AndLongs: {
+			long rhs = stackFrame.popLong();
+			long lhs = stackFrame.popLong();
+			stackFrame.push(rhs & lhs);
 			break;
+		}
 		default:
 			throw new NotImplementedException();
 		}
