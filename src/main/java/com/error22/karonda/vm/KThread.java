@@ -2,9 +2,9 @@ package com.error22.karonda.vm;
 
 import java.util.Stack;
 
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
+import com.error22.karonda.ir.PrimitiveType;
 
 public class KThread {
 	private ClassPool classPool;
@@ -19,7 +19,7 @@ public class KThread {
 		frames = new Stack<StackFrame>();
 	}
 
-	public void initAndCall(KMethod method, boolean instructionPushBack, IObject... arguments) {
+	public void initAndCall(KMethod method, boolean instructionPushBack, int[] arguments) {
 		boolean pushed = staticInit(method.getKClass(), instructionPushBack);
 		callMethod(method, pushed, arguments);
 	}
@@ -29,17 +29,17 @@ public class KThread {
 		if (sinit != null) {
 			if (instructionPushBack && !frames.isEmpty())
 				frames.peek().moveInstructionPointer(-1);
-			callMethod(sinit);
+			callMethod(sinit, new int[0]);
 			return true;
 		}
 		return false;
 	}
 
-	public void callMethod(KMethod method, IObject... arguments) {
+	public void callMethod(KMethod method, int[] arguments) {
 		callMethod(method, false, arguments);
 	}
 
-	public void callMethod(KMethod method, boolean pushBack, IObject... arguments) {
+	public void callMethod(KMethod method, boolean pushBack, int[] arguments) {
 		if (!instancePool.hasStaticInit(method.getKClass()))
 			throw new IllegalStateException("Class has not been staticly initialized");
 
@@ -58,11 +58,18 @@ public class KThread {
 		frames.peek().step();
 	}
 
-	public void exitFrame(IObject result) {
-		frames.pop();
-		if (result != null)
-			if (!frames.isEmpty())
-				frames.peek().push(result);
+	public void exitFrame() {
+		StackFrame frame = frames.pop();
+		if (!frame.getMethod().getSignature().getReturnType().equals(PrimitiveType.Void))
+			throw new IllegalArgumentException("Only void frames can be exited without return data");
+	}
+
+	public void exitFrame(int[] result) {
+		StackFrame frame = frames.pop();
+		if (frame.getMethod().getSignature().getReturnType().equals(PrimitiveType.Void))
+			throw new IllegalArgumentException("Only non-void frames can be exited with return data");
+		if (!frames.isEmpty())
+			frames.peek().push(result);
 	}
 
 	public StackFrame getCurrentFrame() {
