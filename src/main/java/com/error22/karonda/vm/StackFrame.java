@@ -5,7 +5,6 @@ import java.util.Map;
 import org.objectweb.asm.Label;
 
 import com.error22.karonda.instructions.IInstruction;
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KMethod;
 
 public class StackFrame {
@@ -14,7 +13,7 @@ public class StackFrame {
 	private IInstruction[] instructions;
 	private Map<Label, Integer> labelMap;
 	private int instructionPointer, stackPointer;
-	private IObject[] locals, stack;
+	private int[] locals, stack;
 	private boolean nativeRan;
 
 	public StackFrame(KThread thread, KMethod method) {
@@ -24,13 +23,14 @@ public class StackFrame {
 		labelMap = method.getLabelMap();
 	}
 
-	public void init(IObject[] arguments) {
+	public void init(int[] arguments) {
 		if (method.isNative()) {
-			locals = arguments.clone();
+			locals = new int[arguments.length];
+			System.arraycopy(arguments, 0, locals, 0, arguments.length);
 			return;
 		}
-		locals = new IObject[method.getMaxLocals()];
-		stack = new IObject[method.getMaxStack()];
+		locals = new int[method.getMaxLocals()];
+		stack = new int[method.getMaxStack()];
 		System.arraycopy(arguments, 0, locals, 0, arguments.length);
 	}
 
@@ -52,21 +52,49 @@ public class StackFrame {
 		instructionPointer = labelMap.get(label);
 	}
 
-	public void push(IObject object) {
+	public void push(int object) {
 		stack[stackPointer] = object;
 		stackPointer++;
 	}
 
-	public IObject pop() {
+	public void push(int[] object) {
+		for (int i = object.length - 1; i >= 0; i--) {
+			stack[stackPointer] = object[i];
+			stackPointer++;
+		}
+	}
+
+	public void push(long object) {
+		stack[stackPointer] = (int) object;
+		stack[stackPointer + 1] = (int) (object >> 32);
+		stackPointer += 2;
+	}
+
+	public int pop() {
 		stackPointer--;
 		return stack[stackPointer];
 	}
 
-	public void setLocal(int index, IObject object) {
+	public int[] pop(int size) {
+		int[] object = new int[size];
+		for (int i = 0; i < object.length; i++) {
+			stackPointer--;
+			object[i] = stack[stackPointer];
+		}
+		return object;
+	}
+
+	public long popLong() {
+		int a = pop();
+		int b = pop();
+		return (long) a << 32 | b & 0xFFFFFFFFL;
+	}
+
+	public void setLocal(int index, int object) {
 		locals[index] = object;
 	}
 
-	public IObject getLocal(int index) {
+	public int getLocal(int index) {
 		return locals[index];
 	}
 
