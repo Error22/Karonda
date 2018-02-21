@@ -12,6 +12,7 @@ dependencies {
     api 'org.ow2.asm:asm-debug-all:5.2'
     implementation 'com.google.guava:guava:21.0'
     implementation 'org.javatuples:javatuples:1.2'
+    implementation 'it.unimi.dsi:fastutil:8.1.1'
     
     testImplementation 'junit:junit:4.12'
 }
