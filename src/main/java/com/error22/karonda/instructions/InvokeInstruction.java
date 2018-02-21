@@ -2,22 +2,19 @@ package com.error22.karonda.instructions;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.ClassType;
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
-import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.vm.ClassPool;
+import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
+import com.error22.karonda.vm.ObjectInstance;
 import com.error22.karonda.vm.StackFrame;
 
 public class InvokeInstruction implements IInstruction {
 	public static enum InvokeType {
-		Special,
-		Virtual,
-		Static,
-		Interface
+		Special, Virtual, Static, Interface
 	}
 
 	private InvokeType type;
@@ -30,11 +27,36 @@ public class InvokeInstruction implements IInstruction {
 		this.isInterface = isInterface;
 	}
 
+	private int[] fetchArguments(KMethod method, StackFrame stackFrame, boolean instance) {
+		IType[] arguments = method.getSignature().getArguments();
+		int size = instance ? 1 : 0;
+		for (IType type : arguments) {
+			size += type.isCategoryTwo() ? 2 : 1;
+		}
+
+		int[] args = new int[size];
+		int pos = args.length;
+		for (int i = arguments.length - 1; i >= 0; i--) {
+			if (arguments[i].isCategoryTwo()) {
+				pos -= 2;
+				args[pos] = stackFrame.pop();
+				args[pos + 1] = stackFrame.pop();
+			} else {
+				pos--;
+				args[pos] = stackFrame.pop();
+			}
+		}
+		if (instance)
+			args[0] = stackFrame.pop();
+		return args;
+	}
+
 	@Override
 	public void execute(StackFrame stackFrame) {
 		KThread thread = stackFrame.getThread();
 		KClass currentClass = stackFrame.getMethod().getKClass();
 		ClassPool pool = thread.getClassPool();
+		InstancePool instancePool = thread.getInstancePool();
 
 		// if (isInterface && type != InvokeType.Interface)
 		// throw new NotImplementedException();
@@ -44,41 +66,14 @@ public class InvokeInstruction implements IInstruction {
 
 		switch (type) {
 		case Static: {
-			IType[] arguments = method.getSignature().getArguments();
-			int size = 0;
-			for (IType type : arguments) {
-				size += type.isCategoryTwo() ? 2 : 1;
-			}
-
-			IObject[] args = new IObject[size];
-			int pos = args.length;
-			for (int i = arguments.length - 1; i >= 0; i--) {
-				pos -= arguments[i].isCategoryTwo() ? 2 : 1;
-				args[pos] = stackFrame.pop();
-			}
+			int[] args = fetchArguments(method, stackFrame, false);
 			thread.initAndCall(method, false, args);
 			break;
 		}
 		case Special: {
-			IType[] arguments = method.getSignature().getArguments();
-			int size = 1;
-			for (IType type : arguments) {
-				size += type.isCategoryTwo() ? 2 : 1;
-			}
-
-			IObject[] args = new IObject[size];
-			int pos = args.length;
-			for (int i = arguments.length - 1; i >= 0; i--) {
-				pos -= arguments[i].isCategoryTwo() ? 2 : 1;
-				args[pos] = stackFrame.pop();
-			}
-
-			ObjectReference reference = (ObjectReference) stackFrame.pop();
-			// KClass targetClass = reference.getKClass();
-			args[0] = reference;
+			int[] args = fetchArguments(method, stackFrame, true);
 
 			KMethod resolved;
-
 			if (isInterface) {
 				resolved = method;
 				System.out.println(
@@ -99,23 +94,14 @@ public class InvokeInstruction implements IInstruction {
 		}
 		case Interface:
 		case Virtual: {
-			IType[] arguments = method.getSignature().getArguments();
-			int size = 1;
-			for (IType type : arguments) {
-				size += type.isCategoryTwo() ? 2 : 1;
-			}
+			int[] args = fetchArguments(method, stackFrame, true);
 
-			IObject[] args = new IObject[size];
-			int pos = args.length;
-			for (int i = arguments.length - 1; i >= 0; i--) {
-				pos -= arguments[i].isCategoryTwo() ? 2 : 1;
-				args[pos] = stackFrame.pop();
-			}
+			int oid = args[0];
+			if (oid == 0)
+				throw new NotImplementedException("Null object supported not implemented");
+			ObjectInstance instance = instancePool.getObject(oid);
 
-			ObjectReference reference = (ObjectReference) stackFrame.pop();
-			KClass targetClass = reference.getKClass();
-			args[0] = reference;
-
+			KClass targetClass = instance.getKClass();
 			KMethod resolved = targetClass.findMethod(signature, true);
 			thread.initAndCall(resolved, false, args);
 			break;
