@@ -19,13 +19,11 @@ public class PopInstruction implements IInstruction {
 	public void execute(StackFrame stackFrame) {
 		switch (mode) {
 		case Single: {
-			if (stackFrame.pop().getType().isCategoryTwo())
-				throw new IllegalArgumentException();
+			stackFrame.pop();
 			break;
 		}
 		case Double: {
-			if (!stackFrame.pop().getType().isCategoryTwo())
-				stackFrame.pop();
+			stackFrame.pop(2);
 			break;
 		}
 		default:
