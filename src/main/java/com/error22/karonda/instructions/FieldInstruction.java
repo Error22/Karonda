@@ -1,21 +1,17 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.ir.FieldSignature;
-import com.error22.karonda.ir.IObject;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
-import com.error22.karonda.ir.ObjectReference;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
+import com.error22.karonda.vm.ObjectInstance;
 import com.error22.karonda.vm.StackFrame;
 
 public class FieldInstruction implements IInstruction {
 	public static enum FieldOperation {
-		LoadStatic,
-		StoreStatic,
-		LoadLocal,
-		StoreLocal
+		LoadStatic, StoreStatic, LoadLocal, StoreLocal
 	}
 
 	private FieldOperation operation;
@@ -38,7 +34,7 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			IObject value = signature.getType().fieldUnwrap(instancePool.getStaticField(clazz, signature));
+			int[] value = signature.getType().fieldUnwrap(instancePool.getStaticField(clazz, signature));
 			stackFrame.push(value);
 			break;
 		}
@@ -47,7 +43,7 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			IObject value = signature.getType().fieldWrap(stackFrame.pop());
+			int[] value = signature.getType().fieldWrap(stackFrame.pop(signature.getType().isCategoryTwo() ? 2 : 1));
 			instancePool.setStaticField(clazz, signature, value);
 			break;
 		}
@@ -55,10 +51,10 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			ObjectReference reference = (ObjectReference) stackFrame.pop();
+			ObjectInstance instance = instancePool.getObject(stackFrame.pop());
 			KField target = clazz.findField(signature);
-			IObject fieldValue = reference.getInstance().getField(target.getSignature());
-			IObject value = signature.getType().fieldUnwrap(fieldValue);
+			int[] fieldValue = instance.getField(target.getSignature());
+			int[] value = signature.getType().fieldUnwrap(fieldValue);
 			stackFrame.push(value);
 			break;
 		}
@@ -67,11 +63,11 @@ public class FieldInstruction implements IInstruction {
 			if (thread.staticInit(clazz, true))
 				return;
 
-			IObject value = stackFrame.pop();
-			IObject fieldValue = signature.getType().fieldWrap(value);
-			ObjectReference reference = (ObjectReference) stackFrame.pop();
+			int[] value = stackFrame.pop(signature.getType().isCategoryTwo() ? 2 : 1);
+			int[] fieldValue = signature.getType().fieldWrap(value);
+			ObjectInstance instance = instancePool.getObject(stackFrame.pop());
 			KField target = clazz.findField(signature);
-			reference.getInstance().setField(target.getSignature(), fieldValue);
+			instance.setField(target.getSignature(), fieldValue);
 			break;
 		}
 		default:
