@@ -1,7 +1,5 @@
 package com.error22.karonda.instructions;
 
-import com.error22.karonda.ir.PrimitiveObject;
-import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.StackFrame;
 
 public class IncrementInstruction implements IInstruction {
@@ -14,14 +12,14 @@ public class IncrementInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
-		PrimitiveObject obj = (PrimitiveObject) stackFrame.getLocal(index);
-
-		if (obj.getType() != PrimitiveType.Int)
-			throw new IllegalArgumentException();
-
-		int value = ((Number) obj.getValue()).intValue();
-		value += by;
-
-		stackFrame.setLocal(index, new PrimitiveObject(PrimitiveType.Int, value));
+		int val = stackFrame.getLocal(index);
+		val += by;
+		stackFrame.setLocal(index, val);
 	}
+
+	@Override
+	public String toString() {
+		return "IncrementInstruction [index=" + index + ", by=" + by + "]";
+	}
+
 }
