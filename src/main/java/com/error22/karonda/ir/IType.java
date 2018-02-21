@@ -2,12 +2,12 @@ package com.error22.karonda.ir;
 
 public interface IType {
 
-	IObject getDefaultValue();
+	int[] getDefaultValue();
 
 	boolean isCategoryTwo();
 
-	IObject fieldWrap(IObject value);
+	int[] fieldWrap(int[] value);
 
-	IObject fieldUnwrap(IObject value);
+	int[] fieldUnwrap(int[] value);
 
 }
