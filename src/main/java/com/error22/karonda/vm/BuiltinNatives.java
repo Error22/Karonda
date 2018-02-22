@@ -16,6 +16,7 @@ public class BuiltinNatives {
 	public void loadAll() {
 		loadPrimitives();
 		loadSystem();
+		loadObject();
 	}
 
 	public void loadPrimitives() {
@@ -31,6 +32,10 @@ public class BuiltinNatives {
 	public void loadSystem() {
 		manager.addUnboundHook(this::arraycopy, "arraycopy", PrimitiveType.Void, OBJECT_TYPE, PrimitiveType.Int,
 				OBJECT_TYPE, PrimitiveType.Int, PrimitiveType.Int);
+	}
+
+	public void loadObject() {
+		manager.addUnboundHook(this::getClass, "getClass", CLASS_TYPE);
 	}
 
 	private void empty(KThread thread, StackFrame frame, int[] args) {
@@ -73,6 +78,15 @@ public class BuiltinNatives {
 
 	private void returnArgs(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(args);
+	}
+
+	private void getClass(KThread thread, StackFrame frame, int[] args) {
+		InstancePool pool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+		ObjectInstance object = pool.getObject(args[0]);
+
+		int type = pool.getRuntimeClass(classPool, object.getType(), frame.getMethod().getKClass());
+		frame.exit(new int[] { type });
 	}
 
 	private static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");
