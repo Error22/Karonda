@@ -30,10 +30,11 @@ public class ObjectInstance {
 		}
 	}
 
-	public ObjectInstance(ArrayType arrayType, int id, int arraySize) {
+	public ObjectInstance(KClass kClass, ArrayType arrayType, int id, int arraySize) {
 		isArray = true;
 		this.arrayType = arrayType;
 		this.id = id;
+		this.kClass = kClass;
 		this.arraySize = arraySize;
 		this.arrayData = new int[arraySize][];
 	}

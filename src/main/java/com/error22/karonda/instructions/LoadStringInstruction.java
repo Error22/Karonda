@@ -29,7 +29,7 @@ public class LoadStringInstruction implements IInstruction {
 
 		char[] chars = value.toCharArray();
 
-		int valueRef = instancePool.createArray(CharArray, chars.length);
+		int valueRef = instancePool.createArray(classPool, CharArray, chars.length);
 		ObjectInstance valueInst = instancePool.getObject(valueRef);
 
 		for (int i = 0; i < chars.length; i++) {

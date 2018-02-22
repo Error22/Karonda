@@ -88,9 +88,10 @@ public class InstancePool {
 		return id;
 	}
 
-	public int createArray(ArrayType type, int size) {
+	public int createArray(ClassPool pool, ArrayType type, int size) {
 		int id = allocateObjectId();
-		ObjectInstance instance = new ObjectInstance(type, id, size);
+		KClass objectClass = pool.getClass("java/lang/Object", null);
+		ObjectInstance instance = new ObjectInstance(objectClass, type, id, size);
 		objects.put(id, instance);
 		return id;
 	}
