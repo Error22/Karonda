@@ -13,6 +13,7 @@ import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
+import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -81,9 +82,9 @@ public class InstancePool {
 		idHint = id;
 	}
 
-	public int createInstance(KClass clazz) {
+	public int createInstance(KClass clazz, ObjectType type) {
 		int id = allocateObjectId();
-		ObjectInstance instance = new ObjectInstance(id, clazz);
+		ObjectInstance instance = new ObjectInstance(id, clazz, type);
 		objects.put(id, instance);
 		return id;
 	}
@@ -104,7 +105,7 @@ public class InstancePool {
 
 		KClass classClass = pool.getClass("java/lang/Class", null);
 		int id = allocateObjectId();
-		ObjectInstance instance = new ObjectInstance(id, classClass);
+		ObjectInstance instance = new ObjectInstance(id, classClass, ObjectType.CLASS_TYPE);
 		objects.put(id, instance);
 		runtimeClasses.put(key, id);
 		return id;

@@ -21,7 +21,7 @@ public class NewInstruction implements IInstruction {
 		ClassPool classPool = thread.getClassPool();
 		InstancePool instancePool = thread.getInstancePool();
 		KClass targetClass = classPool.getClass(type.getName(), currentClass);
-		stackFrame.push(instancePool.createInstance(targetClass));
+		stackFrame.push(instancePool.createInstance(targetClass, type));
 	}
 
 }

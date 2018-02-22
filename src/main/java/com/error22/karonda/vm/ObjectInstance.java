@@ -6,11 +6,14 @@ import java.util.Map;
 
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
+import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
+import com.error22.karonda.ir.ObjectType;
 
 public class ObjectInstance {
 	private int id;
+	private ObjectType objectType;
 	private boolean isArray;
 	private KClass kClass;
 	private Map<FieldSignature, int[]> fields;
@@ -18,10 +21,11 @@ public class ObjectInstance {
 	private int arraySize;
 	private int[][] arrayData;
 
-	public ObjectInstance(int id, KClass kClass) {
+	public ObjectInstance(int id, KClass kClass, ObjectType objectType) {
 		isArray = false;
 		this.id = id;
 		this.kClass = kClass;
+		this.objectType = objectType;
 		fields = new HashMap<FieldSignature, int[]>();
 		ArrayList<KField> classFields = new ArrayList<KField>();
 		kClass.getAllFields(classFields);
@@ -49,6 +53,14 @@ public class ObjectInstance {
 		if (!fields.containsKey(name))
 			throw new IllegalArgumentException("Field not found! " + name);
 		fields.put(name, value);
+	}
+
+	public IType getType() {
+		return isArray ? getArrayType() : getObjectType();
+	}
+
+	public ObjectType getObjectType() {
+		return objectType;
 	}
 
 	public boolean isArray() {

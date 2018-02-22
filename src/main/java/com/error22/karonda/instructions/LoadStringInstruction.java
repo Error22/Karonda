@@ -3,6 +3,7 @@ package com.error22.karonda.instructions;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.KClass;
+import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
@@ -25,7 +26,7 @@ public class LoadStringInstruction implements IInstruction {
 		InstancePool instancePool = thread.getInstancePool();
 
 		KClass targetClass = classPool.getClass(StringClass, currentClass);
-		int reference = instancePool.createInstance(targetClass);
+		int reference = instancePool.createInstance(targetClass, ObjectType.STRING_TYPE);
 
 		char[] chars = value.toCharArray();
 
