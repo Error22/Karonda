@@ -52,6 +52,19 @@ public class KClass {
 		return superClass.isParent(clazz);
 	}
 
+	public boolean isImplemented(KClass clazz) {
+		if (!resolved)
+			throw new IllegalStateException("Class has not been resolved");
+		for (KClass iface : interfaces) {
+			if (iface.equals(clazz) || iface.isImplemented(clazz)) {
+				return true;
+			}
+		}
+		if (superClass != null)
+			return superClass.isImplemented(clazz);
+		return false;
+	}
+
 	public KMethod findMethod(MethodSignature signature, boolean throwException) {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
