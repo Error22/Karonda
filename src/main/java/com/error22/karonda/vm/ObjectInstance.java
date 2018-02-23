@@ -76,7 +76,10 @@ public class ObjectInstance {
 	}
 
 	public int[] getArrayElement(int index) {
-		return arrayData[index];
+		int[] value = arrayData[index];
+		if (value == null)
+			value = new int[1];
+		return value;
 	}
 
 	public void setArrayElement(int index, int[] data) {
