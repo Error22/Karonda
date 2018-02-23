@@ -14,7 +14,10 @@ import com.error22.karonda.vm.StackFrame;
 
 public class InvokeInstruction implements IInstruction {
 	public static enum InvokeType {
-		Special, Virtual, Static, Interface
+		Special,
+		Virtual,
+		Static,
+		Interface
 	}
 
 	private InvokeType type;
@@ -27,8 +30,8 @@ public class InvokeInstruction implements IInstruction {
 		this.isInterface = isInterface;
 	}
 
-	private int[] fetchArguments(KMethod method, StackFrame stackFrame, boolean instance) {
-		IType[] arguments = method.getSignature().getArguments();
+	private int[] fetchArguments(MethodSignature signature, StackFrame stackFrame, boolean instance) {
+		IType[] arguments = signature.getArguments();
 		int size = instance ? 1 : 0;
 		for (IType type : arguments) {
 			size += type.isCategoryTwo() ? 2 : 1;
@@ -58,43 +61,34 @@ public class InvokeInstruction implements IInstruction {
 		ClassPool pool = thread.getClassPool();
 		InstancePool instancePool = thread.getInstancePool();
 
-		// if (isInterface && type != InvokeType.Interface)
-		// throw new NotImplementedException();
-
-		KClass clazz = pool.getClass(signature.getClazz(), currentClass);
-		KMethod method = clazz.getMethod(signature);
+		KClass signatureClass = pool.getClass(signature.getClazz(), currentClass);
 
 		switch (type) {
 		case Static: {
-			int[] args = fetchArguments(method, stackFrame, false);
+			KMethod method = signatureClass.getMethod(signature);
+			int[] args = fetchArguments(signature, stackFrame, false);
 			thread.initAndCall(method, false, args);
 			break;
 		}
 		case Special: {
-			int[] args = fetchArguments(method, stackFrame, true);
+			int[] args = fetchArguments(signature, stackFrame, true);
 
-			KMethod resolved;
-			if (isInterface) {
-				resolved = method;
-				System.out.println(
-						"InvokeInstruction: specialResolve:  INTERFACE OVERRIDE  special: " + resolved.getSignature());
-			} else {
-				boolean specialResolve = currentClass.shouldSpecialMethodResolve()
-						&& (clazz.getType() == ClassType.Interface || currentClass.isParent(clazz))
-						&& !signature.isLocalInitializer();
+			if (args[0] == 0)
+				throw new NotImplementedException("Null object supported not implemented");
 
-				KClass scanClass = specialResolve ? currentClass.getSuperClass() : clazz;
-				resolved = scanClass.findMethod(signature, true);
-				System.out.println("InvokeInstruction: specialResolve: " + specialResolve + " resolved: "
-						+ resolved.getSignature());
-			}
+			boolean useSuperclass = currentClass.shouldSpecialMethodResolve() && !signature.isLocalInitializer()
+					&& !signature.isStaticInitializer()
+					&& (signatureClass.getType() == ClassType.Interface || currentClass.isParent(signatureClass));
+
+			KClass targetClass = useSuperclass ? currentClass.getSuperClass() : signatureClass;
+			KMethod resolved = targetClass.findMethod(signature, true);
 
 			thread.initAndCall(resolved, false, args);
 			break;
 		}
 		case Interface:
 		case Virtual: {
-			int[] args = fetchArguments(method, stackFrame, true);
+			int[] args = fetchArguments(signature, stackFrame, true);
 
 			int oid = args[0];
 			if (oid == 0)
@@ -110,4 +104,10 @@ public class InvokeInstruction implements IInstruction {
 			throw new NotImplementedException();
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "InvokeInstruction [type=" + type + ", signature=" + signature + ", isInterface=" + isInterface + "]";
+	}
+
 }
