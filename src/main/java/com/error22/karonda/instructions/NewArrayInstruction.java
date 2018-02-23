@@ -34,7 +34,7 @@ public class NewArrayInstruction implements IInstruction {
 
 	private int createDimension(ClassPool classPool, InstancePool instancePool, int[] dimensionSizes, int dimension) {
 		int size = dimensionSizes[dimension];
-		int ref = instancePool.createArray(classPool, new ArrayType(type, dimension - dimension), size);
+		int ref = instancePool.createArray(classPool, new ArrayType(type, -dimension), size);
 		ObjectInstance inst = instancePool.getObject(ref);
 
 		if (dimension < dimensions - 1) {
