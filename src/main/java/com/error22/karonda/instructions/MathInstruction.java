@@ -266,4 +266,9 @@ public class MathInstruction implements IInstruction {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "MathInstruction [op=" + op + "]";
+	}
+
 }
