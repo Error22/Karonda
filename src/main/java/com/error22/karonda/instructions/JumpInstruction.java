@@ -7,7 +7,24 @@ import com.error22.karonda.vm.StackFrame;
 
 public class JumpInstruction implements IInstruction {
 	public static enum JumpType {
-		EqualZero, NotEqualZero, LessThanZero, LessThanEqualZero, GreaterThanEqualZero, GreaterThanZero, IntsEqual, IntsNotEqual, IntsLessThan, IntsLessThanEqual, IntsGreaterThanEqual, IntsGreaterThan, ReferenceEqual, ReferenceNotEqual, Subroutine, Goto, Null, NotNull
+		EqualZero,
+		NotEqualZero,
+		LessThanZero,
+		LessThanEqualZero,
+		GreaterThanEqualZero,
+		GreaterThanZero,
+		IntsEqual,
+		IntsNotEqual,
+		IntsLessThan,
+		IntsLessThanEqual,
+		IntsGreaterThanEqual,
+		IntsGreaterThan,
+		ReferenceEqual,
+		ReferenceNotEqual,
+		Subroutine,
+		Goto,
+		Null,
+		NotNull
 	}
 
 	private JumpType type;
@@ -104,6 +121,11 @@ public class JumpInstruction implements IInstruction {
 		}
 		if (jump)
 			stackFrame.jump(label);
+	}
+
+	@Override
+	public String toString() {
+		return "JumpInstruction [type=" + type + ", label=" + label + "]";
 	}
 
 }
