@@ -11,7 +11,10 @@ import com.error22.karonda.vm.StackFrame;
 
 public class FieldInstruction implements IInstruction {
 	public static enum FieldOperation {
-		LoadStatic, StoreStatic, LoadLocal, StoreLocal
+		LoadStatic,
+		StoreStatic,
+		LoadLocal,
+		StoreLocal
 	}
 
 	private FieldOperation operation;
@@ -74,4 +77,10 @@ public class FieldInstruction implements IInstruction {
 			throw new IllegalArgumentException();
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "FieldInstruction [operation=" + operation + ", signature=" + signature + "]";
+	}
+
 }
