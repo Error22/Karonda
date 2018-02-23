@@ -34,8 +34,20 @@ public class TypeInstruction implements IInstruction {
 		KClass currentClass = stackFrame.getMethod().getKClass();
 
 		int ref = stackFrame.pop();
-		ObjectInstance object = instancePool.getObject(ref);
 
+		if (ref == 0) {
+			switch (op) {
+			case InstanceOf:
+				stackFrame.push(0);
+				return;
+			case CheckCast:
+				throw new NotImplementedException();
+			default:
+				throw new IllegalArgumentException("Unknown operation " + op);
+			}
+		}
+
+		ObjectInstance object = instancePool.getObject(ref);
 		boolean sameType = isCompatible(classPool, currentClass, object.getType(), type);
 
 		switch (op) {
