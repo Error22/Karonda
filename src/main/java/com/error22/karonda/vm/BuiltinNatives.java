@@ -34,6 +34,7 @@ public class BuiltinNatives {
 				OBJECT_TYPE, PrimitiveType.Int, PrimitiveType.Int);
 		manager.addUnboundHook(this::nanoTime, "nanoTime", PrimitiveType.Long);
 		manager.addUnboundHook(this::currentTimeMillis, "currentTimeMillis", PrimitiveType.Long);
+		manager.addUnboundHook(this::identityHashCode, "identityHashCode", PrimitiveType.Int, OBJECT_TYPE);
 	}
 
 	public void loadObject() {
@@ -86,6 +87,10 @@ public class BuiltinNatives {
 	private void currentTimeMillis(KThread thread, StackFrame frame, int[] args) {
 		long lval = System.currentTimeMillis();
 		frame.exit(new int[] { (int) (lval >> 32), (int) lval });
+	}
+
+	private void identityHashCode(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { args[0] });
 	}
 
 	private void returnArgs(KThread thread, StackFrame frame, int[] args) {
