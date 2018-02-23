@@ -14,7 +14,8 @@ public class KMethod {
 	private IInstruction[] instructions;
 	private Map<Label, Integer> labelMap;
 
-	public KMethod(KClass kClass, MethodSignature signature, boolean isAbstract,  boolean isSynchronized, boolean isNative) {
+	public KMethod(KClass kClass, MethodSignature signature, boolean isAbstract, boolean isSynchronized,
+			boolean isNative) {
 		this.kClass = kClass;
 		this.signature = signature;
 		this.isAbstract = isAbstract;
@@ -57,17 +58,24 @@ public class KMethod {
 	public void setLabelMap(Map<Label, Integer> labelMap) {
 		this.labelMap = labelMap;
 	}
-	
+
 	public Map<Label, Integer> getLabelMap() {
 		return labelMap;
 	}
-	
+
 	public boolean isAbstract() {
 		return isAbstract;
 	}
 
 	public boolean isNative() {
 		return isNative;
+	}
+
+	@Override
+	public String toString() {
+		return "KMethod [kClass=" + kClass + ", signature=" + signature + ", isAbstract=" + isAbstract
+				+ ", isSynchronized=" + isSynchronized + ", isNative=" + isNative + ", maxStack=" + maxStack
+				+ ", maxLocals=" + maxLocals + "]";
 	}
 
 }
