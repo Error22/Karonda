@@ -267,7 +267,7 @@ public class MethodConverter extends MethodVisitor {
 			addInstruction(new MathInstruction(MathOp.AndInts));
 			break;
 		case Opcodes.LAND:
-			addInstruction(new MathInstruction(MathOp.AndInts));
+			addInstruction(new MathInstruction(MathOp.AndLongs));
 			break;
 		case Opcodes.IOR:
 			addInstruction(new MathInstruction(MathOp.OrInts));
