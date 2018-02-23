@@ -126,4 +126,10 @@ public class StackFrame {
 		thread.exitFrame(result);
 	}
 
+	@Override
+	public String toString() {
+		return "StackFrame [thread=" + thread + ", method=" + method + ", instructionPointer=" + instructionPointer
+				+ ", stackPointer=" + stackPointer + "]";
+	}
+
 }
