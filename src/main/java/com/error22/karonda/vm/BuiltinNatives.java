@@ -17,6 +17,7 @@ public class BuiltinNatives {
 		loadPrimitives();
 		loadSystem();
 		loadObject();
+		loadThrowable();
 	}
 
 	public void loadPrimitives() {
@@ -39,6 +40,10 @@ public class BuiltinNatives {
 
 	public void loadObject() {
 		manager.addUnboundHook(this::getClass, "getClass", CLASS_TYPE);
+	}
+
+	public void loadThrowable() {
+		manager.addUnboundHook(this::returnFirstArg, "fillInStackTrace", THROWABLE_TYPE, PrimitiveType.Int);
 	}
 
 	private void empty(KThread thread, StackFrame frame, int[] args) {
@@ -97,6 +102,10 @@ public class BuiltinNatives {
 		frame.exit(args);
 	}
 
+	private void returnFirstArg(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { args[0] });
+	}
+
 	private void getClass(KThread thread, StackFrame frame, int[] args) {
 		InstancePool pool = thread.getInstancePool();
 		ClassPool classPool = thread.getClassPool();
@@ -109,4 +118,5 @@ public class BuiltinNatives {
 	private static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");
 	private static final ObjectType CLASS_TYPE = new ObjectType("java/lang/Class");
 	private static final ObjectType STRING_TYPE = new ObjectType("java/lang/String");
+	private static final ObjectType THROWABLE_TYPE = new ObjectType("java/lang/Throwable");
 }
