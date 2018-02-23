@@ -33,6 +33,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::arraycopy, "arraycopy", PrimitiveType.Void, OBJECT_TYPE, PrimitiveType.Int,
 				OBJECT_TYPE, PrimitiveType.Int, PrimitiveType.Int);
 		manager.addUnboundHook(this::nanoTime, "nanoTime", PrimitiveType.Long);
+		manager.addUnboundHook(this::currentTimeMillis, "currentTimeMillis", PrimitiveType.Long);
 	}
 
 	public void loadObject() {
@@ -79,6 +80,11 @@ public class BuiltinNatives {
 
 	private void nanoTime(KThread thread, StackFrame frame, int[] args) {
 		long lval = System.nanoTime();
+		frame.exit(new int[] { (int) (lval >> 32), (int) lval });
+	}
+
+	private void currentTimeMillis(KThread thread, StackFrame frame, int[] args) {
+		long lval = System.currentTimeMillis();
 		frame.exit(new int[] { (int) (lval >> 32), (int) lval });
 	}
 
