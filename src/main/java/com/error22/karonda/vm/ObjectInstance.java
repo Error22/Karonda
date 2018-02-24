@@ -78,7 +78,7 @@ public class ObjectInstance {
 	public int[] getArrayElement(int index) {
 		int[] value = arrayData[index];
 		if (value == null)
-			value = new int[1];
+			value = arrayType.getDimensions() > 1 ? arrayType.getDefaultValue() : arrayType.getType().getDefaultValue();
 		return value;
 	}
 
