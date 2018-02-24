@@ -55,6 +55,10 @@ public class ObjectInstance {
 		fields.put(name, value);
 	}
 
+	public Map<FieldSignature, int[]> getFields() {
+		return fields;
+	}
+
 	public IType getType() {
 		return isArray ? getArrayType() : getObjectType();
 	}
