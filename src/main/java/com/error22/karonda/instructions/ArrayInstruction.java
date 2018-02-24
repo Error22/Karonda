@@ -35,7 +35,7 @@ public class ArrayInstruction implements IInstruction {
 		case Load: {
 			int index = stackFrame.pop();
 			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
-			stackFrame.push(inst.getArrayElement(index), inst.getArrayType().getType() instanceof ObjectType);
+			stackFrame.push(inst.getArrayElement(index), inst.getArrayType().getType().isReference());
 			break;
 		}
 		case Store: {

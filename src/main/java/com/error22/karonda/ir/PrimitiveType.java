@@ -65,5 +65,10 @@ public enum PrimitiveType implements IType {
 			throw new NotImplementedException();
 		}
 	}
+	
+	@Override
+	public boolean isReference() {
+		return false;
+	}
 
 }

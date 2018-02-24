@@ -7,5 +7,6 @@ public interface IType {
 	int getSize();
 
 	void validate(int[] value);
-
+	
+	boolean isReference();
 }

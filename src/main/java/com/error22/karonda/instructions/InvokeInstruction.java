@@ -47,7 +47,7 @@ public class InvokeInstruction implements IInstruction {
 			pos -= arguments[i].getSize();
 			for (int j = 0; j < arguments[i].getSize(); j++) {
 				args[pos + j] = stackFrame.pop();
-				objectMap[pos + j] = arguments[i] instanceof ObjectType;
+				objectMap[pos + j] = arguments[i].isReference();
 			}
 		}
 		if (instance) {

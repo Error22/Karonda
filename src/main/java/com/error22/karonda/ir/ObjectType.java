@@ -28,6 +28,11 @@ public class ObjectType implements IType {
 	}
 
 	@Override
+	public boolean isReference() {
+		return true;
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

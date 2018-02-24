@@ -1,7 +1,6 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.ir.IType;
-import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 import com.error22.karonda.vm.StackFrame;
 
@@ -18,7 +17,7 @@ public class ReturnInstruction implements IInstruction {
 			stackFrame.exit();
 			return;
 		}
-		stackFrame.exit(stackFrame.pop(type.getSize()), type instanceof ObjectType);
+		stackFrame.exit(stackFrame.pop(type.getSize()), type.isReference());
 	}
 
 	@Override

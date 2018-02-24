@@ -3,7 +3,6 @@ package com.error22.karonda.instructions;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
-import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
@@ -38,7 +37,7 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			stackFrame.push(instancePool.getStaticField(clazz, signature), signature.getType() instanceof ObjectType);
+			stackFrame.push(instancePool.getStaticField(clazz, signature), signature.getType().isReference());
 			break;
 		}
 		case StoreStatic: {
@@ -56,7 +55,7 @@ public class FieldInstruction implements IInstruction {
 				return;
 			ObjectInstance instance = instancePool.getObject(stackFrame.pop());
 			KField target = clazz.findField(signature);
-			stackFrame.push(instance.getField(target.getSignature()), signature.getType() instanceof ObjectType);
+			stackFrame.push(instance.getField(target.getSignature()), signature.getType().isReference());
 			break;
 		}
 		case StoreLocal: {
