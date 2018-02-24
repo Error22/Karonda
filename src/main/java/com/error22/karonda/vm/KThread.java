@@ -76,6 +76,10 @@ public class KThread {
 	public StackFrame getCurrentFrame() {
 		return frames.peek();
 	}
+	
+	public Stack<StackFrame> getFrames() {
+		return frames;
+	}
 
 	public ClassPool getClassPool() {
 		return classPool;
