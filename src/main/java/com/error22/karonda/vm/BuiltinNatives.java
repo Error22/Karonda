@@ -43,9 +43,10 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::desiredAssertionStatus0, "desiredAssertionStatus0", PrimitiveType.Boolean,
 				CLASS_TYPE);
 		manager.addUnboundHook(this::getPrimitiveClass, "getPrimitiveClass", CLASS_TYPE, STRING_TYPE);
-		manager.addUnboundHook(this::returnArgs, "floatToRawIntBits", PrimitiveType.Int, PrimitiveType.Float);
-		manager.addUnboundHook(this::returnArgs, "doubleToRawLongBits", PrimitiveType.Long, PrimitiveType.Double);
-		manager.addUnboundHook(this::returnArgs, "longBitsToDouble", PrimitiveType.Double, PrimitiveType.Long);
+		manager.addUnboundHook(this::returnArgsNonObject, "floatToRawIntBits", PrimitiveType.Int, PrimitiveType.Float);
+		manager.addUnboundHook(this::returnArgsNonObject, "doubleToRawLongBits", PrimitiveType.Long,
+				PrimitiveType.Double);
+		manager.addUnboundHook(this::returnArgsNonObject, "longBitsToDouble", PrimitiveType.Double, PrimitiveType.Long);
 	}
 
 	public void loadSystem() {
@@ -65,7 +66,7 @@ public class BuiltinNatives {
 	}
 
 	public void loadThrowable() {
-		manager.addUnboundHook(this::returnFirstArg, "fillInStackTrace", THROWABLE_TYPE, PrimitiveType.Int);
+		manager.addUnboundHook(this::returnFirstArgAsObject, "fillInStackTrace", THROWABLE_TYPE, PrimitiveType.Int);
 	}
 
 	private void initializeVM(KThread thread, StackFrame frame, int[] args) {
@@ -87,7 +88,7 @@ public class BuiltinNatives {
 
 			ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
 			for (Entry<Object, Object> e : prop.entrySet()) {
-				instructions.add(new LoadConstantInstruction(PrimitiveType.Int, ref));
+				instructions.add(new LoadConstantInstruction(PrimitiveType.Int, ref, true));
 				instructions.add(new LoadStringInstruction((String) e.getKey()));
 				instructions.add(new LoadStringInstruction((String) e.getValue()));
 				instructions.add(new InvokeInstruction(InvokeType.Virtual, SET_PROPERTY_METHOD, false));
@@ -99,7 +100,7 @@ public class BuiltinNatives {
 			initMethod.setMaxLocals(0);
 			initMethod.setMaxStack(3);
 
-			thread.callMethod(initMethod, new int[] {});
+			thread.callMethod(initMethod, new int[0], new boolean[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
@@ -111,7 +112,7 @@ public class BuiltinNatives {
 	}
 
 	private void desiredAssertionStatus0(KThread thread, StackFrame frame, int[] args) {
-		frame.exit(new int[] { 0 });
+		frame.exit(new int[] { 0 }, false);
 	}
 
 	private void getPrimitiveClass(KThread thread, StackFrame frame, int[] args) {
@@ -127,7 +128,8 @@ public class BuiltinNatives {
 			throw new NotImplementedException(name);
 		}
 		frame.exit(new int[] {
-				thread.getInstancePool().getRuntimeClass(thread.getClassPool(), type, frame.getMethod().getKClass()) });
+				thread.getInstancePool().getRuntimeClass(thread.getClassPool(), type, frame.getMethod().getKClass()) },
+				true);
 	}
 
 	private void arraycopy(KThread thread, StackFrame frame, int[] args) {
@@ -146,24 +148,24 @@ public class BuiltinNatives {
 
 	private void nanoTime(KThread thread, StackFrame frame, int[] args) {
 		long lval = System.nanoTime();
-		frame.exit(new int[] { (int) (lval >> 32), (int) lval });
+		frame.exit(new int[] { (int) (lval >> 32), (int) lval }, false);
 	}
 
 	private void currentTimeMillis(KThread thread, StackFrame frame, int[] args) {
 		long lval = System.currentTimeMillis();
-		frame.exit(new int[] { (int) (lval >> 32), (int) lval });
+		frame.exit(new int[] { (int) (lval >> 32), (int) lval }, false);
 	}
 
 	private void identityHashCode(KThread thread, StackFrame frame, int[] args) {
-		frame.exit(new int[] { args[0] });
+		frame.exit(new int[] { args[0] }, true);
 	}
 
-	private void returnArgs(KThread thread, StackFrame frame, int[] args) {
-		frame.exit(args);
+	private void returnArgsNonObject(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(args, false);
 	}
 
-	private void returnFirstArg(KThread thread, StackFrame frame, int[] args) {
-		frame.exit(new int[] { args[0] });
+	private void returnFirstArgAsObject(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { args[0] }, true);
 	}
 
 	private void getClass(KThread thread, StackFrame frame, int[] args) {
@@ -172,7 +174,7 @@ public class BuiltinNatives {
 		ObjectInstance object = pool.getObject(args[0]);
 
 		int type = pool.getRuntimeClass(classPool, object.getType(), frame.getMethod().getKClass());
-		frame.exit(new int[] { type });
+		frame.exit(new int[] { type }, true);
 	}
 
 	private static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");

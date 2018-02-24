@@ -24,11 +24,11 @@ public class CompareInstruction implements IInstruction {
 			long value2 = stackFrame.popLong();
 			long value1 = stackFrame.popLong();
 			if (value1 > value2) {
-				stackFrame.push(1);
+				stackFrame.pushInt(1);
 			} else if (value1 == value2) {
-				stackFrame.push(0);
+				stackFrame.pushInt(0);
 			} else if (value1 < value2) {
-				stackFrame.push(-1);
+				stackFrame.pushInt(-1);
 			} else {
 				throw new IllegalStateException();
 			}
@@ -36,16 +36,16 @@ public class CompareInstruction implements IInstruction {
 		}
 		case FloatsPosNaN:
 		case FloatsNegNaN: {
-			float value2 = Float.intBitsToFloat(stackFrame.pop());
-			float value1 = Float.intBitsToFloat(stackFrame.pop());
+			float value2 = stackFrame.popFloat();
+			float value1 = stackFrame.popFloat();
 			if (value1 == Float.NaN || value2 == Float.NaN) {
-				stackFrame.push(op == CompareOp.FloatsNegNaN ? -1 : 1);
+				stackFrame.pushInt(op == CompareOp.FloatsNegNaN ? -1 : 1);
 			} else if (value1 > value2) {
-				stackFrame.push(1);
+				stackFrame.pushInt(1);
 			} else if (value1 == value2) {
-				stackFrame.push(0);
+				stackFrame.pushInt(0);
 			} else if (value1 < value2) {
-				stackFrame.push(-1);
+				stackFrame.pushInt(-1);
 			} else {
 				throw new IllegalStateException();
 			}
@@ -53,16 +53,16 @@ public class CompareInstruction implements IInstruction {
 		}
 		case DoublesPosNaN:
 		case DoublesNegNaN: {
-			double value2 = Double.longBitsToDouble(stackFrame.popLong());
-			double value1 = Double.longBitsToDouble(stackFrame.popLong());
+			double value2 = stackFrame.popDouble();
+			double value1 = stackFrame.popDouble();
 			if (value1 == Double.NaN || value2 == Double.NaN) {
-				stackFrame.push(op == CompareOp.DoublesNegNaN ? -1 : 1);
+				stackFrame.pushInt(op == CompareOp.DoublesNegNaN ? -1 : 1);
 			} else if (value1 > value2) {
-				stackFrame.push(1);
+				stackFrame.pushInt(1);
 			} else if (value1 == value2) {
-				stackFrame.push(0);
+				stackFrame.pushInt(0);
 			} else if (value1 < value2) {
-				stackFrame.push(-1);
+				stackFrame.pushInt(-1);
 			} else {
 				throw new IllegalStateException();
 			}

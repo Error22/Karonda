@@ -75,7 +75,7 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.NOP:
 			break;
 		case Opcodes.ACONST_NULL:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Void, null));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Void, null, true));
 			break;
 		case Opcodes.ICONST_M1:
 		case Opcodes.ICONST_0:
@@ -84,20 +84,20 @@ public class MethodConverter extends MethodVisitor {
 		case Opcodes.ICONST_3:
 		case Opcodes.ICONST_4:
 		case Opcodes.ICONST_5:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, opcode - Opcodes.ICONST_0));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, opcode - Opcodes.ICONST_0, false));
 			break;
 		case Opcodes.LCONST_0:
 		case Opcodes.LCONST_1:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Long, opcode - Opcodes.LCONST_0));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Long, opcode - Opcodes.LCONST_0, false));
 			break;
 		case Opcodes.FCONST_0:
 		case Opcodes.FCONST_1:
 		case Opcodes.FCONST_2:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Float, opcode - Opcodes.FCONST_0));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Float, opcode - Opcodes.FCONST_0, false));
 			break;
 		case Opcodes.DCONST_0:
 		case Opcodes.DCONST_1:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, opcode - Opcodes.DCONST_0));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, opcode - Opcodes.DCONST_0, false));
 			break;
 		case Opcodes.IALOAD:
 			addInstruction(new ArrayInstruction(ArrayOperation.Load, PrimitiveType.Int));
@@ -380,28 +380,28 @@ public class MethodConverter extends MethodVisitor {
 	public void visitLdcInsn(Object cst) {
 		if (cst instanceof Integer) {
 			int val = ((Integer) cst).intValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, val, false));
 		} else if (cst instanceof Byte) {
 			int val = ((Byte) cst).intValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Byte, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Byte, val, false));
 		} else if (cst instanceof Character) {
 			int val = ((Character) cst).charValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Char, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Char, val, false));
 		} else if (cst instanceof Short) {
 			int val = ((Short) cst).intValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Short, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Short, val, false));
 		} else if (cst instanceof Boolean) {
 			int val = ((Boolean) cst).booleanValue() ? 1 : 0;
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Boolean, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Boolean, val, false));
 		} else if (cst instanceof Float) {
 			float val = ((Float) cst).floatValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Float, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Float, val, false));
 		} else if (cst instanceof Long) {
 			long val = ((Long) cst).longValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Long, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Long, val, false));
 		} else if (cst instanceof Double) {
 			double val = ((Double) cst).doubleValue();
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, val));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Double, val, false));
 		} else if (cst instanceof String) {
 			addInstruction(new LoadStringInstruction((String) cst));
 		} else if (cst instanceof Type) {
@@ -507,10 +507,10 @@ public class MethodConverter extends MethodVisitor {
 	public void visitIntInsn(int opcode, int operand) {
 		switch (opcode) {
 		case Opcodes.BIPUSH:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand, false));
 			break;
 		case Opcodes.SIPUSH:
-			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand));
+			addInstruction(new LoadConstantInstruction(PrimitiveType.Int, operand, false));
 			break;
 		case Opcodes.NEWARRAY:
 			switch (operand) {

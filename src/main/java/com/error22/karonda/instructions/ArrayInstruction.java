@@ -1,6 +1,7 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.ir.IType;
+import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
 import com.error22.karonda.vm.ObjectInstance;
@@ -34,21 +35,20 @@ public class ArrayInstruction implements IInstruction {
 		case Load: {
 			int index = stackFrame.pop();
 			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
-			// TODO: check types compatible
-			stackFrame.push(inst.getArrayType().getType().fieldUnwrap(inst.getArrayElement(index)));
+			stackFrame.push(inst.getArrayElement(index), inst.getArrayType().getType() instanceof ObjectType);
 			break;
 		}
 		case Store: {
-			int[] value = stackFrame.pop(type.isCategoryTwo() ? 2 : 1);
+			int[] value = stackFrame.pop(type.getSize());
 			int index = stackFrame.pop();
 			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
-			// TODO: check types compatible
-			inst.setArrayElement(index, inst.getArrayType().getType().fieldWrap(value));
+			inst.getArrayType().getType().validate(value);
+			inst.setArrayElement(index, value);
 			break;
 		}
 		case Length: {
 			ObjectInstance inst = instancePool.getObject(stackFrame.pop());
-			stackFrame.push(inst.getArraySize());
+			stackFrame.pushInt(inst.getArraySize());
 			break;
 		}
 		default:

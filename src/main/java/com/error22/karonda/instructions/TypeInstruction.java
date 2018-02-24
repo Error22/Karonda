@@ -38,7 +38,7 @@ public class TypeInstruction implements IInstruction {
 		if (ref == 0) {
 			switch (op) {
 			case InstanceOf:
-				stackFrame.push(0);
+				stackFrame.push(0, false);
 				return;
 			case CheckCast:
 				throw new NotImplementedException();
@@ -52,11 +52,11 @@ public class TypeInstruction implements IInstruction {
 
 		switch (op) {
 		case InstanceOf:
-			stackFrame.push(sameType ? 1 : 0);
+			stackFrame.push(sameType ? 1 : 0, false);
 			break;
 		case CheckCast:
 			if (sameType) {
-				stackFrame.push(ref);
+				stackFrame.push(ref, true);
 			} else {
 				throw new NotImplementedException();
 			}

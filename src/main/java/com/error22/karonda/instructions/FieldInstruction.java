@@ -3,6 +3,7 @@ package com.error22.karonda.instructions;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KField;
+import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
@@ -37,16 +38,15 @@ public class FieldInstruction implements IInstruction {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			int[] value = signature.getType().fieldUnwrap(instancePool.getStaticField(clazz, signature));
-			stackFrame.push(value);
+			stackFrame.push(instancePool.getStaticField(clazz, signature), signature.getType() instanceof ObjectType);
 			break;
 		}
 		case StoreStatic: {
-			// TODO: check types compatible
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-			int[] value = signature.getType().fieldWrap(stackFrame.pop(signature.getType().isCategoryTwo() ? 2 : 1));
+			int[] value = stackFrame.pop(signature.getType().getSize());
+			signature.getType().validate(value);
 			instancePool.setStaticField(clazz, signature, value);
 			break;
 		}
@@ -56,21 +56,18 @@ public class FieldInstruction implements IInstruction {
 				return;
 			ObjectInstance instance = instancePool.getObject(stackFrame.pop());
 			KField target = clazz.findField(signature);
-			int[] fieldValue = instance.getField(target.getSignature());
-			int[] value = signature.getType().fieldUnwrap(fieldValue);
-			stackFrame.push(value);
+			stackFrame.push(instance.getField(target.getSignature()), signature.getType() instanceof ObjectType);
 			break;
 		}
 		case StoreLocal: {
 			KClass clazz = classPool.getClass(signature.getClazz(), currentClass);
 			if (thread.staticInit(clazz, true))
 				return;
-
-			int[] value = stackFrame.pop(signature.getType().isCategoryTwo() ? 2 : 1);
-			int[] fieldValue = signature.getType().fieldWrap(value);
+			int[] value = stackFrame.pop(signature.getType().getSize());
+			signature.getType().validate(value);
 			ObjectInstance instance = instancePool.getObject(stackFrame.pop());
 			KField target = clazz.findField(signature);
-			instance.setField(target.getSignature(), fieldValue);
+			instance.setField(target.getSignature(), value);
 			break;
 		}
 		default:

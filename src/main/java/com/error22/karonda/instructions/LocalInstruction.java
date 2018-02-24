@@ -5,7 +5,8 @@ import com.error22.karonda.vm.StackFrame;
 
 public class LocalInstruction implements IInstruction {
 	public static enum LocalOperation {
-		Load, Store
+		Load,
+		Store
 	}
 
 	private LocalOperation operation;
@@ -20,22 +21,30 @@ public class LocalInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
+		int[] stack = stackFrame.getStack();
+		boolean[] stackObjectMap = stackFrame.getStackObjectMap();
+		int pointer = stackFrame.getStackPointer();
+		int[] locals = stackFrame.getLocals();
+		boolean[] localsObjectMap = stackFrame.getLocalsObjectMap();
 		switch (operation) {
 		case Load:
-			if (type.isCategoryTwo()) {
-				stackFrame.push(stackFrame.getLocal(index + 1));
+			for (int i = 0; i < type.getSize(); i++) {
+				stack[pointer + i] = locals[index + i];
+				stackObjectMap[pointer + i] = localsObjectMap[index + i];
 			}
-			stackFrame.push(stackFrame.getLocal(index));
+			pointer += type.getSize();
 			break;
 		case Store:
-			stackFrame.setLocal(index, stackFrame.pop());
-			if (type.isCategoryTwo()) {
-				stackFrame.setLocal(index + 1, stackFrame.pop());
+			pointer -= type.getSize();
+			for (int i = 0; i < type.getSize(); i++) {
+				locals[index + i] = stack[pointer + i];
+				localsObjectMap[index + i] = stackObjectMap[pointer + i];
 			}
 			break;
 		default:
 			throw new IllegalArgumentException();
 		}
+		stackFrame.setStackPointer(pointer);
 	}
 
 	@Override

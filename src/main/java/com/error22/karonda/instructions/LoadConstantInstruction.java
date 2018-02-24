@@ -8,8 +8,10 @@ import com.error22.karonda.vm.StackFrame;
 
 public class LoadConstantInstruction implements IInstruction {
 	private int[] data;
+	private boolean isObject;
 
-	public LoadConstantInstruction(PrimitiveType type, Object value) {
+	public LoadConstantInstruction(PrimitiveType type, Object value, boolean isObject) {
+		this.isObject = isObject;
 		switch (type) {
 		case Void:
 			data = new int[] { 0 };
@@ -45,7 +47,7 @@ public class LoadConstantInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
-		stackFrame.push(data);
+		stackFrame.push(data, isObject);
 	}
 
 	@Override

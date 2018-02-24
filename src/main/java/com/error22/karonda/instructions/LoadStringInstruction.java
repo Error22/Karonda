@@ -39,7 +39,7 @@ public class LoadStringInstruction implements IInstruction {
 
 		instancePool.getObject(reference).setField(ValueField, new int[] { valueRef });
 
-		stackFrame.push(reference);
+		stackFrame.push(reference, true);
 	}
 
 	private static final String StringClass = "java/lang/String";

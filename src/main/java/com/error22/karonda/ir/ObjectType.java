@@ -12,8 +12,8 @@ public class ObjectType implements IType {
 	}
 
 	@Override
-	public boolean isCategoryTwo() {
-		return false;
+	public int getSize() {
+		return 1;
 	}
 
 	@Override
@@ -22,17 +22,9 @@ public class ObjectType implements IType {
 	}
 
 	@Override
-	public int[] fieldWrap(int[] value) {
+	public void validate(int[] value) {
 		if (value.length != 1)
 			throw new IllegalArgumentException("Incorrect data size");
-		return new int[] { value[0] };
-	}
-
-	@Override
-	public int[] fieldUnwrap(int[] value) {
-		if (value.length != 1)
-			throw new IllegalArgumentException("Incorrect data size");
-		return new int[] { value[0] };
 	}
 
 	@Override

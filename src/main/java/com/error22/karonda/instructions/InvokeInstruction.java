@@ -1,11 +1,14 @@
 package com.error22.karonda.instructions;
 
+import org.javatuples.Pair;
+
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.ClassType;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
+import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
@@ -30,28 +33,28 @@ public class InvokeInstruction implements IInstruction {
 		this.isInterface = isInterface;
 	}
 
-	private int[] fetchArguments(MethodSignature signature, StackFrame stackFrame, boolean instance) {
+	private Pair<int[], boolean[]> fetchArguments(MethodSignature signature, StackFrame stackFrame, boolean instance) {
 		IType[] arguments = signature.getArguments();
 		int size = instance ? 1 : 0;
 		for (IType type : arguments) {
-			size += type.isCategoryTwo() ? 2 : 1;
+			size += type.getSize();
 		}
 
 		int[] args = new int[size];
+		boolean[] objectMap = new boolean[size];
 		int pos = args.length;
 		for (int i = arguments.length - 1; i >= 0; i--) {
-			if (arguments[i].isCategoryTwo()) {
-				pos -= 2;
-				args[pos] = stackFrame.pop();
-				args[pos + 1] = stackFrame.pop();
-			} else {
-				pos--;
-				args[pos] = stackFrame.pop();
+			pos -= arguments[i].getSize();
+			for (int j = 0; j < arguments[i].getSize(); j++) {
+				args[pos + j] = stackFrame.pop();
+				objectMap[pos + j] = arguments[i] instanceof ObjectType;
 			}
 		}
-		if (instance)
+		if (instance) {
 			args[0] = stackFrame.pop();
-		return args;
+			objectMap[0] = true;
+		}
+		return new Pair<int[], boolean[]>(args, objectMap);
 	}
 
 	@Override
@@ -66,14 +69,14 @@ public class InvokeInstruction implements IInstruction {
 		switch (type) {
 		case Static: {
 			KMethod method = signatureClass.getMethod(signature);
-			int[] args = fetchArguments(signature, stackFrame, false);
-			thread.initAndCall(method, false, args);
+			Pair<int[], boolean[]> args = fetchArguments(signature, stackFrame, false);
+			thread.initAndCall(method, false, args.getValue0(), args.getValue1());
 			break;
 		}
 		case Special: {
-			int[] args = fetchArguments(signature, stackFrame, true);
+			Pair<int[], boolean[]> args = fetchArguments(signature, stackFrame, true);
 
-			if (args[0] == 0)
+			if (args.getValue0()[0] == 0)
 				throw new NotImplementedException("Null object supported not implemented");
 
 			boolean useSuperclass = currentClass.shouldSpecialMethodResolve() && !signature.isLocalInitializer()
@@ -83,21 +86,21 @@ public class InvokeInstruction implements IInstruction {
 			KClass targetClass = useSuperclass ? currentClass.getSuperClass() : signatureClass;
 			KMethod resolved = targetClass.findMethod(signature, true);
 
-			thread.initAndCall(resolved, false, args);
+			thread.initAndCall(resolved, false, args.getValue0(), args.getValue1());
 			break;
 		}
 		case Interface:
 		case Virtual: {
-			int[] args = fetchArguments(signature, stackFrame, true);
+			Pair<int[], boolean[]> args = fetchArguments(signature, stackFrame, true);
 
-			int oid = args[0];
+			int oid = args.getValue0()[0];
 			if (oid == 0)
 				throw new NotImplementedException("Null object supported not implemented");
 			ObjectInstance instance = instancePool.getObject(oid);
 
 			KClass targetClass = instance.getKClass();
 			KMethod resolved = targetClass.findMethod(signature, true);
-			thread.initAndCall(resolved, false, args);
+			thread.initAndCall(resolved, false, args.getValue0(), args.getValue1());
 			break;
 		}
 		default:

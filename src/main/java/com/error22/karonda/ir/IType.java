@@ -4,10 +4,8 @@ public interface IType {
 
 	int[] getDefaultValue();
 
-	boolean isCategoryTwo();
+	int getSize();
 
-	int[] fieldWrap(int[] value);
-
-	int[] fieldUnwrap(int[] value);
+	void validate(int[] value);
 
 }

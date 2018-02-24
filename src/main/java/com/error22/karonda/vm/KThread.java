@@ -19,9 +19,10 @@ public class KThread {
 		frames = new Stack<StackFrame>();
 	}
 
-	public void initAndCall(KMethod method, boolean instructionPushBack, int[] arguments) {
+	public void initAndCall(KMethod method, boolean instructionPushBack, int[] arguments,
+			boolean[] argumentsObjectMap) {
 		boolean pushed = staticInit(method.getKClass(), instructionPushBack);
-		callMethod(method, pushed, arguments);
+		callMethod(method, pushed, arguments, argumentsObjectMap);
 	}
 
 	public boolean staticInit(KClass clazz, boolean instructionPushBack) {
@@ -29,22 +30,22 @@ public class KThread {
 		if (sinit != null) {
 			if (instructionPushBack && !frames.isEmpty())
 				frames.peek().moveInstructionPointer(-1);
-			callMethod(sinit, new int[0]);
+			callMethod(sinit, new int[0], new boolean[0]);
 			return true;
 		}
 		return false;
 	}
 
-	public void callMethod(KMethod method, int[] arguments) {
-		callMethod(method, false, arguments);
+	public void callMethod(KMethod method, int[] arguments, boolean[] argumentsObjectMap) {
+		callMethod(method, false, arguments, argumentsObjectMap);
 	}
 
-	public void callMethod(KMethod method, boolean pushBack, int[] arguments) {
+	public void callMethod(KMethod method, boolean pushBack, int[] arguments, boolean[] argumentsObjectMap) {
 		if (!instancePool.hasStaticInit(method.getKClass()))
 			throw new IllegalStateException("Class has not been staticly initialized");
 
 		StackFrame frame = new StackFrame(this, method);
-		frame.init(arguments);
+		frame.init(arguments, argumentsObjectMap);
 		if (pushBack) {
 			StackFrame top = frames.pop();
 			frames.push(frame);
@@ -64,12 +65,12 @@ public class KThread {
 			throw new IllegalArgumentException("Only void frames can be exited without return data");
 	}
 
-	public void exitFrame(int[] result) {
+	public void exitFrame(int[] result, boolean isObject) {
 		StackFrame frame = frames.pop();
 		if (frame.getMethod().getSignature().getReturnType().equals(PrimitiveType.Void))
 			throw new IllegalArgumentException("Only non-void frames can be exited with return data");
 		if (!frames.isEmpty())
-			frames.peek().push(result);
+			frames.peek().push(result, isObject);
 	}
 
 	public StackFrame getCurrentFrame() {

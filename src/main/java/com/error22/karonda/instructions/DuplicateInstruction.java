@@ -5,7 +5,12 @@ import com.error22.karonda.vm.StackFrame;
 
 public class DuplicateInstruction implements IInstruction {
 	public static enum DuplicateMode {
-		SingleCat1, SingleCat1TwoDown, SingleSpecialDown, TwoSpecial, TwoSpecialDown, TwoSpecialFurtherDown
+		SingleCat1,
+		SingleCat1TwoDown,
+		SingleSpecialDown,
+		TwoSpecial,
+		TwoSpecialDown,
+		TwoSpecialFurtherDown
 	}
 
 	private DuplicateMode mode;
@@ -16,67 +21,80 @@ public class DuplicateInstruction implements IInstruction {
 
 	@Override
 	public void execute(StackFrame stackFrame) {
+		int[] stack = stackFrame.getStack();
+		boolean[] stackObjectMap = stackFrame.getStackObjectMap();
+		int pointer = stackFrame.getStackPointer();
 		switch (mode) {
 		case SingleCat1: {
-			int value = stackFrame.pop();
-			stackFrame.push(value);
-			stackFrame.push(value);
+			stack[pointer] = stack[pointer - 1];
+			stackObjectMap[pointer] = stackObjectMap[pointer - 1];
+			pointer++;
 			break;
 		}
 		case SingleCat1TwoDown: {
-			int value1 = stackFrame.pop();
-			int value2 = stackFrame.pop();
-			stackFrame.push(value1);
-			stackFrame.push(value2);
-			stackFrame.push(value1);
+			stack[pointer] = stack[pointer - 1];
+			stackObjectMap[pointer] = stackObjectMap[pointer - 1];
+			stack[pointer - 1] = stack[pointer - 2];
+			stackObjectMap[pointer - 1] = stackObjectMap[pointer - 2];
+			stack[pointer - 2] = stack[pointer];
+			stackObjectMap[pointer - 2] = stackObjectMap[pointer];
+			pointer++;
 			break;
 		}
 		case SingleSpecialDown: {
-			int value1 = stackFrame.pop();
-			int value2 = stackFrame.pop();
-			int value3 = stackFrame.pop();
-			stackFrame.push(value1);
-			stackFrame.push(value3);
-			stackFrame.push(value2);
-			stackFrame.push(value1);
+			stack[pointer] = stack[pointer - 1];
+			stackObjectMap[pointer] = stackObjectMap[pointer - 1];
+			stack[pointer - 1] = stack[pointer - 2];
+			stackObjectMap[pointer - 1] = stackObjectMap[pointer - 2];
+			stack[pointer - 2] = stack[pointer - 3];
+			stackObjectMap[pointer - 2] = stackObjectMap[pointer - 3];
+			stack[pointer - 3] = stack[pointer];
+			stackObjectMap[pointer - 3] = stackObjectMap[pointer];
+			pointer++;
 			break;
 		}
 		case TwoSpecial: {
-			int value1 = stackFrame.pop();
-			int value2 = stackFrame.pop();
-			stackFrame.push(value2);
-			stackFrame.push(value1);
-			stackFrame.push(value2);
-			stackFrame.push(value1);
+			stack[pointer + 1] = stack[pointer - 1];
+			stackObjectMap[pointer + 1] = stackObjectMap[pointer - 1];
+			stack[pointer] = stack[pointer - 2];
+			stackObjectMap[pointer] = stackObjectMap[pointer - 2];
+			pointer += 2;
 			break;
 		}
 		case TwoSpecialDown: {
-			int value1 = stackFrame.pop();
-			int value2 = stackFrame.pop();
-			int value3 = stackFrame.pop();
-			stackFrame.push(value2);
-			stackFrame.push(value1);
-			stackFrame.push(value3);
-			stackFrame.push(value2);
-			stackFrame.push(value1);
+			stack[pointer + 1] = stack[pointer - 1];
+			stackObjectMap[pointer + 1] = stackObjectMap[pointer - 1];
+			stack[pointer] = stack[pointer - 2];
+			stackObjectMap[pointer] = stackObjectMap[pointer - 2];
+			stack[pointer - 1] = stack[pointer - 3];
+			stackObjectMap[pointer - 1] = stackObjectMap[pointer - 3];
+			stack[pointer - 2] = stack[pointer + 1];
+			stackObjectMap[pointer - 2] = stackObjectMap[pointer + 1];
+			stack[pointer - 3] = stack[pointer];
+			stackObjectMap[pointer - 3] = stackObjectMap[pointer];
+			pointer += 2;
 			break;
 		}
 		case TwoSpecialFurtherDown: {
-			int value1 = stackFrame.pop();
-			int value2 = stackFrame.pop();
-			int value3 = stackFrame.pop();
-			int value4 = stackFrame.pop();
-			stackFrame.push(value2);
-			stackFrame.push(value1);
-			stackFrame.push(value4);
-			stackFrame.push(value3);
-			stackFrame.push(value2);
-			stackFrame.push(value1);
+			stack[pointer + 1] = stack[pointer - 1];
+			stackObjectMap[pointer + 1] = stackObjectMap[pointer - 1];
+			stack[pointer] = stack[pointer - 2];
+			stackObjectMap[pointer] = stackObjectMap[pointer - 2];
+			stack[pointer - 1] = stack[pointer - 3];
+			stackObjectMap[pointer - 1] = stackObjectMap[pointer - 3];
+			stack[pointer - 2] = stack[pointer - 4];
+			stackObjectMap[pointer - 2] = stackObjectMap[pointer - 4];
+			stack[pointer - 3] = stack[pointer + 1];
+			stackObjectMap[pointer - 3] = stackObjectMap[pointer + 1];
+			stack[pointer - 4] = stack[pointer];
+			stackObjectMap[pointer - 4] = stackObjectMap[pointer];
+			pointer += 2;
 			break;
 		}
 		default:
 			throw new NotImplementedException();
 		}
+		stackFrame.setStackPointer(pointer);
 	}
 
 }

@@ -27,10 +27,10 @@ public class ConvertInstruction implements IInstruction {
 			value = stackFrame.popLong();
 			break;
 		case Float:
-			value = Float.intBitsToFloat(stackFrame.pop());
+			value = stackFrame.popFloat();
 			break;
 		case Double:
-			value = Double.longBitsToDouble(stackFrame.popLong());
+			value = stackFrame.popDouble();
 			break;
 		default:
 			throw new NotImplementedException();
@@ -38,28 +38,28 @@ public class ConvertInstruction implements IInstruction {
 
 		switch (to) {
 		case Byte:
-			stackFrame.push(value.byteValue());
+			stackFrame.pushInt(value.byteValue());
 			break;
 		case Boolean:
-			stackFrame.push(value.intValue() != 0 ? 1 : 0);
+			stackFrame.pushInt(value.intValue() != 0 ? 1 : 0);
 			break;
 		case Char:
-			stackFrame.push((int) (char) value.intValue());
+			stackFrame.pushInt((int) (char) value.intValue());
 			break;
 		case Short:
-			stackFrame.push(value.shortValue());
+			stackFrame.pushInt(value.shortValue());
 			break;
 		case Int:
-			stackFrame.push(value.intValue());
+			stackFrame.pushInt(value.intValue());
 			break;
 		case Long:
-			stackFrame.push(value.longValue());
+			stackFrame.pushLong(value.longValue());
 			break;
 		case Float:
-			stackFrame.push(Float.floatToIntBits(value.floatValue()));
+			stackFrame.pushFloat(value.floatValue());
 			break;
 		case Double:
-			stackFrame.push(Double.doubleToRawLongBits(value.doubleValue()));
+			stackFrame.pushDouble(value.doubleValue());
 			break;
 		default:
 			throw new NotImplementedException();

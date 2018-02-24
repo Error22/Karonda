@@ -29,7 +29,7 @@ public class NewArrayInstruction implements IInstruction {
 			dimensionSizes[i] = stackFrame.pop();
 
 		int reference = createDimension(classPool, instancePool, dimensionSizes, 0);
-		stackFrame.push(reference);
+		stackFrame.push(reference, true);
 	}
 
 	private int createDimension(ClassPool classPool, InstancePool instancePool, int[] dimensionSizes, int dimension) {

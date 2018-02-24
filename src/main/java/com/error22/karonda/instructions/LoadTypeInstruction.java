@@ -20,7 +20,7 @@ public class LoadTypeInstruction implements IInstruction {
 		KClass currentClass = stackFrame.getMethod().getKClass();
 		ClassPool classPool = thread.getClassPool();
 		InstancePool instancePool = thread.getInstancePool();
-		stackFrame.push(instancePool.getRuntimeClass(classPool, type, currentClass));
+		stackFrame.push(instancePool.getRuntimeClass(classPool, type, currentClass), true);
 	}
 
 }
