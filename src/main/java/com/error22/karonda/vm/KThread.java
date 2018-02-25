@@ -7,12 +7,15 @@ import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.PrimitiveType;
 
 public class KThread {
+	private ThreadManager threadManager;
 	private ClassPool classPool;
 	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private Stack<StackFrame> frames;
 
-	public KThread(ClassPool classPool, InstancePool instancePool, NativeManager nativeManager) {
+	public KThread(ThreadManager threadManager, ClassPool classPool, InstancePool instancePool,
+			NativeManager nativeManager) {
+		this.threadManager = threadManager;
 		this.classPool = classPool;
 		this.instancePool = instancePool;
 		this.nativeManager = nativeManager;
@@ -83,6 +86,10 @@ public class KThread {
 
 	public Stack<StackFrame> getFrames() {
 		return frames;
+	}
+
+	public ThreadManager getThreadManager() {
+		return threadManager;
 	}
 
 	public ClassPool getClassPool() {
