@@ -103,7 +103,7 @@ public class ConversionUtils {
 		return new int[] { (int) (lval >> 32), (int) lval };
 	}
 
-	public int convertString(StackFrame stackFrame, String value) {
+	public static int convertString(StackFrame stackFrame, String value) {
 		KThread thread = stackFrame.getThread();
 		KClass currentClass = stackFrame.getMethod().getKClass();
 		ClassPool classPool = thread.getClassPool();
