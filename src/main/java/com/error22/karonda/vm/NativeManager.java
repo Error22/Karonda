@@ -1,5 +1,6 @@
 package com.error22.karonda.vm;
 
+import java.lang.invoke.MethodHandle;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +21,11 @@ public class NativeManager {
 		boundHooks.put(signature, hook);
 	}
 
+	public void addBoundHandleHook(MethodHandle hook, String clazz, String name) {
+		HandleMethodHook hmh = new HandleMethodHook(hook);
+		addBoundHook(new MethodSignature(clazz, name, hmh.getReturnType(), hmh.getArguments()), hmh);
+	}
+
 	public void addUnboundHook(IMethodHook hook, String name, IType returnType, IType... arguments) {
 		final int prime = 31;
 		int result = 1;
@@ -27,6 +33,11 @@ public class NativeManager {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((returnType == null) ? 0 : returnType.hashCode());
 		unboundHooks.put(result, hook);
+	}
+
+	public void addUnboundHandleHook(MethodHandle hook, String name) {
+		HandleMethodHook hmh = new HandleMethodHook(hook);
+		addUnboundHook(hmh, name, hmh.getReturnType(), hmh.getArguments());
 	}
 
 	public void invokeNative(MethodSignature signature, KThread thread, StackFrame stackFrame, int[] arguments) {
