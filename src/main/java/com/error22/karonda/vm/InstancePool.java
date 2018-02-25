@@ -78,6 +78,7 @@ public class InstancePool {
 	}
 
 	private void deallocateObjectId(int id) {
+		objects.remove(id);
 		objectIds.clear(id);
 		idHint = id;
 	}
