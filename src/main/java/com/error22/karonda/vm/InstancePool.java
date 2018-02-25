@@ -1,5 +1,6 @@
 package com.error22.karonda.vm;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class InstancePool {
 	private BitSet objectIds;
 	private int idHint;
 	private BiMap<Pair<IType, Object>, Integer> runtimeClasses;
+	private List<Integer> forceLoaded;
 
 	public InstancePool() {
 		staticInitMap = new ConcurrentHashMap<KClass, Boolean>();
@@ -38,6 +40,7 @@ public class InstancePool {
 		objectIds = new BitSet();
 		objectIds.set(0);
 		idHint = 1;
+		forceLoaded = new ArrayList<Integer>();
 		runtimeClasses = HashBiMap.create();
 	}
 
@@ -78,6 +81,9 @@ public class InstancePool {
 	}
 
 	private void deallocateObjectId(int id) {
+		if (forceLoaded.contains(id)) {
+			throw new IllegalArgumentException("Object is force loaded");
+		}
 		objects.remove(id);
 		objectIds.clear(id);
 		if (idHint > id)
@@ -116,6 +122,9 @@ public class InstancePool {
 	public int garbageCollect(List<KThread> threads) {
 		BitSet foundMap = new BitSet();
 		foundMap.set(0);
+		for (int i : forceLoaded) {
+			foundMap.set(i);
+		}
 		for (Entry<FieldSignature, int[]> entry : staticFields.entrySet()) {
 			if (entry.getKey().getType().isReference()) {
 				markObject(foundMap, entry.getValue()[0]);
@@ -182,5 +191,17 @@ public class InstancePool {
 		if (!objectIds.get(id))
 			throw new IllegalArgumentException("No object with id " + id + " exists");
 		return objects.get(id);
+	}
+
+	public void forceLoad(int id) {
+		if (!objectIds.get(id))
+			throw new IllegalArgumentException("No object with id " + id + " exists");
+		forceLoaded.add(id);
+	}
+
+	public void unforceLoad(int id) {
+		if (!objectIds.get(id))
+			throw new IllegalArgumentException("No object with id " + id + " exists");
+		forceLoaded.remove(id);
 	}
 }
