@@ -29,7 +29,7 @@ public class StackFrame {
 			locals = new int[arguments.length];
 			System.arraycopy(arguments, 0, locals, 0, arguments.length);
 			localsObjectMap = new boolean[argumentsObjectMap.length];
-			System.arraycopy(arguments, 0, locals, 0, arguments.length);
+			System.arraycopy(argumentsObjectMap, 0, localsObjectMap, 0, argumentsObjectMap.length);
 			return;
 		}
 		locals = new int[method.getMaxLocals()];
