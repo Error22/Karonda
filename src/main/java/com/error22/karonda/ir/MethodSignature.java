@@ -6,12 +6,19 @@ public class MethodSignature {
 	private String clazz, name;
 	private IType returnType;
 	private IType[] arguments;
+	private int nonBoundSignature;
 
 	public MethodSignature(String clazz, String name, IType returnType, IType... arguments) {
 		this.clazz = clazz;
 		this.name = name;
 		this.returnType = returnType;
 		this.arguments = arguments;
+
+		final int prime = 31;
+		nonBoundSignature = 1;
+		nonBoundSignature = prime * nonBoundSignature + Arrays.hashCode(arguments);
+		nonBoundSignature = prime * nonBoundSignature + ((name == null) ? 0 : name.hashCode());
+		nonBoundSignature = prime * nonBoundSignature + ((returnType == null) ? 0 : returnType.hashCode());
 	}
 
 	public boolean isLocalInitializer() {
@@ -43,8 +50,8 @@ public class MethodSignature {
 	}
 
 	public boolean matches(MethodSignature signature) {
-		return name.equals(signature.name) && returnType.equals(signature.returnType)
-				&& Arrays.equals(arguments, signature.arguments);
+		return nonBoundSignature == signature.nonBoundSignature && name.equals(signature.name)
+				&& returnType.equals(signature.returnType) && Arrays.equals(arguments, signature.arguments);
 	}
 
 	@Override
