@@ -6,12 +6,16 @@ import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.PrimitiveType;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+
 public class KThread {
 	private ThreadManager threadManager;
 	private ClassPool classPool;
 	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private Stack<StackFrame> frames;
+	private Int2IntMap lockCounts;
 
 	public KThread(ThreadManager threadManager, ClassPool classPool, InstancePool instancePool,
 			NativeManager nativeManager) {
@@ -20,6 +24,7 @@ public class KThread {
 		this.instancePool = instancePool;
 		this.nativeManager = nativeManager;
 		frames = new Stack<StackFrame>();
+		lockCounts = new Int2IntOpenHashMap();
 	}
 
 	public void initAndCall(KMethod method, boolean instructionPushBack, int[] arguments,
@@ -86,6 +91,22 @@ public class KThread {
 
 	public Stack<StackFrame> getFrames() {
 		return frames;
+	}
+
+	public void lock(int id) {
+		lockCounts.put(id, lockCounts.getOrDefault(id, 0) + 1);
+	}
+
+	public void unlock(int id) {
+		int count = lockCounts.get(id);
+		if (count == 1)
+			lockCounts.remove(id);
+		else
+			lockCounts.put(id, count - 1);
+	}
+
+	public boolean isLocked(int id) {
+		return lockCounts.containsKey(id);
 	}
 
 	public ThreadManager getThreadManager() {
