@@ -3,11 +3,17 @@ package com.error22.karonda.ir;
 public class FieldSignature {
 	private String clazz, name;
 	private IType type;
+	private int nonBoundSignature;
 
 	public FieldSignature(String clazz, String name, IType type) {
 		this.clazz = clazz;
 		this.name = name;
 		this.type = type;
+
+		final int prime = 31;
+		nonBoundSignature = 1;
+		nonBoundSignature = prime * nonBoundSignature + ((name == null) ? 0 : name.hashCode());
+		nonBoundSignature = prime * nonBoundSignature + ((type == null) ? 0 : type.hashCode());
 	}
 
 	public String getClazz() {
@@ -23,7 +29,8 @@ public class FieldSignature {
 	}
 
 	public boolean matches(FieldSignature signature) {
-		return name.equals(signature.name) && type.equals(signature.type);
+		return nonBoundSignature == signature.nonBoundSignature && name.equals(signature.name)
+				&& type.equals(signature.type);
 	}
 
 	@Override
