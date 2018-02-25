@@ -1,7 +1,9 @@
 package com.error22.karonda.vm;
 
 import java.util.BitSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.javatuples.Pair;
@@ -109,6 +111,71 @@ public class InstancePool {
 		objects.put(id, instance);
 		runtimeClasses.put(key, id);
 		return id;
+	}
+
+	public int garbageCollect(List<KThread> threads) {
+		BitSet foundMap = new BitSet();
+		foundMap.set(0);
+		for (Entry<FieldSignature, int[]> entry : staticFields.entrySet()) {
+			if (entry.getKey().getType().isReference()) {
+				markObject(foundMap, entry.getValue()[0]);
+			}
+		}
+		for (int id : runtimeClasses.values()) {
+			markObject(foundMap, id);
+		}
+		for (KThread thread : threads) {
+			for (StackFrame frame : thread.getFrames()) {
+				int[] locals = frame.getLocals();
+				boolean[] localsObjectMap = frame.getLocalsObjectMap();
+				int[] stack = frame.getStack();
+				boolean[] stackObjectMap = frame.getStackObjectMap();
+				int stackPointer = frame.getStackPointer();
+				for (int i = 0; i < locals.length; i++) {
+					if (localsObjectMap[i]) {
+						markObject(foundMap, locals[i]);
+					}
+				}
+				for (int i = 0; i < stackPointer; i++) {
+					if (stackObjectMap[i]) {
+						markObject(foundMap, stack[i]);
+					}
+				}
+			}
+		}
+		objectIds.andNot(foundMap);
+		int deallocated = objectIds.cardinality();
+		for (int i = objectIds.nextSetBit(0); i >= 0; i = objectIds.nextSetBit(i + 1)) {
+			objects.remove(i);
+			if (idHint > i)
+				idHint = i;
+			if (i == Integer.MAX_VALUE) {
+				break;
+			}
+		}
+		objectIds = foundMap;
+		return deallocated;
+	}
+
+	private void markObject(BitSet foundMap, int id) {
+		if (id == 0 || foundMap.get(id)) {
+			return;
+		}
+		foundMap.set(id);
+		ObjectInstance instance = objects.get(id);
+		if (instance.isArray()) {
+			if (instance.getArrayType().getDimensions() > 1 || instance.getArrayType().getType().isReference()) {
+				for (int i = 0; i < instance.getArraySize(); i++) {
+					markObject(foundMap, instance.getArrayElement(i)[0]);
+				}
+			}
+		} else {
+			for (Entry<FieldSignature, int[]> entry : instance.getFields().entrySet()) {
+				if (entry.getKey().getType().isReference()) {
+					markObject(foundMap, entry.getValue()[0]);
+				}
+			}
+		}
 	}
 
 	public ObjectInstance getObject(int id) {
