@@ -76,7 +76,11 @@ public class KThread {
 	public StackFrame getCurrentFrame() {
 		return frames.peek();
 	}
-	
+
+	public boolean hasFrame() {
+		return !frames.isEmpty();
+	}
+
 	public Stack<StackFrame> getFrames() {
 		return frames;
 	}
