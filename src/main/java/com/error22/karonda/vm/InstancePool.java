@@ -112,6 +112,8 @@ public class InstancePool {
 	}
 
 	public ObjectInstance getObject(int id) {
+		if (!objectIds.get(id))
+			throw new IllegalArgumentException("No object with id " + id + " exists");
 		return objects.get(id);
 	}
 }
