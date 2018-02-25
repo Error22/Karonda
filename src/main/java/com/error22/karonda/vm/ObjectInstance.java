@@ -1,6 +1,7 @@
 package com.error22.karonda.vm;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,6 +97,13 @@ public class ObjectInstance {
 
 	public int getId() {
 		return id;
+	}
+
+	@Override
+	public String toString() {
+		return "ObjectInstance [id=" + id + ", objectType=" + objectType + ", isArray=" + isArray + ", kClass=" + kClass
+				+ ", fields=" + fields + ", arrayType=" + arrayType + ", arraySize=" + arraySize + ", arrayData="
+				+ Arrays.toString(arrayData) + "]";
 	}
 
 }
