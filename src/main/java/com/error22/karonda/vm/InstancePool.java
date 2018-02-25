@@ -57,14 +57,12 @@ public class InstancePool {
 	}
 
 	public void setStaticField(KClass clazz, FieldSignature field, int[] value) {
-		System.out.println("setStaticField " + field + " " + value);
 		if (!hasStaticInit(clazz))
 			throw new IllegalStateException("Class has not been staticly initialized");
 		staticFields.put(field, value);
 	}
 
 	public int[] getStaticField(KClass clazz, FieldSignature field) {
-		System.out.println("getStaticField " + field);
 		if (!hasStaticInit(clazz))
 			throw new IllegalStateException("Class has not been staticly initialized");
 		return staticFields.get(field);
