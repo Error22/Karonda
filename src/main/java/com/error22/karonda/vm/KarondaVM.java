@@ -1,8 +1,13 @@
 package com.error22.karonda.vm;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.Properties;
 
+import com.error22.karonda.instructions.FieldInstruction;
+import com.error22.karonda.instructions.FieldInstruction.FieldOperation;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
@@ -41,12 +46,37 @@ public class KarondaVM {
 				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), false, false, false);
 
 		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
-		for (String clazz : Arrays.asList("java/lang/System", "java/lang/ThreadGroup", "java/lang/Thread")) {
+		for (String clazz : Arrays.asList("java/lang/System", "java/lang/ThreadGroup", "java/lang/Thread",
+				"sun/misc/VM")) {
 			KMethod method = instancePool.staticInit(classPool.bootstrapResolve(clazz));
 			if (method != null) {
 				MethodSignature signature = method.getSignature();
 				instructions.add(new InvokeInstruction(InvokeType.Static, signature, false));
 			}
+		}
+
+		// Set VM properties
+		try {
+			// Find host VM properties
+			Class<?> clazz = Class.forName("sun.misc.VM");
+			Field field = clazz.getDeclaredField("savedProps");
+			field.setAccessible(true);
+			Properties prop = (Properties) field.get(null);
+
+			// Store values into savedProps
+			MethodSignature setPropertyMethod = new MethodSignature("java/util/Properties", "setProperty",
+					ObjectType.OBJECT_TYPE, ObjectType.STRING_TYPE, ObjectType.STRING_TYPE);
+			for (Entry<Object, Object> e : prop.entrySet()) {
+				instructions.add(new FieldInstruction(FieldOperation.LoadStatic,
+						new FieldSignature("sun/misc/VM", "savedProps", ObjectType.PROPERTIES_TYPE)));
+				instructions.add(new LoadStringInstruction((String) e.getKey()));
+				instructions.add(new LoadStringInstruction((String) e.getValue()));
+				instructions.add(new InvokeInstruction(InvokeType.Virtual, setPropertyMethod, false));
+				instructions.add(new PopInstruction(PopMode.Single));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 
 		// Create thread groups

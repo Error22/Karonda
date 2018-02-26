@@ -1,25 +1,8 @@
 package com.error22.karonda.vm;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.Properties;
-
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
-import com.error22.karonda.instructions.IInstruction;
-import com.error22.karonda.instructions.InvokeInstruction;
-import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
-import com.error22.karonda.instructions.LoadConstantInstruction;
-import com.error22.karonda.instructions.LoadStringInstruction;
-import com.error22.karonda.instructions.PopInstruction;
-import com.error22.karonda.instructions.PopInstruction.PopMode;
-import com.error22.karonda.instructions.ReturnInstruction;
-import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
-import com.error22.karonda.ir.KClass;
-import com.error22.karonda.ir.KMethod;
-import com.error22.karonda.ir.MethodSignature;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 
@@ -74,49 +57,11 @@ public class BuiltinNatives {
 	}
 
 	public void loadSunVM() {
-		manager.addUnboundHook(this::initializeVM, "initialize", PrimitiveType.Void);
+		manager.addUnboundHook(this::empty, "initialize", PrimitiveType.Void);
 	}
 
 	public void loadThrowable() {
 		manager.addUnboundHook(this::returnFirstArgAsObject, "fillInStackTrace", THROWABLE_TYPE, PrimitiveType.Int);
-	}
-
-	private void initializeVM(KThread thread, StackFrame frame, int[] args) {
-		frame.exit();
-		try {
-			Class<?> clazz = Class.forName("sun.misc.VM");
-			Field field = clazz.getDeclaredField("savedProps");
-			field.setAccessible(true);
-			Properties prop = (Properties) field.get(null);
-
-			KClass currentClass = frame.getMethod().getKClass();
-			InstancePool instancePool = thread.getInstancePool();
-
-			int ref = instancePool.getStaticField(currentClass, SAVED_PROPS_FIELD)[0];
-
-			MethodSignature signature = new MethodSignature(currentClass.getName(), "initializeVM_impl",
-					PrimitiveType.Void);
-			KMethod initMethod = new KMethod(currentClass, signature, false, false, false);
-
-			ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
-			for (Entry<Object, Object> e : prop.entrySet()) {
-				instructions.add(new LoadConstantInstruction(PrimitiveType.Int, ref, true));
-				instructions.add(new LoadStringInstruction((String) e.getKey()));
-				instructions.add(new LoadStringInstruction((String) e.getValue()));
-				instructions.add(new InvokeInstruction(InvokeType.Virtual, SET_PROPERTY_METHOD, false));
-				instructions.add(new PopInstruction(PopMode.Single));
-			}
-			instructions.add(new ReturnInstruction(PrimitiveType.Void));
-
-			initMethod.setInstructions(instructions.toArray(new IInstruction[instructions.size()]));
-			initMethod.setMaxLocals(0);
-			initMethod.setMaxStack(3);
-
-			thread.callMethod(initMethod, new int[0], new boolean[0]);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
 	}
 
 	private void empty(KThread thread, StackFrame frame, int[] args) {
@@ -201,9 +146,4 @@ public class BuiltinNatives {
 	private static final ObjectType CLASS_TYPE = new ObjectType("java/lang/Class");
 	private static final ObjectType STRING_TYPE = new ObjectType("java/lang/String");
 	private static final ObjectType THROWABLE_TYPE = new ObjectType("java/lang/Throwable");
-	private static final ObjectType PROPERTIES_TYPE = new ObjectType("java/util/Properties");
-	private static final FieldSignature SAVED_PROPS_FIELD = new FieldSignature("sun/misc/VM", "savedProps",
-			PROPERTIES_TYPE);
-	private static final MethodSignature SET_PROPERTY_METHOD = new MethodSignature("java/util/Properties",
-			"setProperty", OBJECT_TYPE, STRING_TYPE, STRING_TYPE);
 }
