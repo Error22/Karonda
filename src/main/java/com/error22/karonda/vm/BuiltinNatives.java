@@ -63,6 +63,7 @@ public class BuiltinNatives {
 	public void loadThread() {
 		manager.addUnboundHook(this::currentThread, "currentThread", ObjectType.THREAD_TYPE);
 		manager.addUnboundHook(this::empty, "setPriority0", PrimitiveType.Void, PrimitiveType.Int);
+		manager.addUnboundHook(this::isAlive, "isAlive", PrimitiveType.Boolean);
 	}
 
 	public void loadSecurity() {
@@ -161,6 +162,15 @@ public class BuiltinNatives {
 
 	private void currentThread(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { thread.getThreadObjRef() }, true);
+	}
+
+	private void isAlive(KThread thread, StackFrame frame, int[] args) {
+		if (args[0] == 0) {
+			throw new NotImplementedException();
+		}
+
+		KThread target = thread.getThreadManager().getThreadByRef(args[0]);
+		frame.exit(new int[] { target != null ? 1 : 0 }, false);
 	}
 
 	private void doPrivileged(KThread thread, StackFrame frame, int[] args) {

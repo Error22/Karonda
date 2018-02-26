@@ -20,6 +20,15 @@ public class ThreadManager {
 		return null;
 	}
 
+	public KThread getThreadByRef(int id) {
+		for (KThread thread : threads) {
+			if (thread.getThreadObjRef() == id) {
+				return thread;
+			}
+		}
+		return null;
+	}
+
 	public void setMainThread(KThread thread) {
 		this.mainThread = thread;
 		threads.add(mainThread);
