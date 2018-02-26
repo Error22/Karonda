@@ -25,6 +25,7 @@ public class BuiltinNatives {
 		loadObject();
 		loadSunVM();
 		loadThrowable();
+		loadFileDescriptor();
 	}
 
 	public void loadPrimitives() {
@@ -72,6 +73,10 @@ public class BuiltinNatives {
 
 	public void loadThrowable() {
 		manager.addUnboundHook(this::returnFirstArgAsObject, "fillInStackTrace", THROWABLE_TYPE, PrimitiveType.Int);
+	}
+
+	public void loadFileDescriptor() {
+		manager.addUnboundHook(this::empty, "initIDs", PrimitiveType.Void);
 	}
 
 	private void empty(KThread thread, StackFrame frame, int[] args) {
