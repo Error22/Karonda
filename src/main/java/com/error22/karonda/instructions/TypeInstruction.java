@@ -41,7 +41,9 @@ public class TypeInstruction implements IInstruction {
 				stackFrame.push(0, false);
 				return;
 			case CheckCast:
-				throw new NotImplementedException();
+				// TODO: Check against spec
+				stackFrame.push(ref, true);
+				return;
 			default:
 				throw new IllegalArgumentException("Unknown operation " + op);
 			}
