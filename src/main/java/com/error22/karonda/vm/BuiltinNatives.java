@@ -2,6 +2,7 @@ package com.error22.karonda.vm;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
+import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
@@ -26,6 +27,7 @@ public class BuiltinNatives {
 		loadSunVM();
 		loadThrowable();
 		loadFileDescriptor();
+		loadUnsafe();
 	}
 
 	public void loadPrimitives() {
@@ -78,6 +80,12 @@ public class BuiltinNatives {
 
 	public void loadFileDescriptor() {
 		manager.addUnboundHook(this::empty, "initIDs", PrimitiveType.Void);
+	}
+
+	public void loadUnsafe() {
+		manager.addUnboundHook(this::arrayBaseOffset, "arrayBaseOffset", PrimitiveType.Int, ObjectType.CLASS_TYPE);
+		manager.addUnboundHook(this::arrayIndexScale, "arrayIndexScale", PrimitiveType.Int, ObjectType.CLASS_TYPE);
+		manager.addUnboundHook(this::addressSize, "addressSize", PrimitiveType.Int);
 	}
 
 	private void empty(KThread thread, StackFrame frame, int[] args) {
@@ -163,6 +171,19 @@ public class BuiltinNatives {
 
 		int type = pool.getRuntimeClass(classPool, object.getType(), frame.getMethod().getKClass());
 		frame.exit(new int[] { type }, true);
+	}
+
+	private void arrayBaseOffset(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[1], false);
+	}
+
+	private void arrayIndexScale(KThread thread, StackFrame frame, int[] args) {
+		ArrayType arrayType = (ArrayType) thread.getInstancePool().getTypeFromRuntimeClass(args[1]);
+		frame.exit(new int[] { arrayType.getType().getSize() * 4 }, false);
+	}
+
+	private void addressSize(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { 4 }, false);
 	}
 
 	private static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");

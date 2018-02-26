@@ -119,6 +119,12 @@ public class InstancePool {
 		return id;
 	}
 
+	public IType getTypeFromRuntimeClass(int ref) {
+		if (!runtimeClasses.inverse().containsKey(ref))
+			throw new IllegalArgumentException("Invlaid ref " + ref);
+		return runtimeClasses.inverse().get(ref).getValue0();
+	}
+
 	public int garbageCollect(List<KThread> threads) {
 		BitSet foundMap = new BitSet();
 		foundMap.set(0);
