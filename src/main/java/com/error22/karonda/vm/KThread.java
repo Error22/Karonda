@@ -17,6 +17,7 @@ public class KThread {
 	private NativeManager nativeManager;
 	private Stack<StackFrame> frames;
 	private Int2IntMap lockCounts;
+	private int threadObjRef;
 
 	public KThread(ThreadManager threadManager, ClassPool classPool, InstancePool instancePool,
 			NativeManager nativeManager) {
@@ -128,6 +129,14 @@ public class KThread {
 
 	public NativeManager getNativeManager() {
 		return nativeManager;
+	}
+
+	public void setThreadObjRef(int threadObjRef) {
+		this.threadObjRef = threadObjRef;
+	}
+
+	public int getThreadObjRef() {
+		return threadObjRef;
 	}
 
 }

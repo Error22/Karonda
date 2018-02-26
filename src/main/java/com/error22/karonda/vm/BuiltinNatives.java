@@ -33,6 +33,7 @@ public class BuiltinNatives {
 	public void loadAll() {
 		loadPrimitives();
 		loadSystem();
+		loadThread();
 		loadObject();
 		loadSunVM();
 		loadThrowable();
@@ -55,6 +56,10 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::nanoTime, "nanoTime", PrimitiveType.Long);
 		manager.addUnboundHook(this::currentTimeMillis, "currentTimeMillis", PrimitiveType.Long);
 		manager.addUnboundHook(this::identityHashCode, "identityHashCode", PrimitiveType.Int, OBJECT_TYPE);
+	}
+
+	public void loadThread() {
+		manager.addUnboundHook(this::currentThread, "currentThread", ObjectType.THREAD_TYPE);
 	}
 
 	public void loadObject() {
@@ -158,6 +163,10 @@ public class BuiltinNatives {
 
 	private void identityHashCode(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { args[0] }, true);
+	}
+
+	private void currentThread(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { thread.getThreadObjRef() }, true);
 	}
 
 	private void returnArgsNonObject(KThread thread, StackFrame frame, int[] args) {
