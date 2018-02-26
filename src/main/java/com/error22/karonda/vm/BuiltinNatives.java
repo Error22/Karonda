@@ -6,7 +6,9 @@ import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.IType;
+import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
+import com.error22.karonda.ir.MethodSignature;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 
@@ -66,6 +68,8 @@ public class BuiltinNatives {
 	public void loadSecurity() {
 		manager.addUnboundHook(this::returnNull, "getStackAccessControlContext",
 				new ObjectType("java/security/AccessControlContext"));
+		manager.addUnboundHook(this::doPrivileged, "doPrivileged", ObjectType.OBJECT_TYPE,
+				new ObjectType("java/security/PrivilegedAction"));
 	}
 
 	public void loadObject() {
@@ -159,6 +163,22 @@ public class BuiltinNatives {
 		frame.exit(new int[] { thread.getThreadObjRef() }, true);
 	}
 
+	private void doPrivileged(KThread thread, StackFrame frame, int[] args) {
+		if (thread.getFrames().pop() != frame) {
+			throw new IllegalStateException("Unexpected frame");
+		}
+
+		InstancePool instancePool = thread.getInstancePool();
+		int oid = args[0];
+		if (oid == 0)
+			throw new NotImplementedException("Null object supported not implemented");
+		ObjectInstance instance = instancePool.getObject(oid);
+
+		KClass targetClass = instance.getKClass();
+		KMethod resolved = targetClass.findMethod(PRIVILEGED_ACTION_RUN_METHOD, true);
+		thread.initAndCall(resolved, false, new int[] { args[0] }, new boolean[] { true });
+	}
+
 	private void returnArgsNonObject(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(args, false);
 	}
@@ -208,4 +228,6 @@ public class BuiltinNatives {
 	private static final ObjectType CLASS_TYPE = new ObjectType("java/lang/Class");
 	private static final ObjectType STRING_TYPE = new ObjectType("java/lang/String");
 	private static final ObjectType THROWABLE_TYPE = new ObjectType("java/lang/Throwable");
+	private static final MethodSignature PRIVILEGED_ACTION_RUN_METHOD = new MethodSignature(
+			"java/security/PrivilegedAction", "run", ObjectType.OBJECT_TYPE);
 }
