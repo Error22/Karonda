@@ -60,6 +60,7 @@ public class BuiltinNatives {
 
 	public void loadThread() {
 		manager.addUnboundHook(this::currentThread, "currentThread", ObjectType.THREAD_TYPE);
+		manager.addUnboundHook(this::empty, "setPriority0", PrimitiveType.Void, PrimitiveType.Int);
 	}
 
 	public void loadObject() {
