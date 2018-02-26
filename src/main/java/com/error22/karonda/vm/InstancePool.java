@@ -134,6 +134,9 @@ public class InstancePool {
 			markObject(foundMap, id);
 		}
 		for (KThread thread : threads) {
+			for (int id : thread.getLocks()) {
+				markObject(foundMap, id);
+			}
 			for (StackFrame frame : thread.getFrames()) {
 				int[] locals = frame.getLocals();
 				boolean[] localsObjectMap = frame.getLocalsObjectMap();

@@ -8,6 +8,7 @@ import com.error22.karonda.ir.PrimitiveType;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 public class KThread {
 	private ThreadManager threadManager;
@@ -107,6 +108,10 @@ public class KThread {
 
 	public boolean isLocked(int id) {
 		return lockCounts.containsKey(id);
+	}
+
+	public IntCollection getLocks() {
+		return lockCounts.values();
 	}
 
 	public ThreadManager getThreadManager() {
