@@ -65,4 +65,6 @@ public class ObjectType implements IType {
 	public static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");
 	public static final ObjectType CLASS_TYPE = new ObjectType("java/lang/Class");
 	public static final ObjectType STRING_TYPE = new ObjectType("java/lang/String");
+	public static final ObjectType THREAD_GROUP_TYPE = new ObjectType("java/lang/ThreadGroup");
+	public static final ObjectType THREAD_TYPE = new ObjectType("java/lang/Thread");
 }
