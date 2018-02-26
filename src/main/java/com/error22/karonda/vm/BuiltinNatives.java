@@ -3,14 +3,17 @@ package com.error22.karonda.vm;
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
 import com.error22.karonda.ir.IType;
+import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 
 public class BuiltinNatives {
 	private NativeManager manager;
+	private KMethod initPropertiesMethod;
 
-	public BuiltinNatives(NativeManager manager) {
+	public BuiltinNatives(NativeManager manager, KMethod initPropertiesMethod) {
 		this.manager = manager;
+		this.initPropertiesMethod = initPropertiesMethod;
 	}
 
 	public void loadAll() {
@@ -40,6 +43,8 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::nanoTime, "nanoTime", PrimitiveType.Long);
 		manager.addUnboundHook(this::currentTimeMillis, "currentTimeMillis", PrimitiveType.Long);
 		manager.addUnboundHook(this::identityHashCode, "identityHashCode", PrimitiveType.Int, OBJECT_TYPE);
+		manager.addUnboundHook(this::initProperties, "initProperties", ObjectType.PROPERTIES_TYPE,
+				ObjectType.PROPERTIES_TYPE);
 	}
 
 	public void loadThread() {
@@ -115,6 +120,11 @@ public class BuiltinNatives {
 
 	private void identityHashCode(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { args[0] }, true);
+	}
+
+	private void initProperties(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { args[0] }, true);
+		thread.callMethod(initPropertiesMethod, new int[] { args[0] }, new boolean[] { true });
 	}
 
 	private void currentThread(KThread thread, StackFrame frame, int[] args) {

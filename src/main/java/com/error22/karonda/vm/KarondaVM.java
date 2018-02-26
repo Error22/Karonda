@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import com.error22.karonda.instructions.FieldInstruction;
-import com.error22.karonda.instructions.FieldInstruction.FieldOperation;
 import com.error22.karonda.instructions.IInstruction;
 import com.error22.karonda.instructions.InvokeInstruction;
 import com.error22.karonda.instructions.InvokeInstruction.InvokeType;
 import com.error22.karonda.instructions.LoadConstantInstruction;
 import com.error22.karonda.instructions.LoadStringInstruction;
+import com.error22.karonda.instructions.LocalInstruction;
+import com.error22.karonda.instructions.LocalInstruction.LocalOperation;
 import com.error22.karonda.instructions.PopInstruction;
 import com.error22.karonda.instructions.PopInstruction.PopMode;
 import com.error22.karonda.instructions.ReturnInstruction;
@@ -29,6 +29,7 @@ public class KarondaVM {
 	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private ThreadManager threadManager;
+	private KClass autoStartClass;
 
 	public KarondaVM(BootstrapClassLoader bootstrapClassLoader) {
 		classPool = new ClassPool(bootstrapClassLoader);
@@ -36,26 +37,17 @@ public class KarondaVM {
 		threadManager = new ThreadManager();
 		nativeManager = new NativeManager();
 
-		BuiltinNatives builtinNatives = new BuiltinNatives(nativeManager);
+		autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, true, null, new String[0]);
+
+		BuiltinNatives builtinNatives = new BuiltinNatives(nativeManager, createInitPropertiesMethod());
 		builtinNatives.loadAll();
 	}
 
-	public void start(MethodSignature mainMethod) {
-		KClass autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, true, null, new String[0]);
-		KMethod initVMMethod = new KMethod(autoStartClass,
+	private KMethod createInitPropertiesMethod() {
+		KMethod initPropertiesMethod = new KMethod(autoStartClass,
 				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), false, false, false);
 
 		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
-		for (String clazz : Arrays.asList("java/lang/System", "java/lang/ThreadGroup", "java/lang/Thread",
-				"sun/misc/VM")) {
-			KMethod method = instancePool.staticInit(classPool.bootstrapResolve(clazz));
-			if (method != null) {
-				MethodSignature signature = method.getSignature();
-				instructions.add(new InvokeInstruction(InvokeType.Static, signature, false));
-			}
-		}
-
-		// Set VM properties
 		try {
 			// Find host VM properties
 			Class<?> clazz = Class.forName("sun.misc.VM");
@@ -67,8 +59,7 @@ public class KarondaVM {
 			MethodSignature setPropertyMethod = new MethodSignature("java/util/Properties", "setProperty",
 					ObjectType.OBJECT_TYPE, ObjectType.STRING_TYPE, ObjectType.STRING_TYPE);
 			for (Entry<Object, Object> e : prop.entrySet()) {
-				instructions.add(new FieldInstruction(FieldOperation.LoadStatic,
-						new FieldSignature("sun/misc/VM", "savedProps", ObjectType.PROPERTIES_TYPE)));
+				instructions.add(new LocalInstruction(LocalOperation.Load, ObjectType.PROPERTIES_TYPE, 0));
 				instructions.add(new LoadStringInstruction((String) e.getKey()));
 				instructions.add(new LoadStringInstruction((String) e.getValue()));
 				instructions.add(new InvokeInstruction(InvokeType.Virtual, setPropertyMethod, false));
@@ -77,6 +68,28 @@ public class KarondaVM {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
+		}
+
+		instructions.add(new ReturnInstruction(PrimitiveType.Void));
+		initPropertiesMethod.setInstructions(instructions.toArray(new IInstruction[instructions.size()]));
+		initPropertiesMethod.setMaxLocals(1);
+		initPropertiesMethod.setMaxStack(3);
+
+		return initPropertiesMethod;
+	}
+
+	public void start(MethodSignature mainMethod) {
+		KMethod initVMMethod = new KMethod(autoStartClass,
+				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), false, false, false);
+
+		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
+		for (String clazz : Arrays.asList("java/lang/System", "java/lang/ThreadGroup", "java/lang/Thread",
+				"sun/misc/VM")) {
+			KMethod method = instancePool.staticInit(classPool.bootstrapResolve(clazz));
+			if (method != null) {
+				MethodSignature signature = method.getSignature();
+				instructions.add(new InvokeInstruction(InvokeType.Static, signature, false));
+			}
 		}
 
 		// Create thread groups
@@ -111,6 +124,10 @@ public class KarondaVM {
 		instructions.add(new LoadStringInstruction("main"));
 		instructions.add(new InvokeInstruction(InvokeType.Special, new MethodSignature(ObjectType.THREAD_TYPE.getName(),
 				"<init>", PrimitiveType.Void, ObjectType.THREAD_GROUP_TYPE, ObjectType.STRING_TYPE), false));
+
+		// Initialise system class
+		instructions.add(new InvokeInstruction(InvokeType.Static,
+				new MethodSignature("java/lang/System", "initializeSystemClass", PrimitiveType.Void), false));
 
 		// Invoke main method
 		instructions.add(new InvokeInstruction(InvokeType.Static, mainMethod, false));
