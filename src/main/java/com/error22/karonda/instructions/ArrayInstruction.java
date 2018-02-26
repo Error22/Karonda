@@ -1,7 +1,6 @@
 package com.error22.karonda.instructions;
 
 import com.error22.karonda.ir.IType;
-import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
 import com.error22.karonda.vm.ObjectInstance;

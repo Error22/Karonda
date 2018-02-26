@@ -8,7 +8,6 @@ import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
-import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
