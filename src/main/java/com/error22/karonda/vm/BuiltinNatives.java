@@ -34,6 +34,7 @@ public class BuiltinNatives {
 		loadPrimitives();
 		loadSystem();
 		loadThread();
+		loadSecurity();
 		loadObject();
 		loadSunVM();
 		loadThrowable();
@@ -61,6 +62,11 @@ public class BuiltinNatives {
 	public void loadThread() {
 		manager.addUnboundHook(this::currentThread, "currentThread", ObjectType.THREAD_TYPE);
 		manager.addUnboundHook(this::empty, "setPriority0", PrimitiveType.Void, PrimitiveType.Int);
+	}
+
+	public void loadSecurity() {
+		manager.addUnboundHook(this::returnNull, "getStackAccessControlContext",
+				new ObjectType("java/security/AccessControlContext"));
 	}
 
 	public void loadObject() {
@@ -172,6 +178,10 @@ public class BuiltinNatives {
 
 	private void returnArgsNonObject(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(args, false);
+	}
+
+	private void returnNull(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[1], true);
 	}
 
 	private void returnFirstArgAsObject(KThread thread, StackFrame frame, int[] args) {
