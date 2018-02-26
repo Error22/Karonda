@@ -19,6 +19,7 @@ public class BuiltinNatives {
 	public void loadAll() {
 		loadPrimitives();
 		loadSystem();
+		loadRuntime();
 		loadThread();
 		loadSecurity();
 		loadObject();
@@ -45,6 +46,10 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::identityHashCode, "identityHashCode", PrimitiveType.Int, OBJECT_TYPE);
 		manager.addUnboundHook(this::initProperties, "initProperties", ObjectType.PROPERTIES_TYPE,
 				ObjectType.PROPERTIES_TYPE);
+	}
+
+	public void loadRuntime() {
+		manager.addUnboundHook(this::maxMemory, "maxMemory", PrimitiveType.Long);
 	}
 
 	public void loadThread() {
@@ -125,6 +130,12 @@ public class BuiltinNatives {
 	private void initProperties(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { args[0] }, true);
 		thread.callMethod(initPropertiesMethod, new int[] { args[0] }, new boolean[] { true });
+	}
+
+	private void maxMemory(KThread thread, StackFrame frame, int[] args) {
+		// TODO: Implement memory manager
+		long lval = Long.MAX_VALUE;
+		frame.exit(new int[] { (int) (lval >> 32), (int) lval }, false);
 	}
 
 	private void currentThread(KThread thread, StackFrame frame, int[] args) {
