@@ -1,7 +1,6 @@
 package com.error22.karonda.ir;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,9 +13,11 @@ public class KClass {
 	private ClassType type;
 	private boolean specialMethodResolve, resolved;
 	private Map<MethodSignature, KMethod> methods;
-	private Map<FieldSignature, KField> fields;
+	private Map<FieldSignature, KField> fieldMap;
+	private List<KField> fields;
 	private KClass superClass;
 	private KClass[] interfaces;
+	private int firstFieldId, lastFieldId;
 
 	public KClass(String name, ClassType type, boolean specialMethodResolve, String superName,
 			String[] interfaceNames) {
@@ -26,7 +27,8 @@ public class KClass {
 		this.superName = superName;
 		this.interfaceNames = interfaceNames;
 		methods = new ConcurrentHashMap<MethodSignature, KMethod>();
-		fields = new ConcurrentHashMap<FieldSignature, KField>();
+		fieldMap = new ConcurrentHashMap<FieldSignature, KField>();
+		fields = new ArrayList<KField>();
 	}
 
 	public void bootstrapResolve(ClassPool pool) {
@@ -39,6 +41,17 @@ public class KClass {
 		interfaces = new KClass[interfaceNames.length];
 		for (int i = 0; i < interfaceNames.length; i++) {
 			interfaces[i] = pool.bootstrapResolve(interfaceNames[i]);
+		}
+
+		firstFieldId = -1;
+		lastFieldId = superClass != null ? superClass.lastFieldId : -1;
+
+		for (KField field : fields) {
+			lastFieldId++;
+			if (firstFieldId == -1) {
+				firstFieldId = lastFieldId;
+			}
+			field.setIndex(lastFieldId);
 		}
 	}
 
@@ -102,7 +115,7 @@ public class KClass {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
 
-		for (KField field : fields.values()) {
+		for (KField field : fieldMap.values()) {
 			if (field.getSignature().matches(signature)) {
 				return field;
 			}
@@ -118,7 +131,7 @@ public class KClass {
 
 		if (superClass != null)
 			superClass.getAllFields(fields);
-		fields.addAll(this.fields.values());
+		fields.addAll(this.fieldMap.values());
 	}
 
 	public boolean shouldSpecialMethodResolve() {
@@ -138,15 +151,15 @@ public class KClass {
 	public void addField(KField field) {
 		if (resolved)
 			throw new IllegalStateException("Class has been resolved");
-		fields.put(field.getSignature(), field);
+		fieldMap.put(field.getSignature(), field);
 	}
 
-	public Collection<KField> getFields() {
-		return fields.values();
+	public List<KField> getFields() {
+		return fields;
 	}
 
 	public KField getField(FieldSignature signature) {
-		return fields.get(signature);
+		return fieldMap.get(signature);
 	}
 
 	public KClass getSuperClass() {
