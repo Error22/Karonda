@@ -11,6 +11,10 @@ public class ThreadManager {
 		threads = new ArrayList<KThread>();
 	}
 
+	public void addThread(KThread thread) {
+		threads.add(thread);
+	}
+
 	public KThread getLockOwner(int id) {
 		for (KThread thread : threads) {
 			if (thread.isLocked(id)) {
@@ -37,4 +41,5 @@ public class ThreadManager {
 	public KThread getMainThread() {
 		return mainThread;
 	}
+
 }

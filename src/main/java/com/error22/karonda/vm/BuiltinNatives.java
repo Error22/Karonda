@@ -64,6 +64,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::currentThread, "currentThread", ObjectType.THREAD_TYPE);
 		manager.addUnboundHook(this::empty, "setPriority0", PrimitiveType.Void, PrimitiveType.Int);
 		manager.addUnboundHook(this::isAlive, "isAlive", PrimitiveType.Boolean);
+		manager.addUnboundHook(this::startThread, "start0", PrimitiveType.Void);
 	}
 
 	public void loadSecurity() {
@@ -173,6 +174,31 @@ public class BuiltinNatives {
 		frame.exit(new int[] { target != null ? 1 : 0 }, false);
 	}
 
+	private void startThread(KThread thread, StackFrame frame, int[] args) {
+		ThreadManager threadManager = thread.getThreadManager();
+		InstancePool instancePool = thread.getInstancePool();
+
+		int oid = args[0];
+		if (oid == 0)
+			throw new NotImplementedException("Null object supported not implemented");
+
+		if (threadManager.getThreadByRef(oid) != null) {
+			throw new IllegalStateException();
+		}
+
+		ObjectInstance instance = instancePool.getObject(oid);
+		KClass targetClass = instance.getKClass();
+		KMethod resolved = targetClass.findMethod(THREAD_RUN_METHOD, true);
+
+		KThread newThread = new KThread(threadManager, thread.getClassPool(), thread.getInstancePool(),
+				thread.getNativeManager());
+		newThread.setThreadObjRef(oid);
+		threadManager.addThread(newThread);
+		newThread.initAndCall(resolved, false, new int[] { args[0] }, new boolean[] { true });
+
+		thread.exitFrame();
+	}
+
 	private void doPrivileged(KThread thread, StackFrame frame, int[] args) {
 		if (thread.getFrames().pop() != frame) {
 			throw new IllegalStateException("Unexpected frame");
@@ -240,4 +266,6 @@ public class BuiltinNatives {
 	private static final ObjectType THROWABLE_TYPE = new ObjectType("java/lang/Throwable");
 	private static final MethodSignature PRIVILEGED_ACTION_RUN_METHOD = new MethodSignature(
 			"java/security/PrivilegedAction", "run", ObjectType.OBJECT_TYPE);
+	private static final MethodSignature THREAD_RUN_METHOD = new MethodSignature("java/lang/Thread", "run",
+			PrimitiveType.Void);
 }
