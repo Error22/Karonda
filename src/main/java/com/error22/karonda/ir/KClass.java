@@ -126,6 +126,8 @@ public class KClass {
 	}
 
 	public void addMethod(KMethod method) {
+		if (resolved)
+			throw new IllegalStateException("Class has been resolved");
 		methods.put(method.getSignature(), method);
 	}
 
@@ -134,6 +136,8 @@ public class KClass {
 	}
 
 	public void addField(KField field) {
+		if (resolved)
+			throw new IllegalStateException("Class has been resolved");
 		fields.put(field.getSignature(), field);
 	}
 
