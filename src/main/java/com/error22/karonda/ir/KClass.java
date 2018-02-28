@@ -1,6 +1,7 @@
 package com.error22.karonda.ir;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -154,8 +155,8 @@ public class KClass {
 		fieldMap.put(field.getSignature(), field);
 	}
 
-	public List<KField> getFields() {
-		return fields;
+	public Collection<KField> getFields() {
+		return fieldMap.values();
 	}
 
 	public KField getField(FieldSignature signature) {
