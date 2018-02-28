@@ -68,4 +68,7 @@ public class ObjectType implements IType {
 	public static final ObjectType THREAD_GROUP_TYPE = new ObjectType("java/lang/ThreadGroup");
 	public static final ObjectType THREAD_TYPE = new ObjectType("java/lang/Thread");
 	public static final ObjectType PROPERTIES_TYPE = new ObjectType("java/util/Properties");
+	public static final ObjectType REFLECT_ACCESSIBLE_OBJECT_TYPE = new ObjectType(
+			"java/lang/reflect/AccessibleObject");
+	public static final ObjectType REFLECT_FIELD_TYPE = new ObjectType("java/lang/reflect/Field");
 }

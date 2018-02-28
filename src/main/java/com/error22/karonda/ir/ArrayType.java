@@ -77,4 +77,5 @@ public class ArrayType implements IType {
 		return "ArrayType [type=" + type + ", dimensions=" + dimensions + "]";
 	}
 
+	public static final ArrayType REFLECT_FIELD_ARRAY = new ArrayType(ObjectType.REFLECT_FIELD_TYPE, 1);
 }

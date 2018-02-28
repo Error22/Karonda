@@ -1,12 +1,16 @@
 package com.error22.karonda.vm;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
 import com.error22.karonda.ir.ArrayType;
+import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
+import com.error22.karonda.ir.KField;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
 import com.error22.karonda.ir.ObjectType;
@@ -28,6 +32,7 @@ public class BuiltinNatives {
 		loadThread();
 		loadSecurity();
 		loadObject();
+		loadClass();
 		loadSunVM();
 		loadThrowable();
 		loadFileDescriptor();
@@ -77,6 +82,11 @@ public class BuiltinNatives {
 	public void loadObject() {
 		manager.addUnboundHook(this::getClass, "getClass", CLASS_TYPE);
 		manager.addUnboundHook(this::returnFirstArgAsObject, "hashCode", PrimitiveType.Int);
+	}
+
+	public void loadClass() {
+		manager.addUnboundHook(this::getDeclaredFields0, "getDeclaredFields0", ArrayType.REFLECT_FIELD_ARRAY,
+				PrimitiveType.Boolean);
 	}
 
 	public void loadSunVM() {
@@ -234,6 +244,69 @@ public class BuiltinNatives {
 
 		int type = pool.getRuntimeClass(classPool, object.getType(), frame.getMethod().getKClass());
 		frame.exit(new int[] { type }, true);
+	}
+
+	private void getDeclaredFields0(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+		KClass currentClass = frame.getMethod().getKClass();
+
+		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
+		List<Integer> ids = new ArrayList<Integer>();
+
+		if (type instanceof PrimitiveType || type instanceof ArrayType) {
+		} else if (type instanceof ObjectType) {
+			KClass clazz = classPool.getClass(((ObjectType) type).getName(), currentClass);
+
+			List<KField> fields = new ArrayList<KField>();
+			clazz.getAllFields(fields);
+
+			// TODO: Add public check using first argument
+			for (KField field : fields) {
+				ids.add(createReflectionField(field, thread, frame));
+			}
+
+		} else {
+			throw new IllegalArgumentException();
+		}
+
+		int ref = instancePool.createArray(classPool, ArrayType.REFLECT_FIELD_ARRAY, ids.size());
+		ObjectInstance inst = instancePool.getObject(ref);
+
+		for (int i = 0; i < ids.size(); i++) {
+			inst.setArrayElement(i, new int[] { ids.get(i) });
+		}
+
+		frame.exit(new int[] { ref }, true);
+	}
+
+	private int createReflectionField(KField field, KThread thread, StackFrame stackFrame) {
+		KClass currentClass = stackFrame.getMethod().getKClass();
+		ClassPool classPool = thread.getClassPool();
+		InstancePool instancePool = thread.getInstancePool();
+		KClass targetClass = classPool.getClass(ObjectType.REFLECT_FIELD_TYPE.getName(), currentClass);
+		int ref = instancePool.createInstance(targetClass, ObjectType.REFLECT_FIELD_TYPE);
+		ObjectInstance instance = instancePool.getObject(ref);
+
+		// Class
+		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "clazz", ObjectType.CLASS_TYPE),
+				new int[] { instancePool.getRuntimeClass(classPool, new ObjectType(field.getSignature().getClazz()),
+						currentClass) });
+		// Slot
+		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "slot", PrimitiveType.Int),
+				new int[] { field.getIndex() });
+		// Name
+		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "name", ObjectType.STRING_TYPE),
+				new int[] { ConversionUtils.convertString(stackFrame, field.getSignature().getName()) });
+		// Type
+		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "type", ObjectType.CLASS_TYPE),
+				new int[] { instancePool.getRuntimeClass(classPool, field.getSignature().getType(), currentClass) });
+		// Override
+		instance.setField(new FieldSignature(ObjectType.REFLECT_ACCESSIBLE_OBJECT_TYPE.getName(), "override",
+				PrimitiveType.Boolean), new int[] { 0 });
+		// TODO: Add modifier, generic signature & annotations
+
+		return ref;
 	}
 
 	private void arrayBaseOffset(KThread thread, StackFrame frame, int[] args) {
