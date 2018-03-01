@@ -21,10 +21,14 @@ import com.error22.karonda.ir.PrimitiveType;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class InstancePool {
+	private ClassPool classPool;
 	private Map<KClass, Boolean> staticInitMap;
 	private Object2ObjectOpenHashMap<FieldSignature, int[]> staticFields;
 	private Int2ObjectOpenHashMap<ObjectInstance> objects;
@@ -32,8 +36,11 @@ public class InstancePool {
 	private int idHint;
 	private BiMap<Pair<IType, Object>, Integer> runtimeClasses;
 	private List<Integer> forceLoaded;
+	private Int2ObjectMap<String> objToStringMap;
+	private Object2IntMap<String> stringToObjMap;
 
-	public InstancePool() {
+	public InstancePool(ClassPool classPool) {
+		this.classPool = classPool;
 		staticInitMap = new ConcurrentHashMap<KClass, Boolean>();
 		staticFields = new Object2ObjectOpenHashMap<FieldSignature, int[]>();
 		objects = new Int2ObjectOpenHashMap<ObjectInstance>();
@@ -42,6 +49,8 @@ public class InstancePool {
 		idHint = 1;
 		forceLoaded = new ArrayList<Integer>();
 		runtimeClasses = HashBiMap.create();
+		objToStringMap = new Int2ObjectOpenHashMap<String>();
+		stringToObjMap = new Object2IntOpenHashMap<String>();
 	}
 
 	public KMethod staticInit(KClass clazz) {
@@ -90,8 +99,57 @@ public class InstancePool {
 		}
 		objects.remove(id);
 		objectIds.clear(id);
-		if (idHint > id)
+		if (idHint > id) {
 			idHint = id;
+		}
+		if (objToStringMap.containsKey(id)) {
+			String value = objToStringMap.remove(id);
+			if (stringToObjMap.getInt(value) == id) {
+				stringToObjMap.removeInt(value);
+			}
+		}
+	}
+
+	public int getStringInstance(String value) {
+		if (stringToObjMap.containsKey(value)) {
+			return stringToObjMap.getInt(value);
+		}
+
+		KClass targetClass = classPool.getClass(ObjectType.STRING_TYPE.getName(), null);
+		int reference = createInstance(targetClass, ObjectType.STRING_TYPE);
+
+		char[] chars = value.toCharArray();
+		int valueRef = createArray(classPool, ArrayType.CHAR_ARRAY, chars.length);
+		ObjectInstance valueInst = getObject(valueRef);
+		for (int i = 0; i < chars.length; i++) {
+			valueInst.setArrayElement(i, new int[] { chars[i] });
+		}
+		getObject(reference).setField(STRING_VALUE_FIELD, new int[] { valueRef });
+
+		stringToObjMap.put(value, reference);
+		objToStringMap.put(reference, value);
+		return reference;
+	}
+
+	public String getStringContent(int obj) {
+		if (objToStringMap.containsKey(obj)) {
+			return objToStringMap.get(obj);
+		}
+
+		ObjectInstance inst = getObject(getObject(obj).getField(STRING_VALUE_FIELD)[0]);
+		int size = inst.getArraySize();
+		char[] chars = new char[size];
+
+		for (int i = 0; i < size; i++) {
+			chars[i] = (char) inst.getArrayElement(i)[0];
+		}
+
+		String value = new String(chars);
+		objToStringMap.put(obj, value);
+		if (!stringToObjMap.containsKey(value)) {
+			stringToObjMap.put(value, obj);
+		}
+		return value;
 	}
 
 	public int createInstance(KClass clazz, ObjectType type) {
@@ -169,8 +227,15 @@ public class InstancePool {
 		int deallocated = objectIds.cardinality();
 		for (int i = objectIds.nextSetBit(0); i >= 0; i = objectIds.nextSetBit(i + 1)) {
 			objects.remove(i);
-			if (idHint > i)
+			if (idHint > i) {
 				idHint = i;
+			}
+			if (objToStringMap.containsKey(i)) {
+				String value = objToStringMap.remove(i);
+				if (stringToObjMap.getInt(value) == i) {
+					stringToObjMap.removeInt(value);
+				}
+			}
 			if (i == Integer.MAX_VALUE) {
 				break;
 			}
@@ -217,4 +282,7 @@ public class InstancePool {
 			throw new IllegalArgumentException("No object with id " + id + " exists");
 		forceLoaded.remove(id);
 	}
+
+	private static final FieldSignature STRING_VALUE_FIELD = new FieldSignature(ObjectType.STRING_TYPE.getName(),
+			"value", ArrayType.CHAR_ARRAY);
 }

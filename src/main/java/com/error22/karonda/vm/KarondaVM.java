@@ -33,7 +33,7 @@ public class KarondaVM {
 
 	public KarondaVM(BootstrapClassLoader bootstrapClassLoader) {
 		classPool = new ClassPool(bootstrapClassLoader);
-		instancePool = new InstancePool();
+		instancePool = new InstancePool(classPool);
 		threadManager = new ThreadManager();
 		nativeManager = new NativeManager();
 

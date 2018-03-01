@@ -64,7 +64,7 @@ public class HandleMethodHook implements IMethodHook {
 				}
 			} else if (type instanceof ObjectType) {
 				if (clazz.equals(String.class)) {
-					values[i] = ConversionUtils.parseString(instancePool, args[argPos]);
+					values[i] = instancePool.getStringContent(args[argPos]);
 				} else {
 					values[i] = instancePool.getObject(args[argPos]);
 				}
@@ -108,7 +108,7 @@ public class HandleMethodHook implements IMethodHook {
 		} else if (returnType instanceof ObjectType) {
 			Class<?> clazz = methodType.returnType();
 			if (clazz.equals(String.class)) {
-				stackFrame.exit(new int[] { ConversionUtils.convertString(stackFrame, (String) result) }, true);
+				stackFrame.exit(new int[] { instancePool.getStringInstance((String) result) }, true);
 			} else {
 				stackFrame.exit(new int[] { ((ObjectInstance) result).getId() }, true);
 			}

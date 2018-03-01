@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Stack;
 
 import com.error22.karonda.NotImplementedException;
-import com.error22.karonda.converter.ConversionUtils;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
@@ -120,7 +119,7 @@ public class BuiltinNatives {
 	}
 
 	private void getPrimitiveClass(KThread thread, StackFrame frame, int[] args) {
-		String name = ConversionUtils.parseString(thread.getInstancePool(), args[0]);
+		String name = thread.getInstancePool().getStringContent(args[0]);
 		IType type;
 		if (name.equals("int")) {
 			type = PrimitiveType.Int;
@@ -297,7 +296,7 @@ public class BuiltinNatives {
 				new int[] { field.getIndex() });
 		// Name
 		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "name", ObjectType.STRING_TYPE),
-				new int[] { ConversionUtils.convertString(stackFrame, field.getSignature().getName()) });
+				new int[] { instancePool.getStringInstance(field.getSignature().getName()) });
 		// Type
 		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "type", ObjectType.CLASS_TYPE),
 				new int[] { instancePool.getRuntimeClass(classPool, field.getSignature().getType(), currentClass) });
