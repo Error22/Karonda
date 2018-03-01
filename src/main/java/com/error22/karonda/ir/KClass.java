@@ -116,7 +116,7 @@ public class KClass {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
 
-		for (KField field : fieldMap.values()) {
+		for (KField field : fields) {
 			if (field.getSignature().matches(signature)) {
 				return field;
 			}
@@ -132,7 +132,7 @@ public class KClass {
 
 		if (superClass != null)
 			superClass.getAllFields(fields);
-		fields.addAll(this.fieldMap.values());
+		fields.addAll(this.fields);
 	}
 
 	public boolean shouldSpecialMethodResolve() {
@@ -153,10 +153,11 @@ public class KClass {
 		if (resolved)
 			throw new IllegalStateException("Class has been resolved");
 		fieldMap.put(field.getSignature(), field);
+		fields.add(field);
 	}
 
 	public Collection<KField> getFields() {
-		return fieldMap.values();
+		return fields;
 	}
 
 	public KField getField(FieldSignature signature) {
