@@ -37,6 +37,7 @@ public class BuiltinNatives {
 		loadFileDescriptor();
 		loadUnsafe();
 		loadReflection();
+		loadString();
 	}
 
 	public void loadPrimitives() {
@@ -108,6 +109,10 @@ public class BuiltinNatives {
 
 	public void loadReflection() {
 		manager.addUnboundHook(this::getCallerClass, "getCallerClass", ObjectType.CLASS_TYPE);
+	}
+
+	public void loadString() {
+		manager.addUnboundHook(this::intern, "intern", ObjectType.STRING_TYPE);
 	}
 
 	private void empty(KThread thread, StackFrame frame, int[] args) {
@@ -330,6 +335,11 @@ public class BuiltinNatives {
 		int type = pool.getRuntimeClass(classPool, new ObjectType(target.getMethod().getKClass().getName()),
 				frame.getMethod().getKClass());
 		frame.exit(new int[] { type }, true);
+	}
+
+	private void intern(KThread thread, StackFrame frame, int[] args) {
+		InstancePool pool = thread.getInstancePool();
+		frame.exit(new int[] { pool.getStringInstance(pool.getStringContent(args[0])) }, true);
 	}
 
 	private static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");
