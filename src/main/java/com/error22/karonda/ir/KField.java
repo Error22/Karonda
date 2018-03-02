@@ -34,4 +34,9 @@ public class KField {
 		this.isStatic = isStatic;
 	}
 
+	@Override
+	public String toString() {
+		return "KField [signature=" + signature + ", isStatic=" + isStatic + ", index=" + index + "]";
+	}
+
 }
