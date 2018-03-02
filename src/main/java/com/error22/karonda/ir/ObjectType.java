@@ -7,6 +7,10 @@ public class ObjectType implements IType {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public int getSize() {
 		return 1;
@@ -29,13 +33,13 @@ public class ObjectType implements IType {
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public String getTypeName() {
+		return name.replaceAll("/", ".");
 	}
 
 	@Override
 	public String getEncodedName() {
-		return "L" + name;
+		return "L" + getTypeName();
 	}
 
 	@Override

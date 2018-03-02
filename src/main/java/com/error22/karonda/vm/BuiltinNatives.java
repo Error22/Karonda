@@ -277,7 +277,7 @@ public class BuiltinNatives {
 	private void getName0(KThread thread, StackFrame frame, int[] args) {
 		InstancePool instancePool = thread.getInstancePool();
 		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
-		frame.exit(new int[] { instancePool.getStringInstance(type.getName()) }, true);
+		frame.exit(new int[] { instancePool.getStringInstance(type.getTypeName()) }, true);
 	}
 
 	private void getDeclaredFields0(KThread thread, StackFrame frame, int[] args) {

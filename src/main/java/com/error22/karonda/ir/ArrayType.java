@@ -37,7 +37,7 @@ public class ArrayType implements IType {
 	}
 
 	@Override
-	public String getName() {
+	public String getTypeName() {
 		String name = "";
 		for (int i = 0; i < dimensions; i++) {
 			name += "[";

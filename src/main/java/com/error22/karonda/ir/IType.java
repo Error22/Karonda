@@ -10,7 +10,7 @@ public interface IType {
 
 	boolean isReference();
 
-	String getName();
+	String getTypeName();
 
 	String getEncodedName();
 

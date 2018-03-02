@@ -72,7 +72,7 @@ public enum PrimitiveType implements IType {
 	}
 
 	@Override
-	public String getName() {
+	public String getTypeName() {
 		switch (this) {
 		case Byte:
 			return "byte";
