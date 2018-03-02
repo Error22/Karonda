@@ -8,6 +8,7 @@ import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
 import com.error22.karonda.instructions.TypeInstruction;
 import com.error22.karonda.ir.ArrayType;
+import com.error22.karonda.ir.ClassType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
@@ -94,6 +95,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::forName0, "forName0", ObjectType.CLASS_TYPE, ObjectType.STRING_TYPE,
 				PrimitiveType.Boolean, ObjectType.CLASS_LOADER_TYPE, ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::isPrimitive, "isPrimitive", PrimitiveType.Boolean);
+		manager.addUnboundHook(this::isInterface, "isInterface", PrimitiveType.Boolean);
 		manager.addUnboundHook(this::isAssignableFrom, "isAssignableFrom", PrimitiveType.Boolean,
 				ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::getDeclaredFields0, "getDeclaredFields0", ArrayType.REFLECT_FIELD_ARRAY,
@@ -340,6 +342,15 @@ public class BuiltinNatives {
 		InstancePool instancePool = thread.getInstancePool();
 		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
 		frame.exit(new int[] { type instanceof PrimitiveType ? 1 : 0 }, false);
+	}
+
+	private void isInterface(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
+		boolean isInterface = type instanceof ObjectType
+				&& thread.getClassPool().getClass(((ObjectType) type).getName(), frame.getMethod().getKClass())
+						.getType() == ClassType.Interface;
+		frame.exit(new int[] { isInterface ? 1 : 0 }, false);
 	}
 
 	private void isAssignableFrom(KThread thread, StackFrame frame, int[] args) {
