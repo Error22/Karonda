@@ -78,8 +78,10 @@ public class TypeInstruction implements IInstruction {
 			KClass targetClass = classPool.getClass(((ObjectType) target).getName(), currentClass);
 
 			switch (typeClass.getType()) {
+			case Abstract:
 			case Class:
 				switch (targetClass.getType()) {
+				case Abstract:
 				case Class:
 					return typeClass.equals(targetClass) || typeClass.isParent(targetClass);
 				case Interface:
@@ -89,6 +91,7 @@ public class TypeInstruction implements IInstruction {
 				}
 			case Interface:
 				switch (targetClass.getType()) {
+				case Abstract:
 				case Class:
 					return target.equals(ObjectType.OBJECT_TYPE);
 				case Interface:
@@ -103,6 +106,7 @@ public class TypeInstruction implements IInstruction {
 			if (target instanceof ObjectType) {
 				KClass targetClass = classPool.getClass(((ObjectType) target).getName(), currentClass);
 				switch (targetClass.getType()) {
+				case Abstract:
 				case Class:
 					return target.equals(ObjectType.OBJECT_TYPE);
 				case Interface:
