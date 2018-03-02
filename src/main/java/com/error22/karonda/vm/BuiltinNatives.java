@@ -89,6 +89,8 @@ public class BuiltinNatives {
 
 	public void loadClass() {
 		manager.addUnboundHook(this::getName0, "getName0", ObjectType.STRING_TYPE);
+		manager.addUnboundHook(this::forName0, "forName0", ObjectType.CLASS_TYPE, ObjectType.STRING_TYPE,
+				PrimitiveType.Boolean, ObjectType.CLASS_LOADER_TYPE, ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::getDeclaredFields0, "getDeclaredFields0", ArrayType.REFLECT_FIELD_ARRAY,
 				PrimitiveType.Boolean);
 	}
@@ -278,6 +280,39 @@ public class BuiltinNatives {
 		InstancePool instancePool = thread.getInstancePool();
 		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
 		frame.exit(new int[] { instancePool.getStringInstance(type.getTypeName()) }, true);
+	}
+
+	private void forName0(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+		KClass currentClass = frame.getMethod().getKClass();
+		String name = instancePool.getStringContent(args[0]);
+		boolean initialize = args[1] != 0;
+		if (args[2] != 0) {
+			throw new NotImplementedException("Classloaders not supported");
+		}
+
+		KClass callerClass = null;
+		if (args[3] != 0) {
+			ObjectType type = (ObjectType) instancePool.getTypeFromRuntimeClass(args[3]);
+			callerClass = classPool.getClass(type.getName(), currentClass);
+		}
+
+		IType target = IType.getType(name);
+		if (target instanceof PrimitiveType) {
+			throw new NotImplementedException();
+		}
+
+		frame.exit(new int[] { instancePool.getRuntimeClass(classPool, target, callerClass) }, true);
+
+		if (initialize) {
+			KClass targetClass = classPool.getClass(target instanceof ObjectType ? ((ObjectType) target).getName()
+					: ((ObjectType) ((ArrayType) target).getType()).getName(), callerClass);
+			KMethod initMethod = instancePool.staticInit(targetClass);
+			if (initMethod != null) {
+				thread.callMethod(initMethod, new int[0], new boolean[0]);
+			}
+		}
 	}
 
 	private void getDeclaredFields0(KThread thread, StackFrame frame, int[] args) {
