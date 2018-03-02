@@ -373,7 +373,11 @@ public class BuiltinNatives {
 		// Override
 		instance.setField(new FieldSignature(ObjectType.REFLECT_ACCESSIBLE_OBJECT_TYPE.getName(), "override",
 				PrimitiveType.Boolean), new int[] { 0 });
-		// TODO: Add modifier, generic signature & annotations
+		// Modifiers
+		instance.setField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "modifiers", PrimitiveType.Int),
+				new int[] { field.getFlags() });
+
+		// TODO: Add generic signature & annotations
 
 		return ref;
 	}

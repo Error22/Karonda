@@ -2,16 +2,22 @@ package com.error22.karonda.ir;
 
 public class KField {
 	private FieldSignature signature;
+	private int flags;
 	private boolean isStatic;
 	private int index;
 
-	public KField(FieldSignature signature, boolean isStatic) {
+	public KField(FieldSignature signature, int flags, boolean isStatic) {
 		this.signature = signature;
+		this.flags = flags;
 		this.isStatic = isStatic;
 	}
 
 	public FieldSignature getSignature() {
 		return signature;
+	}
+
+	public int getFlags() {
+		return flags;
 	}
 
 	public boolean isStatic() {

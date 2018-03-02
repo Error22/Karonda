@@ -69,7 +69,7 @@ public class ClassConverter extends ClassVisitor {
 
 		FieldSignature signature = ConversionUtils.parseFieldSignature(kClass.getName(), name, desc);
 		boolean isStatic = (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
-		KField field = new KField(signature, isStatic);
+		KField field = new KField(signature, access, isStatic);
 		kClass.addField(field);
 		return new FieldConverter(field);
 	}
