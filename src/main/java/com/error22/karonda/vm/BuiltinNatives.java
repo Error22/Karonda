@@ -91,6 +91,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::getName0, "getName0", ObjectType.STRING_TYPE);
 		manager.addUnboundHook(this::forName0, "forName0", ObjectType.CLASS_TYPE, ObjectType.STRING_TYPE,
 				PrimitiveType.Boolean, ObjectType.CLASS_LOADER_TYPE, ObjectType.CLASS_TYPE);
+		manager.addUnboundHook(this::isPrimitive, "isPrimitive", PrimitiveType.Boolean);
 		manager.addUnboundHook(this::getDeclaredFields0, "getDeclaredFields0", ArrayType.REFLECT_FIELD_ARRAY,
 				PrimitiveType.Boolean);
 	}
@@ -313,6 +314,12 @@ public class BuiltinNatives {
 				thread.callMethod(initMethod, new int[0], new boolean[0]);
 			}
 		}
+	}
+
+	private void isPrimitive(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
+		frame.exit(new int[] { type instanceof PrimitiveType ? 1 : 0 }, false);
 	}
 
 	private void getDeclaredFields0(KThread thread, StackFrame frame, int[] args) {
