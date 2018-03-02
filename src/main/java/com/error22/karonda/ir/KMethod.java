@@ -13,6 +13,7 @@ public class KMethod {
 	private int maxStack, maxLocals;
 	private IInstruction[] instructions;
 	private Map<Label, Integer> labelMap;
+	private int index;
 
 	public KMethod(KClass kClass, MethodSignature signature, boolean isAbstract, boolean isSynchronized,
 			boolean isNative) {
@@ -61,6 +62,14 @@ public class KMethod {
 
 	public Map<Label, Integer> getLabelMap() {
 		return labelMap;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public boolean isAbstract() {

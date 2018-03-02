@@ -13,11 +13,13 @@ public class KClass {
 	private String[] interfaceNames;
 	private ClassType type;
 	private boolean specialMethodResolve, resolved;
-	private Map<MethodSignature, KMethod> methods;
+	private Map<MethodSignature, KMethod> methodMap;
+	private List<KMethod> methods;
 	private Map<FieldSignature, KField> fieldMap;
 	private List<KField> fields;
 	private KClass superClass;
 	private KClass[] interfaces;
+	private int firstMethodId, lastMethodId;
 	private int firstFieldId, lastFieldId;
 
 	public KClass(String name, ClassType type, boolean specialMethodResolve, String superName,
@@ -27,7 +29,8 @@ public class KClass {
 		this.specialMethodResolve = specialMethodResolve;
 		this.superName = superName;
 		this.interfaceNames = interfaceNames;
-		methods = new ConcurrentHashMap<MethodSignature, KMethod>();
+		methodMap = new ConcurrentHashMap<MethodSignature, KMethod>();
+		methods = new ArrayList<KMethod>();
 		fieldMap = new ConcurrentHashMap<FieldSignature, KField>();
 		fields = new ArrayList<KField>();
 	}
@@ -53,6 +56,17 @@ public class KClass {
 				firstFieldId = lastFieldId;
 			}
 			field.setIndex(lastFieldId);
+		}
+		
+		firstMethodId = -1;
+		lastMethodId = superClass != null ? superClass.lastMethodId : -1;
+		
+		for (KMethod method : methods) {
+			lastMethodId++;
+			if (firstMethodId == -1) {
+				firstMethodId = lastMethodId;
+			}
+			method.setIndex(lastMethodId);
 		}
 	}
 
@@ -83,7 +97,7 @@ public class KClass {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
 
-		for (KMethod method : methods.values()) {
+		for (KMethod method : methodMap.values()) {
 			if (method.getSignature().matches(signature) & !method.isAbstract()) {
 				return method;
 			}
@@ -142,11 +156,16 @@ public class KClass {
 	public void addMethod(KMethod method) {
 		if (resolved)
 			throw new IllegalStateException("Class has been resolved");
-		methods.put(method.getSignature(), method);
+		methodMap.put(method.getSignature(), method);
+		methods.add(method);
 	}
 
 	public KMethod getMethod(MethodSignature signature) {
-		return methods.get(signature);
+		return methodMap.get(signature);
+	}
+
+	public Collection<KMethod> getMethods() {
+		return methods;
 	}
 
 	public void addField(KField field) {
