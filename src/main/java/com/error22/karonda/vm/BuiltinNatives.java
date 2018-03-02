@@ -108,6 +108,8 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::addressSize, "addressSize", PrimitiveType.Int);
 		manager.addUnboundHook(this::objectFieldOffset, "objectFieldOffset", PrimitiveType.Long,
 				ObjectType.REFLECT_FIELD_TYPE);
+		manager.addUnboundHook(this::compareAndSwapObject, "compareAndSwapObject", PrimitiveType.Boolean,
+				ObjectType.OBJECT_TYPE, PrimitiveType.Long, ObjectType.OBJECT_TYPE, ObjectType.OBJECT_TYPE);
 	}
 
 	public void loadReflection() {
@@ -360,6 +362,40 @@ public class BuiltinNatives {
 		}
 
 		frame.exit(ConversionUtils.convertLong(offset), false);
+	}
+
+	private void compareAndSwapObject(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ObjectInstance objInst = instancePool.getObject(args[1]);
+
+		KClass clazz = objInst.getKClass();
+		List<KField> fields = new ArrayList<KField>();
+		clazz.getAllFields(fields);
+
+		long targetOffset = ConversionUtils.parseLong(args, 2);
+		long offset = 0;
+		KField targetField = null;
+		for (KField field : fields) {
+			if (offset == targetOffset) {
+				targetField = field;
+				break;
+			}
+			offset += field.getSignature().getType().getSize() * 4;
+		}
+
+		if (targetField == null) {
+			throw new RuntimeException("Failed to find field");
+		}
+
+		int current = objInst.getField(targetField.getSignature())[0];
+
+		boolean set = false;
+		if (current == args[4]) {
+			objInst.setField(targetField.getSignature(), new int[] { args[5] });
+			set = true;
+		}
+
+		frame.exit(new int[] { set ? 1 : 0 }, false);
 	}
 
 	private void getCallerClass(KThread thread, StackFrame frame, int[] args) {
