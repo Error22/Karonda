@@ -118,8 +118,14 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::addressSize, "addressSize", PrimitiveType.Int);
 		manager.addUnboundHook(this::objectFieldOffset, "objectFieldOffset", PrimitiveType.Long,
 				ObjectType.REFLECT_FIELD_TYPE);
-		manager.addUnboundHook(this::compareAndSwapObject, "compareAndSwapObject", PrimitiveType.Boolean,
+
+		manager.addUnboundHook(this::compareAndSwap, "compareAndSwapObject", PrimitiveType.Boolean,
 				ObjectType.OBJECT_TYPE, PrimitiveType.Long, ObjectType.OBJECT_TYPE, ObjectType.OBJECT_TYPE);
+		manager.addUnboundHook(this::compareAndSwap, "compareAndSwapInt", PrimitiveType.Boolean, ObjectType.OBJECT_TYPE,
+				PrimitiveType.Long, PrimitiveType.Int, PrimitiveType.Int);
+		manager.addUnboundHook(this::compareAndSwap, "compareAndSwapLong", PrimitiveType.Boolean,
+				ObjectType.OBJECT_TYPE, PrimitiveType.Long, PrimitiveType.Long, PrimitiveType.Long);
+
 		manager.addUnboundHook(this::getNonObject, "getIntVolatile", PrimitiveType.Int, ObjectType.OBJECT_TYPE,
 				PrimitiveType.Long);
 	}
@@ -459,7 +465,7 @@ public class BuiltinNatives {
 		frame.exit(ConversionUtils.convertLong(offset), false);
 	}
 
-	private void compareAndSwapObject(KThread thread, StackFrame frame, int[] args) {
+	private void compareAndSwap(KThread thread, StackFrame frame, int[] args) {
 		InstancePool instancePool = thread.getInstancePool();
 		ObjectInstance objInst = instancePool.getObject(args[1]);
 
@@ -482,11 +488,15 @@ public class BuiltinNatives {
 			throw new RuntimeException("Failed to find field");
 		}
 
-		int current = objInst.getField(targetField.getSignature())[0];
+		int[] current = objInst.getField(targetField.getSignature());
 
 		boolean set = false;
-		if (current == args[4]) {
+		if (current.length == 1 && current[0] == args[4]) {
 			objInst.setField(targetField.getSignature(), new int[] { args[5] });
+			set = true;
+		}
+		if (current.length == 2 && current[0] == args[4] && current[1] == args[5]) {
+			objInst.setField(targetField.getSignature(), new int[] { args[6], args[7] });
 			set = true;
 		}
 
