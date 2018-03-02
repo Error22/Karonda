@@ -78,6 +78,8 @@ public class BuiltinNatives {
 				new ObjectType("java/security/AccessControlContext"));
 		manager.addUnboundHook(this::doPrivileged, "doPrivileged", ObjectType.OBJECT_TYPE,
 				new ObjectType("java/security/PrivilegedAction"));
+		manager.addUnboundHook(this::doPrivilegedException, "doPrivileged", ObjectType.OBJECT_TYPE,
+				new ObjectType("java/security/PrivilegedExceptionAction"));
 	}
 
 	public void loadObject() {
@@ -231,6 +233,22 @@ public class BuiltinNatives {
 
 		KClass targetClass = instance.getKClass();
 		KMethod resolved = targetClass.findMethod(PRIVILEGED_ACTION_RUN_METHOD, true);
+		thread.initAndCall(resolved, false, new int[] { args[0] }, new boolean[] { true });
+	}
+
+	private void doPrivilegedException(KThread thread, StackFrame frame, int[] args) {
+		if (thread.getFrames().pop() != frame) {
+			throw new IllegalStateException("Unexpected frame");
+		}
+
+		InstancePool instancePool = thread.getInstancePool();
+		int oid = args[0];
+		if (oid == 0)
+			throw new NotImplementedException("Null object supported not implemented");
+		ObjectInstance instance = instancePool.getObject(oid);
+
+		KClass targetClass = instance.getKClass();
+		KMethod resolved = targetClass.findMethod(PRIVILEGED_EXCEPTION_ACTION_RUN_METHOD, true);
 		thread.initAndCall(resolved, false, new int[] { args[0] }, new boolean[] { true });
 	}
 
@@ -420,6 +438,8 @@ public class BuiltinNatives {
 	private static final ObjectType THROWABLE_TYPE = new ObjectType("java/lang/Throwable");
 	private static final MethodSignature PRIVILEGED_ACTION_RUN_METHOD = new MethodSignature(
 			"java/security/PrivilegedAction", "run", ObjectType.OBJECT_TYPE);
+	private static final MethodSignature PRIVILEGED_EXCEPTION_ACTION_RUN_METHOD = new MethodSignature(
+			"java/security/PrivilegedExceptionAction", "run", ObjectType.OBJECT_TYPE);
 	private static final MethodSignature THREAD_RUN_METHOD = new MethodSignature("java/lang/Thread", "run",
 			PrimitiveType.Void);
 }
