@@ -72,6 +72,7 @@ public class ObjectType implements IType {
 		return "ObjectType [name=" + name + "]";
 	}
 
+	public static final ObjectType SYSTEM_TYPE = new ObjectType("java/lang/System");
 	public static final ObjectType OBJECT_TYPE = new ObjectType("java/lang/Object");
 	public static final ObjectType CLASS_TYPE = new ObjectType("java/lang/Class");
 	public static final ObjectType STRING_TYPE = new ObjectType("java/lang/String");
@@ -82,4 +83,5 @@ public class ObjectType implements IType {
 			"java/lang/reflect/AccessibleObject");
 	public static final ObjectType REFLECT_FIELD_TYPE = new ObjectType("java/lang/reflect/Field");
 	public static final ObjectType CLASS_LOADER_TYPE = new ObjectType("java/lang/ClassLoader");
+	public static final ObjectType INPUT_STREAM_TYPE = new ObjectType("java/io/InputStream");
 }

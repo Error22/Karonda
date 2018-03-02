@@ -61,6 +61,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::returnFirstArgAsObject, "identityHashCode", PrimitiveType.Int, OBJECT_TYPE);
 		manager.addUnboundHook(this::initProperties, "initProperties", ObjectType.PROPERTIES_TYPE,
 				ObjectType.PROPERTIES_TYPE);
+		manager.addUnboundHook(this::setIn0, "setIn0", PrimitiveType.Void, ObjectType.INPUT_STREAM_TYPE);
 	}
 
 	public void loadRuntime() {
@@ -181,6 +182,14 @@ public class BuiltinNatives {
 	private void initProperties(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { args[0] }, true);
 		thread.callMethod(initPropertiesMethod, new int[] { args[0] }, new boolean[] { true });
+	}
+
+	private void setIn0(KThread thread, StackFrame frame, int[] args) {
+		thread.getInstancePool().setStaticField(
+				thread.getClassPool().getClass(ObjectType.SYSTEM_TYPE.getName(), frame.getMethod().getKClass()),
+				new FieldSignature(ObjectType.SYSTEM_TYPE.getName(), "in", ObjectType.INPUT_STREAM_TYPE),
+				new int[] { args[0] });
+		frame.exit();
 	}
 
 	private void maxMemory(KThread thread, StackFrame frame, int[] args) {
