@@ -120,6 +120,8 @@ public class BuiltinNatives {
 				ObjectType.REFLECT_FIELD_TYPE);
 		manager.addUnboundHook(this::compareAndSwapObject, "compareAndSwapObject", PrimitiveType.Boolean,
 				ObjectType.OBJECT_TYPE, PrimitiveType.Long, ObjectType.OBJECT_TYPE, ObjectType.OBJECT_TYPE);
+		manager.addUnboundHook(this::getNonObject, "getIntVolatile", PrimitiveType.Int, ObjectType.OBJECT_TYPE,
+				PrimitiveType.Long);
 	}
 
 	public void loadReflection() {
@@ -489,6 +491,32 @@ public class BuiltinNatives {
 		}
 
 		frame.exit(new int[] { set ? 1 : 0 }, false);
+	}
+
+	private void getNonObject(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ObjectInstance objInst = instancePool.getObject(args[1]);
+
+		KClass clazz = objInst.getKClass();
+		List<KField> fields = new ArrayList<KField>();
+		clazz.getAllFields(fields);
+
+		long targetOffset = ConversionUtils.parseLong(args, 2);
+		long offset = 0;
+		KField targetField = null;
+		for (KField field : fields) {
+			if (offset == targetOffset) {
+				targetField = field;
+				break;
+			}
+			offset += field.getSignature().getType().getSize() * 4;
+		}
+
+		if (targetField == null) {
+			throw new RuntimeException("Failed to find field");
+		}
+
+		frame.exit(objInst.getField(targetField.getSignature()), false);
 	}
 
 	private void getCallerClass(KThread thread, StackFrame frame, int[] args) {
