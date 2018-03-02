@@ -14,14 +14,16 @@ public class KMethod {
 	private IInstruction[] instructions;
 	private Map<Label, Integer> labelMap;
 	private int index;
+	private int flags;
 
-	public KMethod(KClass kClass, MethodSignature signature, boolean isAbstract, boolean isSynchronized,
+	public KMethod(KClass kClass, MethodSignature signature, int flags, boolean isAbstract, boolean isSynchronized,
 			boolean isNative) {
 		this.kClass = kClass;
 		this.signature = signature;
 		this.isAbstract = isAbstract;
 		this.isSynchronized = isSynchronized;
 		this.isNative = isNative;
+		this.flags = flags;
 	}
 
 	public KClass getKClass() {
@@ -70,6 +72,10 @@ public class KMethod {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public int getFlags() {
+		return flags;
 	}
 
 	public boolean isAbstract() {
