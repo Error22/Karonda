@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 import com.error22.karonda.NotImplementedException;
+import com.error22.karonda.converter.ConversionUtils;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
@@ -105,6 +106,8 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::arrayBaseOffset, "arrayBaseOffset", PrimitiveType.Int, ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::arrayIndexScale, "arrayIndexScale", PrimitiveType.Int, ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::addressSize, "addressSize", PrimitiveType.Int);
+		manager.addUnboundHook(this::objectFieldOffset, "objectFieldOffset", PrimitiveType.Long,
+				ObjectType.REFLECT_FIELD_TYPE);
 	}
 
 	public void loadReflection() {
@@ -324,6 +327,39 @@ public class BuiltinNatives {
 
 	private void addressSize(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { 4 }, false);
+	}
+
+	private void objectFieldOffset(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+		ObjectInstance fieldInst = instancePool.getObject(args[1]);
+
+		int classRef = fieldInst.getField(
+				new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "clazz", ObjectType.CLASS_TYPE))[0];
+		ObjectType type = (ObjectType) instancePool.getTypeFromRuntimeClass(classRef);
+		KClass clazz = classPool.getClass(type.getName(), frame.getMethod().getKClass());
+
+		int slot = fieldInst
+				.getField(new FieldSignature(ObjectType.REFLECT_FIELD_TYPE.getName(), "slot", PrimitiveType.Int))[0];
+
+		List<KField> fields = new ArrayList<KField>();
+		clazz.getAllFields(fields);
+
+		long offset = 0;
+		boolean found = false;
+		for (KField field : fields) {
+			if (field.getIndex() == slot) {
+				found = true;
+				break;
+			}
+			offset += field.getSignature().getType().getSize() * 4;
+		}
+
+		if (!found) {
+			throw new RuntimeException("Failed to find field");
+		}
+
+		frame.exit(ConversionUtils.convertLong(offset), false);
 	}
 
 	private void getCallerClass(KThread thread, StackFrame frame, int[] args) {
