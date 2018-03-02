@@ -50,7 +50,7 @@ public class TypeInstruction implements IInstruction {
 		}
 
 		ObjectInstance object = instancePool.getObject(ref);
-		boolean sameType = isCompatible(classPool, currentClass, object.getType(), type);
+		boolean sameType = areCompatible(classPool, currentClass, object.getType(), type);
 
 		switch (op) {
 		case InstanceOf:
@@ -68,7 +68,7 @@ public class TypeInstruction implements IInstruction {
 		}
 	}
 
-	public boolean isCompatible(ClassPool classPool, KClass currentClass, IType type, IType target) {
+	public static boolean areCompatible(ClassPool classPool, KClass currentClass, IType type, IType target) {
 		if (type instanceof ObjectType) {
 			if (!(target instanceof ObjectType)) {
 				return false;
@@ -123,7 +123,7 @@ public class TypeInstruction implements IInstruction {
 				}
 
 				if (currentArray.getType() instanceof ObjectType && targetArray.getType() instanceof ObjectType) {
-					return isCompatible(classPool, currentClass, currentArray.getType(), targetArray.getType());
+					return areCompatible(classPool, currentClass, currentArray.getType(), targetArray.getType());
 				}
 				return false;
 			} else {

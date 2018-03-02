@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.converter.ConversionUtils;
+import com.error22.karonda.instructions.TypeInstruction;
 import com.error22.karonda.ir.ArrayType;
 import com.error22.karonda.ir.FieldSignature;
 import com.error22.karonda.ir.IType;
@@ -92,6 +93,8 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::forName0, "forName0", ObjectType.CLASS_TYPE, ObjectType.STRING_TYPE,
 				PrimitiveType.Boolean, ObjectType.CLASS_LOADER_TYPE, ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::isPrimitive, "isPrimitive", PrimitiveType.Boolean);
+		manager.addUnboundHook(this::isAssignableFrom, "isAssignableFrom", PrimitiveType.Boolean,
+				ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::getDeclaredFields0, "getDeclaredFields0", ArrayType.REFLECT_FIELD_ARRAY,
 				PrimitiveType.Boolean);
 	}
@@ -320,6 +323,16 @@ public class BuiltinNatives {
 		InstancePool instancePool = thread.getInstancePool();
 		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
 		frame.exit(new int[] { type instanceof PrimitiveType ? 1 : 0 }, false);
+	}
+
+	private void isAssignableFrom(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
+		IType other = instancePool.getTypeFromRuntimeClass(args[1]);
+		frame.exit(new int[] {
+				TypeInstruction.areCompatible(thread.getClassPool(), frame.getMethod().getKClass(), other, type) ? 1
+						: 0 },
+				false);
 	}
 
 	private void getDeclaredFields0(KThread thread, StackFrame frame, int[] args) {
