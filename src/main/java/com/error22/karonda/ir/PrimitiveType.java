@@ -65,10 +65,58 @@ public enum PrimitiveType implements IType {
 			throw new NotImplementedException();
 		}
 	}
-	
+
 	@Override
 	public boolean isReference() {
 		return false;
+	}
+
+	@Override
+	public String getName() {
+		switch (this) {
+		case Byte:
+			return "byte";
+		case Boolean:
+			return "boolean";
+		case Char:
+			return "char";
+		case Short:
+			return "short";
+		case Int:
+			return "int";
+		case Float:
+			return "float";
+		case Long:
+			return "long";
+		case Double:
+			return "double";
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+
+	@Override
+	public String getEncodedName() {
+		switch (this) {
+		case Byte:
+			return "B";
+		case Boolean:
+			return "Z";
+		case Char:
+			return "C";
+		case Short:
+			return "S";
+		case Int:
+			return "I";
+		case Float:
+			return "F";
+		case Long:
+			return "J";
+		case Double:
+			return "D";
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 }

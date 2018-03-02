@@ -37,6 +37,21 @@ public class ArrayType implements IType {
 	}
 
 	@Override
+	public String getName() {
+		String name = "";
+		for (int i = 0; i < dimensions; i++) {
+			name += "[";
+		}
+		name += type.getEncodedName();
+		return name;
+	}
+
+	@Override
+	public String getEncodedName() {
+		throw new IllegalStateException("Unsupported operation");
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

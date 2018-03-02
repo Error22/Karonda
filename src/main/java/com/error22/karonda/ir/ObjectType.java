@@ -7,10 +7,6 @@ public class ObjectType implements IType {
 		this.name = name;
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	@Override
 	public int getSize() {
 		return 1;
@@ -30,6 +26,16 @@ public class ObjectType implements IType {
 	@Override
 	public boolean isReference() {
 		return true;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getEncodedName() {
+		return "L" + name;
 	}
 
 	@Override
