@@ -29,16 +29,16 @@ public class LocalInstruction implements IInstruction {
 		switch (operation) {
 		case Load:
 			for (int i = 0; i < type.getSize(); i++) {
-				stack[pointer + i] = locals[index + i];
-				stackObjectMap[pointer + i] = localsObjectMap[index + i];
+				stack[pointer + type.getSize() - 1 - i] = locals[index + i];
+				stackObjectMap[pointer + type.getSize() - 1 - i] = localsObjectMap[index + i];
 			}
 			pointer += type.getSize();
 			break;
 		case Store:
 			pointer -= type.getSize();
 			for (int i = 0; i < type.getSize(); i++) {
-				locals[index + i] = stack[pointer + i];
-				localsObjectMap[index + i] = stackObjectMap[pointer + i];
+				locals[index + type.getSize() - 1 - i] = stack[pointer + i];
+				localsObjectMap[index + type.getSize() - 1 - i] = stackObjectMap[pointer + i];
 			}
 			break;
 		default:
