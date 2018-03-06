@@ -45,7 +45,7 @@ public class KarondaVM {
 
 	private KMethod createInitPropertiesMethod() {
 		KMethod initPropertiesMethod = new KMethod(autoStartClass,
-				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), false, false, false);
+				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), 0, false, false, false);
 
 		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
 		try {
@@ -80,7 +80,7 @@ public class KarondaVM {
 
 	public void start(MethodSignature mainMethod) {
 		KMethod initVMMethod = new KMethod(autoStartClass,
-				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), false, false, false);
+				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), 0, false, false, false);
 
 		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
 		for (String clazz : Arrays.asList("java/lang/System", "java/lang/ThreadGroup", "java/lang/Thread",
