@@ -100,6 +100,8 @@ public class BuiltinNatives {
 				ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::getDeclaredFields0, "getDeclaredFields0", ArrayType.REFLECT_FIELD_ARRAY,
 				PrimitiveType.Boolean);
+		manager.addUnboundHook(this::getDeclaredConstructors0, "getDeclaredConstructors0",
+				ArrayType.REFLECT_CONSTRUCTOR_ARRAY, PrimitiveType.Boolean);
 	}
 
 	public void loadSunVM() {
@@ -426,6 +428,80 @@ public class BuiltinNatives {
 				new int[] { field.getFlags() });
 
 		// TODO: Add generic signature & annotations
+
+		return ref;
+	}
+
+	private void getDeclaredConstructors0(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+		KClass currentClass = frame.getMethod().getKClass();
+
+		IType type = instancePool.getTypeFromRuntimeClass(args[0]);
+		List<Integer> ids = new ArrayList<Integer>();
+
+		if (type instanceof PrimitiveType || type instanceof ArrayType) {
+		} else if (type instanceof ObjectType) {
+			KClass clazz = classPool.getClass(((ObjectType) type).getName(), currentClass);
+
+			// TODO: Add public check using first argument
+			for (KMethod method : clazz.getMethods()) {
+				if (method.getSignature().getName().equals("<init>")) {
+					ids.add(createReflectionContructor(method, thread, frame));
+				}
+			}
+
+		} else {
+			throw new IllegalArgumentException();
+		}
+
+		int ref = instancePool.createArray(classPool, ArrayType.REFLECT_CONSTRUCTOR_ARRAY, ids.size());
+		ObjectInstance inst = instancePool.getObject(ref);
+
+		for (int i = 0; i < ids.size(); i++) {
+			inst.setArrayElement(i, new int[] { ids.get(i) });
+		}
+
+		frame.exit(new int[] { ref }, true);
+	}
+
+	private int createReflectionContructor(KMethod method, KThread thread, StackFrame stackFrame) {
+		KClass currentClass = stackFrame.getMethod().getKClass();
+		ClassPool classPool = thread.getClassPool();
+		InstancePool instancePool = thread.getInstancePool();
+		KClass targetClass = classPool.getClass(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), currentClass);
+		int ref = instancePool.createInstance(targetClass, ObjectType.REFLECT_CONSTRUCTOR_TYPE);
+		ObjectInstance instance = instancePool.getObject(ref);
+
+		// Collect arguments
+		IType[] argList = method.getSignature().getArguments();
+		int paramRef = instancePool.createArray(classPool, ArrayType.CLASS_ARRAY, argList.length);
+		ObjectInstance inst = instancePool.getObject(paramRef);
+
+		for (int i = 0; i < argList.length; i++) {
+			inst.setArrayElement(i, new int[] { instancePool.getRuntimeClass(classPool, argList[i], currentClass) });
+		}
+
+		// Class
+		instance.setField(
+				new FieldSignature(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), "clazz", ObjectType.CLASS_TYPE),
+				new int[] { instancePool.getRuntimeClass(classPool, new ObjectType(method.getSignature().getClazz()),
+						currentClass) });
+		// Slot
+		instance.setField(new FieldSignature(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), "slot", PrimitiveType.Int),
+				new int[] { method.getIndex() });
+		// Parameters
+		instance.setField(new FieldSignature(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), "parameterTypes",
+				ArrayType.CLASS_ARRAY), new int[] { paramRef });
+		// Override
+		instance.setField(new FieldSignature(ObjectType.REFLECT_ACCESSIBLE_OBJECT_TYPE.getName(), "override",
+				PrimitiveType.Boolean), new int[] { 0 });
+		// Modifiers
+		instance.setField(
+				new FieldSignature(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), "modifiers", PrimitiveType.Int),
+				new int[] { method.getFlags() });
+
+		// TODO: Add exceptions, generic signature & annotations
 
 		return ref;
 	}

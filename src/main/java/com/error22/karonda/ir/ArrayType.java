@@ -92,6 +92,8 @@ public class ArrayType implements IType {
 		return "ArrayType [type=" + type + ", dimensions=" + dimensions + "]";
 	}
 
+	public static final ArrayType CLASS_ARRAY = new ArrayType(ObjectType.CLASS_TYPE, 1);
 	public static final ArrayType REFLECT_FIELD_ARRAY = new ArrayType(ObjectType.REFLECT_FIELD_TYPE, 1);
+	public static final ArrayType REFLECT_CONSTRUCTOR_ARRAY = new ArrayType(ObjectType.REFLECT_CONSTRUCTOR_TYPE, 1);
 	public static final ArrayType CHAR_ARRAY = new ArrayType(PrimitiveType.Char, 1);
 }

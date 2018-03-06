@@ -82,6 +82,7 @@ public class ObjectType implements IType {
 	public static final ObjectType REFLECT_ACCESSIBLE_OBJECT_TYPE = new ObjectType(
 			"java/lang/reflect/AccessibleObject");
 	public static final ObjectType REFLECT_FIELD_TYPE = new ObjectType("java/lang/reflect/Field");
+	public static final ObjectType REFLECT_CONSTRUCTOR_TYPE = new ObjectType("java/lang/reflect/Constructor");
 	public static final ObjectType CLASS_LOADER_TYPE = new ObjectType("java/lang/ClassLoader");
 	public static final ObjectType INPUT_STREAM_TYPE = new ObjectType("java/io/InputStream");
 }
