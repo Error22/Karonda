@@ -8,6 +8,7 @@ import com.error22.karonda.ir.IType;
 import com.error22.karonda.ir.KClass;
 import com.error22.karonda.ir.KMethod;
 import com.error22.karonda.ir.MethodSignature;
+import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.vm.ClassPool;
 import com.error22.karonda.vm.InstancePool;
 import com.error22.karonda.vm.KThread;
@@ -63,7 +64,10 @@ public class InvokeInstruction implements IInstruction {
 		ClassPool pool = thread.getClassPool();
 		InstancePool instancePool = thread.getInstancePool();
 
-		KClass signatureClass = pool.getClass(signature.getClazz(), currentClass);
+		// Experimental array method invocation handling
+		KClass signatureClass = signature.getClazz().startsWith("[")
+				? pool.getClass(ObjectType.OBJECT_TYPE.getName(), null)
+				: pool.getClass(signature.getClazz(), currentClass);
 
 		switch (type) {
 		case Static: {
