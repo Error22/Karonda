@@ -141,6 +141,8 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::getClassAccessFlags, "getClassAccessFlags", PrimitiveType.Int,
 				ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::getClassAccessFlags, "getModifiers", PrimitiveType.Int);
+		manager.addUnboundHook(this::newInstance0, "newInstance0", ObjectType.OBJECT_TYPE,
+				ObjectType.REFLECT_CONSTRUCTOR_TYPE, ArrayType.OBJECT_ARRAY);
 	}
 
 	public void loadString() {
@@ -667,6 +669,41 @@ public class BuiltinNatives {
 		KClass clazz = classPool.getClass(type.getName(), frame.getMethod().getKClass());
 
 		frame.exit(new int[] { clazz.getFlags() }, false);
+	}
+
+	private void newInstance0(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+
+		ObjectInstance inst = instancePool.getObject(args[0]);
+		int classRef = inst.getField(
+				new FieldSignature(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), "clazz", ObjectType.CLASS_TYPE))[0];
+		ObjectType type = (ObjectType) instancePool.getTypeFromRuntimeClass(classRef);
+		KClass clazz = classPool.getClass(type.getName(), frame.getMethod().getKClass());
+		int objectRef = instancePool.createInstance(clazz, type);
+
+		int index = inst.getField(
+				new FieldSignature(ObjectType.REFLECT_CONSTRUCTOR_TYPE.getName(), "slot", PrimitiveType.Int))[0];
+		KMethod method = null;
+		for (KMethod meth : clazz.getMethods()) {
+			if (meth.getIndex() == index) {
+				method = meth;
+			}
+		}
+
+		ObjectInstance argArray = instancePool.getObject(args[1]);
+		int[] callArgs = new int[1 + (argArray != null ? argArray.getArraySize() : 0)];
+		boolean[] callArgsObject = new boolean[callArgs.length];
+
+		callArgs[0] = objectRef;
+		callArgsObject[0] = true;
+		for (int i = 1; i < callArgs.length; i++) {
+			callArgs[i] = argArray.getArrayElement(i)[0];
+			callArgsObject[i] = true;
+		}
+
+		frame.exit(new int[] { objectRef }, true);
+		thread.callMethod(method, callArgs, callArgsObject);
 	}
 
 	private void intern(KThread thread, StackFrame frame, int[] args) {
