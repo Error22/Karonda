@@ -167,6 +167,27 @@ public class InstancePool {
 		return id;
 	}
 
+	public int cloneObject(int id) {
+		ObjectInstance object = getObject(id);
+		int newId = allocateObjectId();
+
+		ObjectInstance instance;
+		if (object.isArray()) {
+			instance = new ObjectInstance(object.getKClass(), object.getArrayType(), newId, object.getArraySize());
+			for (int i = 0; i < object.getArraySize(); i++) {
+				instance.setArrayElement(i, object.getArrayElement(i));
+			}
+		} else {
+			instance = new ObjectInstance(newId, object.getKClass(), object.getObjectType());
+			for (Entry<FieldSignature, int[]> field : object.getFields().entrySet()) {
+				instance.setField(field.getKey(), field.getValue());
+			}
+		}
+		objects.put(newId, instance);
+
+		return newId;
+	}
+
 	public int getRuntimeClass(ClassPool pool, IType type, KClass clazz) {
 		Pair<IType, Object> key = new Pair<IType, Object>(type, null);
 		if (runtimeClasses.containsKey(key)) {

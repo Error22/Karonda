@@ -86,6 +86,7 @@ public class BuiltinNatives {
 	}
 
 	public void loadObject() {
+		manager.addUnboundHook(this::_clone, "clone", ObjectType.OBJECT_TYPE);
 		manager.addUnboundHook(this::getClass, "getClass", CLASS_TYPE);
 		manager.addUnboundHook(this::returnFirstArgAsObject, "hashCode", PrimitiveType.Int);
 	}
@@ -290,6 +291,19 @@ public class BuiltinNatives {
 
 	private void returnFirstArgAsObject(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { args[0] }, true);
+	}
+
+	private void _clone(KThread thread, StackFrame frame, int[] args) {
+		InstancePool pool = thread.getInstancePool();
+		ObjectInstance object = pool.getObject(args[0]);
+
+		// TODO: Check if object implements cloneable
+		if (!object.isArray()) {
+			// TODO: throw CloneNotSupportedException
+			throw new NotImplementedException();
+		}
+
+		frame.exit(new int[] { pool.cloneObject(args[0]) }, true);
 	}
 
 	private void getClass(KThread thread, StackFrame frame, int[] args) {
