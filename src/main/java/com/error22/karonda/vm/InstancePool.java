@@ -25,6 +25,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class InstancePool {
@@ -38,6 +39,7 @@ public class InstancePool {
 	private List<Integer> forceLoaded;
 	private Int2ObjectMap<String> objToStringMap;
 	private Object2IntMap<String> stringToObjMap;
+	private Object2ObjectMap<FieldSignature, FieldSignature> staticFieldMapping;
 
 	public InstancePool(ClassPool classPool) {
 		this.classPool = classPool;
@@ -51,6 +53,7 @@ public class InstancePool {
 		runtimeClasses = HashBiMap.create();
 		objToStringMap = new Int2ObjectOpenHashMap<String>();
 		stringToObjMap = new Object2IntOpenHashMap<String>();
+		staticFieldMapping = new Object2ObjectOpenHashMap<FieldSignature, FieldSignature>();
 	}
 
 	public KMethod staticInit(KClass clazz) {
@@ -70,20 +73,27 @@ public class InstancePool {
 		return staticInitMap.containsKey(clazz);
 	}
 
-	public void setStaticField(KClass clazz, FieldSignature field, int[] value) {
+	private FieldSignature resolveStaticField(KClass clazz, FieldSignature field) {
+		if (staticFieldMapping.containsKey(field))
+			return staticFieldMapping.get(field);
 		if (!hasStaticInit(clazz))
 			throw new IllegalStateException("Class has not been staticly initialized");
+		FieldSignature resolvedField = clazz.findField(field).getSignature();
+		staticFieldMapping.put(field, resolvedField);
+		return resolvedField;
+	}
+
+	public void setStaticField(KClass clazz, FieldSignature field, int[] value) {
 		if (value == null)
 			throw new IllegalArgumentException("Null values not accepted");
-		staticFields.put(field, value);
+		staticFields.put(resolveStaticField(clazz, field), value);
 	}
 
 	public int[] getStaticField(KClass clazz, FieldSignature field) {
-		if (!hasStaticInit(clazz))
-			throw new IllegalStateException("Class has not been staticly initialized");
-		if (!staticFields.containsKey(field))
+		FieldSignature resolvedField = resolveStaticField(clazz, field);
+		if (!staticFields.containsKey(resolvedField))
 			throw new IllegalArgumentException("Unknown field");
-		return staticFields.get(field);
+		return staticFields.get(resolvedField);
 	}
 
 	private int allocateObjectId() {
