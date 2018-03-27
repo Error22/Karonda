@@ -92,6 +92,7 @@ public class BuiltinNatives {
 	}
 
 	public void loadClass() {
+		manager.addUnboundHook(this::getSuperclass, "getSuperclass", ObjectType.CLASS_TYPE);
 		manager.addUnboundHook(this::getName0, "getName0", ObjectType.STRING_TYPE);
 		manager.addUnboundHook(this::forName0, "forName0", ObjectType.CLASS_TYPE, ObjectType.STRING_TYPE,
 				PrimitiveType.Boolean, ObjectType.CLASS_LOADER_TYPE, ObjectType.CLASS_TYPE);
@@ -316,6 +317,19 @@ public class BuiltinNatives {
 
 		int type = pool.getRuntimeClass(classPool, object.getType(), frame.getMethod().getKClass());
 		frame.exit(new int[] { type }, true);
+	}
+
+	private void getSuperclass(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+
+		int classRef = args[0];
+		ObjectType type = (ObjectType) instancePool.getTypeFromRuntimeClass(classRef);
+		KClass clazz = classPool.getClass(type.getName(), frame.getMethod().getKClass());
+
+		int typeInst = clazz.getSuperClass() != null ? instancePool.getRuntimeClass(classPool,
+				new ObjectType(clazz.getSuperClass().getName()), frame.getMethod().getKClass()) : 0;
+		frame.exit(new int[] { typeInst }, true);
 	}
 
 	private void getName0(KThread thread, StackFrame frame, int[] args) {
