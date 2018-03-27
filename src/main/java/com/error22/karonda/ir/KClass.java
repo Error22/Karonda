@@ -11,6 +11,7 @@ import com.error22.karonda.vm.ClassPool;
 public class KClass {
 	private String name, superName;
 	private String[] interfaceNames;
+	private int flags;
 	private ClassType type;
 	private boolean specialMethodResolve, resolved;
 	private Map<MethodSignature, KMethod> methodMap;
@@ -22,10 +23,11 @@ public class KClass {
 	private int firstMethodId, lastMethodId;
 	private int firstFieldId, lastFieldId;
 
-	public KClass(String name, ClassType type, boolean specialMethodResolve, String superName,
+	public KClass(String name, ClassType type, int flags, boolean specialMethodResolve, String superName,
 			String[] interfaceNames) {
 		this.name = name;
 		this.type = type;
+		this.flags = flags;
 		this.specialMethodResolve = specialMethodResolve;
 		this.superName = superName;
 		this.interfaceNames = interfaceNames;
@@ -57,10 +59,10 @@ public class KClass {
 			}
 			field.setIndex(lastFieldId);
 		}
-		
+
 		firstMethodId = -1;
 		lastMethodId = superClass != null ? superClass.lastMethodId : -1;
-		
+
 		for (KMethod method : methods) {
 			lastMethodId++;
 			if (firstMethodId == -1) {
@@ -187,6 +189,10 @@ public class KClass {
 		if (!resolved)
 			throw new IllegalStateException("Class has not been resolved");
 		return superClass;
+	}
+
+	public int getFlags() {
+		return flags;
 	}
 
 	public ClassType getType() {

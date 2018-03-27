@@ -137,6 +137,9 @@ public class BuiltinNatives {
 
 	public void loadReflection() {
 		manager.addUnboundHook(this::getCallerClass, "getCallerClass", ObjectType.CLASS_TYPE);
+		manager.addUnboundHook(this::getClassAccessFlags, "getClassAccessFlags", PrimitiveType.Int,
+				ObjectType.CLASS_TYPE);
+		manager.addUnboundHook(this::getClassAccessFlags, "getModifiers", PrimitiveType.Int);
 	}
 
 	public void loadString() {
@@ -639,6 +642,17 @@ public class BuiltinNatives {
 		int type = pool.getRuntimeClass(classPool, new ObjectType(target.getMethod().getKClass().getName()),
 				frame.getMethod().getKClass());
 		frame.exit(new int[] { type }, true);
+	}
+
+	private void getClassAccessFlags(KThread thread, StackFrame frame, int[] args) {
+		InstancePool instancePool = thread.getInstancePool();
+		ClassPool classPool = thread.getClassPool();
+
+		int classRef = args[0];
+		ObjectType type = (ObjectType) instancePool.getTypeFromRuntimeClass(classRef);
+		KClass clazz = classPool.getClass(type.getName(), frame.getMethod().getKClass());
+
+		frame.exit(new int[] { clazz.getFlags() }, false);
 	}
 
 	private void intern(KThread thread, StackFrame frame, int[] args) {

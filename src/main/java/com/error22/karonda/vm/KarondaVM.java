@@ -37,7 +37,7 @@ public class KarondaVM {
 		threadManager = new ThreadManager();
 		nativeManager = new NativeManager();
 
-		autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, true, null, new String[0]);
+		autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, 0, true, null, new String[0]);
 
 		BuiltinNatives builtinNatives = new BuiltinNatives(nativeManager, createInitPropertiesMethod());
 		builtinNatives.loadAll();
