@@ -15,6 +15,16 @@ public class MemoryBlock {
 		return address >= startAddress && address < startAddress + size;
 	}
 
+	public void store(long address, byte[] data) {
+		if (address < startAddress || address + data.length > startAddress + size) {
+			throw new IllegalArgumentException();
+		}
+		long base = address - startAddress;
+		for (int i = 0; i < data.length; i++) {
+			this.data[(int) (base + i)] = data[i];
+		}
+	}
+
 	public long getStartAddress() {
 		return startAddress;
 	}
@@ -26,5 +36,4 @@ public class MemoryBlock {
 	public byte[] getData() {
 		return data;
 	}
-
 }

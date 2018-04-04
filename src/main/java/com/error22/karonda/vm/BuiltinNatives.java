@@ -136,6 +136,7 @@ public class BuiltinNatives {
 				PrimitiveType.Long);
 
 		manager.addUnboundHook(this::allocateMemory, "allocateMemory", PrimitiveType.Long, PrimitiveType.Long);
+		manager.addUnboundHook(this::putLongAtAddress, "putLong", PrimitiveType.Void, PrimitiveType.Long,PrimitiveType.Long);
 	}
 
 	public void loadReflection() {
@@ -654,6 +655,11 @@ public class BuiltinNatives {
 	private void allocateMemory(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(ConversionUtils.convertLong(thread.getMemoryManager().allocate(ConversionUtils.parseLong(args, 1))),
 				false);
+	}
+	
+	private void putLongAtAddress(KThread thread, StackFrame frame, int[] args) {
+		thread.getMemoryManager().store(ConversionUtils.parseLong(args, 1), new int[] {args[3], args[4]});
+		frame.exit();
 	}
 
 	private void getCallerClass(KThread thread, StackFrame frame, int[] args) {
