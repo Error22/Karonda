@@ -134,6 +134,8 @@ public class BuiltinNatives {
 
 		manager.addUnboundHook(this::getNonObject, "getIntVolatile", PrimitiveType.Int, ObjectType.OBJECT_TYPE,
 				PrimitiveType.Long);
+
+		manager.addUnboundHook(this::allocateMemory, "allocateMemory", PrimitiveType.Long, PrimitiveType.Long);
 	}
 
 	public void loadReflection() {
@@ -647,6 +649,11 @@ public class BuiltinNatives {
 		}
 
 		frame.exit(objInst.getField(targetField.getSignature()), false);
+	}
+
+	private void allocateMemory(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(ConversionUtils.convertLong(thread.getMemoryManager().allocate(ConversionUtils.parseLong(args, 0))),
+				false);
 	}
 
 	private void getCallerClass(KThread thread, StackFrame frame, int[] args) {
