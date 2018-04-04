@@ -26,6 +26,7 @@ import com.error22.karonda.ir.PrimitiveType;
 
 public class KarondaVM {
 	private ClassPool classPool;
+	private MemoryManager memoryManager;
 	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private ThreadManager threadManager;
@@ -33,6 +34,7 @@ public class KarondaVM {
 
 	public KarondaVM(BootstrapClassLoader bootstrapClassLoader) {
 		classPool = new ClassPool(bootstrapClassLoader);
+		memoryManager = new MemoryManager();
 		instancePool = new InstancePool(classPool);
 		threadManager = new ThreadManager();
 		nativeManager = new NativeManager();
@@ -142,7 +144,7 @@ public class KarondaVM {
 		initVMMethod.setMaxLocals(0);
 		initVMMethod.setMaxStack(3);
 
-		KThread mainThread = new KThread(threadManager, classPool, instancePool, nativeManager);
+		KThread mainThread = new KThread(threadManager, classPool, memoryManager, instancePool, nativeManager);
 		mainThread.setThreadObjRef(mainThreadRef);
 		threadManager.setMainThread(mainThread);
 		mainThread.initAndCall(initVMMethod, false, new int[0], new boolean[0]);

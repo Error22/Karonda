@@ -13,16 +13,18 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 public class KThread {
 	private ThreadManager threadManager;
 	private ClassPool classPool;
+	private MemoryManager memoryManager;
 	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private Stack<StackFrame> frames;
 	private Int2IntMap lockCounts;
 	private int threadObjRef;
 
-	public KThread(ThreadManager threadManager, ClassPool classPool, InstancePool instancePool,
-			NativeManager nativeManager) {
+	public KThread(ThreadManager threadManager, ClassPool classPool, MemoryManager memoryManager,
+			InstancePool instancePool, NativeManager nativeManager) {
 		this.threadManager = threadManager;
 		this.classPool = classPool;
+		this.memoryManager = memoryManager;
 		this.instancePool = instancePool;
 		this.nativeManager = nativeManager;
 		frames = new Stack<StackFrame>();
@@ -121,6 +123,10 @@ public class KThread {
 
 	public ClassPool getClassPool() {
 		return classPool;
+	}
+
+	public MemoryManager getMemoryManager() {
+		return memoryManager;
 	}
 
 	public InstancePool getInstancePool() {

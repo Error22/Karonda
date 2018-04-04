@@ -246,8 +246,8 @@ public class BuiltinNatives {
 		KClass targetClass = instance.getKClass();
 		KMethod resolved = targetClass.findMethod(THREAD_RUN_METHOD, true);
 
-		KThread newThread = new KThread(threadManager, thread.getClassPool(), thread.getInstancePool(),
-				thread.getNativeManager());
+		KThread newThread = new KThread(threadManager, thread.getClassPool(), thread.getMemoryManager(),
+				thread.getInstancePool(), thread.getNativeManager());
 		newThread.setThreadObjRef(oid);
 		threadManager.addThread(newThread);
 		newThread.initAndCall(resolved, false, new int[] { args[0] }, new boolean[] { true });
