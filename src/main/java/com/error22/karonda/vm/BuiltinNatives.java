@@ -652,7 +652,7 @@ public class BuiltinNatives {
 	}
 
 	private void allocateMemory(KThread thread, StackFrame frame, int[] args) {
-		frame.exit(ConversionUtils.convertLong(thread.getMemoryManager().allocate(ConversionUtils.parseLong(args, 0))),
+		frame.exit(ConversionUtils.convertLong(thread.getMemoryManager().allocate(ConversionUtils.parseLong(args, 1))),
 				false);
 	}
 
