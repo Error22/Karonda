@@ -25,6 +25,15 @@ public class MemoryBlock {
 		}
 	}
 
+	public byte[] load(long address, int size) {
+		if (address < startAddress || address + size > startAddress + this.size) {
+			throw new IllegalArgumentException();
+		}
+		byte[] fetched = new byte[size];
+		System.arraycopy(data, (int) (address - startAddress), fetched, 0, size);
+		return fetched;
+	}
+
 	public long getStartAddress() {
 		return startAddress;
 	}

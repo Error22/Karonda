@@ -53,4 +53,13 @@ public class MemoryManager {
 		}
 	}
 
+	public byte[] load(long address, int size) {
+		for (MemoryBlock block : blocks) {
+			if (block.isContained(address)) {
+				return block.load(address, size);
+			}
+		}
+		throw new IllegalArgumentException();
+	}
+
 }
