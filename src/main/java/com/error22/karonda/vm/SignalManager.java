@@ -18,4 +18,9 @@ public class SignalManager {
 		return nameMap.containsKey(name) ? nameMap.get(name) : -1;
 	}
 
+	public long registerHandle(int signal, long newHandle) {
+		// TODO: Implement
+		return 1;
+	}
+
 }

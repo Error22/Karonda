@@ -137,6 +137,8 @@ public class BuiltinNatives {
 			manager.addUnboundHandleHook(lookup
 					.findVirtual(SignalManager.class, "findSignal", MethodType.methodType(int.class, String.class))
 					.bindTo(signalManager), "findSignal");
+			manager.addUnboundHandleHook(lookup.findVirtual(SignalManager.class, "registerHandle",
+					MethodType.methodType(long.class, int.class, long.class)).bindTo(signalManager), "handle0");
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
