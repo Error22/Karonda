@@ -1,6 +1,7 @@
 package com.error22.karonda.vm;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class MemoryManager {
@@ -17,6 +18,17 @@ public class MemoryManager {
 		lastAddress += size;
 		blocks.add(new MemoryBlock(startAddress, size));
 		return startAddress;
+	}
+
+	public void free(long address) {
+		Iterator<MemoryBlock> iterator = blocks.iterator();
+		while (iterator.hasNext()) {
+			if (iterator.next().getStartAddress() == address) {
+				iterator.remove();
+				return;
+			}
+		}
+		throw new IllegalArgumentException();
 	}
 
 	public void store(long address, long value) {
