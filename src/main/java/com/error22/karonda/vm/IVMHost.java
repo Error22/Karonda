@@ -8,4 +8,6 @@ public interface IVMHost {
 
 	boolean loadLibrary(String name, boolean builtIn);
 
+	void writeData(int fd, byte[] data, boolean append);
+
 }

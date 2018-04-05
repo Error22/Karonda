@@ -44,7 +44,7 @@ public class BuiltinNatives {
 		loadClass();
 		loadSunVM();
 		loadThrowable();
-		loadFileDescriptor();
+		loadIO();
 		loadUnsafe();
 		loadReflection();
 		loadString();
@@ -149,8 +149,10 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::returnFirstArgAsObject, "fillInStackTrace", THROWABLE_TYPE, PrimitiveType.Int);
 	}
 
-	public void loadFileDescriptor() {
+	public void loadIO() {
 		manager.addUnboundHook(this::empty, "initIDs", PrimitiveType.Void);
+		manager.addUnboundHook(this::writeBytes, "writeBytes", PrimitiveType.Void, ArrayType.BYTE_ARRAY,
+				PrimitiveType.Int, PrimitiveType.Int, PrimitiveType.Boolean);
 	}
 
 	public void loadUnsafe() {
@@ -614,6 +616,24 @@ public class BuiltinNatives {
 		// TODO: Add exceptions, generic signature & annotations
 
 		return ref;
+	}
+
+	private void writeBytes(KThread thread, StackFrame frame, int[] args) {
+		InstancePool pool = thread.getInstancePool();
+		int fdRef = pool.getObject(args[0])
+				.getField(new FieldSignature("java/io/FileOutputStream", "fd", ObjectType.FILE_DESCRIPTOR_TYPE))[0];
+		int fd = pool.getObject(fdRef)
+				.getField(new FieldSignature("java/io/FileDescriptor", "fd", PrimitiveType.Int))[0];
+		ObjectInstance dataArray = pool.getObject(args[1]);
+		int start = args[2];
+		int size = args[3];
+		boolean append = args[4] != 0;
+		byte[] data = new byte[size];
+		for (int i = 0; i < size; i++) {
+			data[i] = (byte) dataArray.getArrayElement(start + i)[0];
+		}
+		vmHost.writeData(fd, data, append);
+		frame.exit();
 	}
 
 	private void arrayBaseOffset(KThread thread, StackFrame frame, int[] args) {

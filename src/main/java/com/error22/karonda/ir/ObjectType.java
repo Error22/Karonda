@@ -86,4 +86,5 @@ public class ObjectType implements IType {
 	public static final ObjectType CLASS_LOADER_TYPE = new ObjectType("java/lang/ClassLoader");
 	public static final ObjectType INPUT_STREAM_TYPE = new ObjectType("java/io/InputStream");
 	public static final ObjectType PRINT_STREAM_TYPE = new ObjectType("java/io/PrintStream");
+	public static final ObjectType FILE_DESCRIPTOR_TYPE = new ObjectType("java/io/FileDescriptor");
 }

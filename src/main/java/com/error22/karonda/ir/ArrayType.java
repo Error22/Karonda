@@ -97,4 +97,5 @@ public class ArrayType implements IType {
 	public static final ArrayType REFLECT_FIELD_ARRAY = new ArrayType(ObjectType.REFLECT_FIELD_TYPE, 1);
 	public static final ArrayType REFLECT_CONSTRUCTOR_ARRAY = new ArrayType(ObjectType.REFLECT_CONSTRUCTOR_TYPE, 1);
 	public static final ArrayType CHAR_ARRAY = new ArrayType(PrimitiveType.Char, 1);
+	public static final ArrayType BYTE_ARRAY = new ArrayType(PrimitiveType.Byte, 1);
 }
