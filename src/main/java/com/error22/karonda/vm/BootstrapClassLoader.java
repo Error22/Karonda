@@ -12,12 +12,10 @@ import org.objectweb.asm.ClassReader;
 import com.error22.karonda.converter.ClassConverter;
 import com.error22.karonda.ir.KClass;
 
-public class BootstrapClassLoader {
-	private File searchDir;
-	private Map<String, KClass> loadedMap;
+public abstract class BootstrapClassLoader {
+	protected Map<String, KClass> loadedMap;
 
-	public BootstrapClassLoader(File searchDir) {
-		this.searchDir = searchDir;
+	public BootstrapClassLoader() {
 		loadedMap = new ConcurrentHashMap<String, KClass>();
 	}
 
@@ -25,18 +23,17 @@ public class BootstrapClassLoader {
 		if (loadedMap.containsKey(className))
 			return loadedMap.get(className);
 
-		try {
-			System.out.println("BootstrapClassLoader: load " + className);
-			KClass kClass = loadFile(new File(searchDir, className + ".class"));
-			loadedMap.put(className, kClass);
-			return kClass;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
+		KClass clazz = loadClass(className);
+		if (clazz != null) {
+			loadedMap.put(className, clazz);
+			return clazz;
 		}
+		return null;
 	}
 
-	private KClass loadFile(File file) throws FileNotFoundException, IOException {
+	protected abstract KClass loadClass(String className);
+
+	protected KClass loadFile(File file) throws FileNotFoundException, IOException {
 		ClassReader classReader = new ClassReader(new FileInputStream(file));
 		ClassConverter converter = new ClassConverter();
 		classReader.accept(converter, 0);
