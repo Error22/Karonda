@@ -121,6 +121,9 @@ public class InstancePool {
 	}
 
 	public int getStringInstance(String value) {
+		if (value == null) {
+			return 0;
+		}
 		if (stringToObjMap.containsKey(value)) {
 			return stringToObjMap.getInt(value);
 		}
@@ -142,6 +145,9 @@ public class InstancePool {
 	}
 
 	public String getStringContent(int obj) {
+		if (obj == 0) {
+			return null;
+		}
 		if (objToStringMap.containsKey(obj)) {
 			return objToStringMap.get(obj);
 		}
