@@ -64,6 +64,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::initProperties, "initProperties", ObjectType.PROPERTIES_TYPE,
 				ObjectType.PROPERTIES_TYPE);
 		manager.addUnboundHook(this::setIn0, "setIn0", PrimitiveType.Void, ObjectType.INPUT_STREAM_TYPE);
+		manager.addUnboundHook(this::setOut0, "setOut0", PrimitiveType.Void, ObjectType.PRINT_STREAM_TYPE);
 	}
 
 	public void loadRuntime() {
@@ -218,6 +219,14 @@ public class BuiltinNatives {
 		thread.getInstancePool().setStaticField(
 				thread.getClassPool().getClass(ObjectType.SYSTEM_TYPE.getName(), frame.getMethod().getKClass()),
 				new FieldSignature(ObjectType.SYSTEM_TYPE.getName(), "in", ObjectType.INPUT_STREAM_TYPE),
+				new int[] { args[0] });
+		frame.exit();
+	}
+
+	private void setOut0(KThread thread, StackFrame frame, int[] args) {
+		thread.getInstancePool().setStaticField(
+				thread.getClassPool().getClass(ObjectType.SYSTEM_TYPE.getName(), frame.getMethod().getKClass()),
+				new FieldSignature(ObjectType.SYSTEM_TYPE.getName(), "out", ObjectType.PRINT_STREAM_TYPE),
 				new int[] { args[0] });
 		frame.exit();
 	}
