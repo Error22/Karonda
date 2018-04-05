@@ -32,7 +32,7 @@ public class KarondaVM {
 	private ThreadManager threadManager;
 	private KClass autoStartClass;
 
-	public KarondaVM(BootstrapClassLoader bootstrapClassLoader) {
+	public KarondaVM(IVMHost vmHost, BootstrapClassLoader bootstrapClassLoader) {
 		classPool = new ClassPool(bootstrapClassLoader);
 		memoryManager = new MemoryManager();
 		instancePool = new InstancePool(classPool);
@@ -41,7 +41,7 @@ public class KarondaVM {
 
 		autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, 0, true, null, new String[0]);
 
-		BuiltinNatives builtinNatives = new BuiltinNatives(nativeManager, createInitPropertiesMethod());
+		BuiltinNatives builtinNatives = new BuiltinNatives(vmHost, nativeManager, createInitPropertiesMethod());
 		builtinNatives.loadAll();
 	}
 

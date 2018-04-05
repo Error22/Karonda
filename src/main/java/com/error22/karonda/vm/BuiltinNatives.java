@@ -1,5 +1,7 @@
 package com.error22.karonda.vm;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -19,10 +21,12 @@ import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 
 public class BuiltinNatives {
+	private IVMHost vmHost;
 	private NativeManager manager;
 	private KMethod initPropertiesMethod;
 
-	public BuiltinNatives(NativeManager manager, KMethod initPropertiesMethod) {
+	public BuiltinNatives(IVMHost vmHost, NativeManager manager, KMethod initPropertiesMethod) {
+		this.vmHost = vmHost;
 		this.manager = manager;
 		this.initPropertiesMethod = initPropertiesMethod;
 	}
@@ -56,6 +60,15 @@ public class BuiltinNatives {
 	}
 
 	public void loadSystem() {
+		try {
+			MethodHandles.Lookup lookup = MethodHandles.lookup();
+			manager.addUnboundHandleHook(lookup
+					.findVirtual(IVMHost.class, "mapLibraryName", MethodType.methodType(String.class, String.class))
+					.bindTo(vmHost), "mapLibraryName");
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
 		manager.addUnboundHook(this::arraycopy, "arraycopy", PrimitiveType.Void, OBJECT_TYPE, PrimitiveType.Int,
 				OBJECT_TYPE, PrimitiveType.Int, PrimitiveType.Int);
 		manager.addUnboundHook(this::nanoTime, "nanoTime", PrimitiveType.Long);
