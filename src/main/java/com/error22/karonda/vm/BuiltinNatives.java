@@ -52,6 +52,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::returnArgsNonObject, "doubleToRawLongBits", PrimitiveType.Long,
 				PrimitiveType.Double);
 		manager.addUnboundHook(this::returnArgsNonObject, "longBitsToDouble", PrimitiveType.Double, PrimitiveType.Long);
+		manager.addUnboundHook(this::VMSupportsCS8, "VMSupportsCS8", PrimitiveType.Boolean);
 	}
 
 	public void loadSystem() {
@@ -178,6 +179,10 @@ public class BuiltinNatives {
 		frame.exit(new int[] {
 				thread.getInstancePool().getRuntimeClass(thread.getClassPool(), type, frame.getMethod().getKClass()) },
 				true);
+	}
+
+	private void VMSupportsCS8(KThread thread, StackFrame frame, int[] args) {
+		frame.exit(new int[] { 1 }, false);
 	}
 
 	private void arraycopy(KThread thread, StackFrame frame, int[] args) {
