@@ -71,6 +71,8 @@ public class BuiltinNatives {
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
+		manager.addUnboundHook(this::loadLibrary, "load", PrimitiveType.Void, ObjectType.STRING_TYPE,
+				PrimitiveType.Boolean);
 
 		manager.addUnboundHook(this::arraycopy, "arraycopy", PrimitiveType.Void, OBJECT_TYPE, PrimitiveType.Int,
 				OBJECT_TYPE, PrimitiveType.Int, PrimitiveType.Int);
@@ -201,6 +203,17 @@ public class BuiltinNatives {
 
 	private void VMSupportsCS8(KThread thread, StackFrame frame, int[] args) {
 		frame.exit(new int[] { 1 }, false);
+	}
+
+	private void loadLibrary(KThread thread, StackFrame frame, int[] args) {
+		InstancePool pool = thread.getInstancePool();
+		ObjectInstance object = pool.getObject(args[0]);
+
+		boolean loaded = vmHost.loadLibrary(pool.getStringContent(args[1]), args[2] != 0);
+		object.setField(new FieldSignature("java/lang/ClassLoader$NativeLibrary", "loaded", PrimitiveType.Boolean),
+				new int[] { loaded ? 1 : 0 });
+
+		frame.exit();
 	}
 
 	private void arraycopy(KThread thread, StackFrame frame, int[] args) {

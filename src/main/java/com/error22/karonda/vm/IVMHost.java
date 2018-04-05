@@ -6,4 +6,6 @@ public interface IVMHost {
 
 	String findBuiltinLib(String name);
 
+	boolean loadLibrary(String name, boolean builtIn);
+
 }
