@@ -4,4 +4,6 @@ public interface IVMHost {
 
 	String mapLibraryName(String name);
 
+	String findBuiltinLib(String name);
+
 }

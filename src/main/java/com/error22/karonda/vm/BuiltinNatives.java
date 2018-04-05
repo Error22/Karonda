@@ -65,6 +65,9 @@ public class BuiltinNatives {
 			manager.addUnboundHandleHook(lookup
 					.findVirtual(IVMHost.class, "mapLibraryName", MethodType.methodType(String.class, String.class))
 					.bindTo(vmHost), "mapLibraryName");
+			manager.addUnboundHandleHook(lookup
+					.findVirtual(IVMHost.class, "findBuiltinLib", MethodType.methodType(String.class, String.class))
+					.bindTo(vmHost), "findBuiltinLib");
 		} catch (NoSuchMethodException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
