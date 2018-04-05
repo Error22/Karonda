@@ -30,6 +30,7 @@ public class KarondaVM {
 	private InstancePool instancePool;
 	private NativeManager nativeManager;
 	private ThreadManager threadManager;
+	private SignalManager signalManager;
 	private KClass autoStartClass;
 
 	public KarondaVM(IVMHost vmHost, BootstrapClassLoader bootstrapClassLoader) {
@@ -38,10 +39,25 @@ public class KarondaVM {
 		instancePool = new InstancePool(classPool);
 		threadManager = new ThreadManager();
 		nativeManager = new NativeManager();
+		signalManager = new SignalManager();
+
+		signalManager.registerName("HUP", 1);
+		signalManager.registerName("INT", 2);
+		signalManager.registerName("QUIT", 3);
+		signalManager.registerName("ILL", 4);
+		signalManager.registerName("TRAP", 5);
+		signalManager.registerName("ABRT", 6);
+		signalManager.registerName("BUS", 7);
+		signalManager.registerName("FPE", 8);
+		signalManager.registerName("SEFV", 11);
+		signalManager.registerName("TERM", 15);
+		signalManager.registerName("CHLD", 17);
+		signalManager.registerName("RECONFIG", 58);
 
 		autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, 0, true, null, new String[0]);
 
-		BuiltinNatives builtinNatives = new BuiltinNatives(vmHost, nativeManager, createInitPropertiesMethod());
+		BuiltinNatives builtinNatives = new BuiltinNatives(vmHost, signalManager, nativeManager,
+				createInitPropertiesMethod());
 		builtinNatives.loadAll();
 	}
 

@@ -22,11 +22,14 @@ import com.error22.karonda.ir.PrimitiveType;
 
 public class BuiltinNatives {
 	private IVMHost vmHost;
+	private SignalManager signalManager;
 	private NativeManager manager;
 	private KMethod initPropertiesMethod;
 
-	public BuiltinNatives(IVMHost vmHost, NativeManager manager, KMethod initPropertiesMethod) {
+	public BuiltinNatives(IVMHost vmHost, SignalManager signalManager, NativeManager manager,
+			KMethod initPropertiesMethod) {
 		this.vmHost = vmHost;
+		this.signalManager = signalManager;
 		this.manager = manager;
 		this.initPropertiesMethod = initPropertiesMethod;
 	}
@@ -129,6 +132,14 @@ public class BuiltinNatives {
 
 	public void loadSunVM() {
 		manager.addUnboundHook(this::empty, "initialize", PrimitiveType.Void);
+		try {
+			MethodHandles.Lookup lookup = MethodHandles.lookup();
+			manager.addUnboundHandleHook(lookup
+					.findVirtual(SignalManager.class, "findSignal", MethodType.methodType(int.class, String.class))
+					.bindTo(signalManager), "findSignal");
+		} catch (NoSuchMethodException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void loadThrowable() {
