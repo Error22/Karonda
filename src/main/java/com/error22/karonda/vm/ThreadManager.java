@@ -33,6 +33,10 @@ public class ThreadManager {
 		return null;
 	}
 
+	public void notifyAll(int id) {
+		// TODO: Implement
+	}
+
 	public void setMainThread(KThread thread) {
 		this.mainThread = thread;
 		threads.add(mainThread);

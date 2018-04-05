@@ -113,6 +113,7 @@ public class BuiltinNatives {
 		manager.addUnboundHook(this::_clone, "clone", ObjectType.OBJECT_TYPE);
 		manager.addUnboundHook(this::getClass, "getClass", CLASS_TYPE);
 		manager.addUnboundHook(this::returnFirstArgAsObject, "hashCode", PrimitiveType.Int);
+		manager.addUnboundHook(this::notifyAll, "notifyAll", PrimitiveType.Void);
 	}
 
 	public void loadClass() {
@@ -390,6 +391,11 @@ public class BuiltinNatives {
 
 		int type = pool.getRuntimeClass(classPool, object.getType(), frame.getMethod().getKClass());
 		frame.exit(new int[] { type }, true);
+	}
+
+	private void notifyAll(KThread thread, StackFrame frame, int[] args) {
+		thread.getThreadManager().notifyAll(args[0]);
+		frame.exit();
 	}
 
 	private void getSuperclass(KThread thread, StackFrame frame, int[] args) {
