@@ -6,7 +6,6 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 
-import com.error22.karonda.NotImplementedException;
 import com.error22.karonda.ir.KField;
 
 public class FieldConverter extends FieldVisitor {
@@ -19,17 +18,16 @@ public class FieldConverter extends FieldVisitor {
 
 	@Override
 	public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-		throw new NotImplementedException();
+		return null;
 	}
 
 	@Override
 	public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String desc, boolean visible) {
-		throw new NotImplementedException();
+		return null;
 	}
 
 	@Override
 	public void visitAttribute(Attribute attr) {
-		throw new NotImplementedException();
 	}
 
 }
