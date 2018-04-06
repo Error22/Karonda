@@ -15,6 +15,10 @@ public class MemoryBlock {
 		return address >= startAddress && address < startAddress + size;
 	}
 
+	public boolean overlaps(MemoryBlock block) {
+		return startAddress < block.startAddress + size && block.startAddress < startAddress + size;
+	}
+
 	public void store(long address, byte[] data) {
 		if (address < startAddress || address + data.length > startAddress + size) {
 			throw new IllegalArgumentException();
@@ -45,4 +49,5 @@ public class MemoryBlock {
 	public byte[] getData() {
 		return data;
 	}
+
 }

@@ -13,6 +13,18 @@ public class MemoryManager {
 		lastAddress = 1;
 	}
 
+	public void addBlock(MemoryBlock block) {
+		for (MemoryBlock other : blocks) {
+			if (other.overlaps(block)) {
+				throw new IllegalArgumentException();
+			}
+		}
+		blocks.add(block);
+		if (lastAddress < block.getStartAddress() + block.getSize()) {
+			lastAddress = block.getStartAddress() + block.getSize();
+		}
+	}
+
 	public long allocate(long size) {
 		long startAddress = lastAddress;
 		lastAddress += size;
@@ -72,6 +84,14 @@ public class MemoryManager {
 			}
 		}
 		throw new IllegalArgumentException();
+	}
+
+	public List<MemoryBlock> getBlocks() {
+		return blocks;
+	}
+
+	public long getLastAddress() {
+		return lastAddress;
 	}
 
 }
