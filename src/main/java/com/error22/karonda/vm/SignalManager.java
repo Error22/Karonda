@@ -10,6 +10,21 @@ public class SignalManager {
 		nameMap = new HashMap<String, Integer>();
 	}
 
+	public void registerDefaults() {
+		registerName("HUP", 1);
+		registerName("INT", 2);
+		registerName("QUIT", 3);
+		registerName("ILL", 4);
+		registerName("TRAP", 5);
+		registerName("ABRT", 6);
+		registerName("BUS", 7);
+		registerName("FPE", 8);
+		registerName("SEFV", 11);
+		registerName("TERM", 15);
+		registerName("CHLD", 17);
+		registerName("RECONFIG", 58);
+	}
+
 	public void registerName(String name, int id) {
 		nameMap.put(name, id);
 	}

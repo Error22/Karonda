@@ -1,8 +1,6 @@
 package com.error22.karonda.vm;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -25,6 +23,7 @@ import com.error22.karonda.ir.ObjectType;
 import com.error22.karonda.ir.PrimitiveType;
 
 public class KarondaVM {
+	private IVMHost vmHost;
 	private ClassPool classPool;
 	private MemoryManager memoryManager;
 	private InstancePool instancePool;
@@ -33,7 +32,19 @@ public class KarondaVM {
 	private SignalManager signalManager;
 	private KClass autoStartClass;
 
+	public KarondaVM(IVMHost vmHost, ClassPool classPool, MemoryManager memoryManager, InstancePool instancePool,
+			NativeManager nativeManager, ThreadManager threadManager, SignalManager signalManager) {
+		this.vmHost = vmHost;
+		this.classPool = classPool;
+		this.memoryManager = memoryManager;
+		this.instancePool = instancePool;
+		this.nativeManager = nativeManager;
+		this.threadManager = threadManager;
+		this.signalManager = signalManager;
+	}
+
 	public KarondaVM(IVMHost vmHost, BootstrapClassLoader bootstrapClassLoader) {
+		this.vmHost = vmHost;
 		classPool = new ClassPool(bootstrapClassLoader);
 		memoryManager = new MemoryManager();
 		instancePool = new InstancePool(classPool);
@@ -41,18 +52,7 @@ public class KarondaVM {
 		nativeManager = new NativeManager();
 		signalManager = new SignalManager();
 
-		signalManager.registerName("HUP", 1);
-		signalManager.registerName("INT", 2);
-		signalManager.registerName("QUIT", 3);
-		signalManager.registerName("ILL", 4);
-		signalManager.registerName("TRAP", 5);
-		signalManager.registerName("ABRT", 6);
-		signalManager.registerName("BUS", 7);
-		signalManager.registerName("FPE", 8);
-		signalManager.registerName("SEFV", 11);
-		signalManager.registerName("TERM", 15);
-		signalManager.registerName("CHLD", 17);
-		signalManager.registerName("RECONFIG", 58);
+		signalManager.registerDefaults();
 
 		autoStartClass = new KClass("__AutoStartVMClass", ClassType.Class, 0, true, null, new String[0]);
 
@@ -67,16 +67,12 @@ public class KarondaVM {
 
 		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
 		try {
-			// Find host VM properties
-			Class<?> clazz = Class.forName("sun.misc.VM");
-			Field field = clazz.getDeclaredField("savedProps");
-			field.setAccessible(true);
-			Properties prop = (Properties) field.get(null);
+			Properties properties = vmHost.getSunProperties();
 
 			// Store values into savedProps
 			MethodSignature setPropertyMethod = new MethodSignature("java/util/Properties", "setProperty",
 					ObjectType.OBJECT_TYPE, ObjectType.STRING_TYPE, ObjectType.STRING_TYPE);
-			for (Entry<Object, Object> e : prop.entrySet()) {
+			for (Entry<Object, Object> e : properties.entrySet()) {
 				instructions.add(new LocalInstruction(LocalOperation.Load, ObjectType.PROPERTIES_TYPE, 0));
 				instructions.add(new LoadStringInstruction((String) e.getKey()));
 				instructions.add(new LoadStringInstruction((String) e.getValue()));
@@ -148,11 +144,13 @@ public class KarondaVM {
 				new MethodSignature("java/lang/System", "initializeSystemClass", PrimitiveType.Void), false));
 
 		// Invoke main method
-		instructions.add(new InvokeInstruction(InvokeType.Static, mainMethod, false));
-		if (mainMethod.getReturnType() != PrimitiveType.Void) {
-			instructions.add(
-					new PopInstruction(mainMethod.getReturnType().getSize() == 2 ? PopMode.Double : PopMode.Single));
+		if (mainMethod != null) {
+			instructions.add(new InvokeInstruction(InvokeType.Static, mainMethod, false));
+			if (mainMethod.getReturnType() != PrimitiveType.Void) {
+				instructions.add(new PopInstruction(
+						mainMethod.getReturnType().getSize() == 2 ? PopMode.Double : PopMode.Single));
 
+			}
 		}
 
 		instructions.add(new ReturnInstruction(PrimitiveType.Void));
@@ -190,4 +188,13 @@ public class KarondaVM {
 	public ThreadManager getThreadManager() {
 		return threadManager;
 	}
+
+	public MemoryManager getMemoryManager() {
+		return memoryManager;
+	}
+
+	public SignalManager getSignalManager() {
+		return signalManager;
+	}
+
 }

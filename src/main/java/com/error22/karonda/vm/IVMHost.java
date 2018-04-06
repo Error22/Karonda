@@ -1,6 +1,10 @@
 package com.error22.karonda.vm;
 
+import java.util.Properties;
+
 public interface IVMHost {
+
+	Properties getSunProperties();
 
 	String mapLibraryName(String name);
 
