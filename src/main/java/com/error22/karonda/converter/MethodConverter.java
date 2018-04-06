@@ -667,14 +667,12 @@ public class MethodConverter extends MethodVisitor {
 
 	@Override
 	public void visitMaxs(int maxStack, int maxLocals) {
-		System.out.println("max: " + maxStack + " " + maxLocals);
 		kMethod.setMaxStack(maxStack);
 		kMethod.setMaxLocals(maxLocals);
 	}
 
 	@Override
 	public void visitEnd() {
-		System.out.println("instructions: " + instructions.size());
 		kMethod.setInstructions(instructions.toArray(new IInstruction[instructions.size()]));
 		kMethod.setLabelMap(labelMap);
 	}
