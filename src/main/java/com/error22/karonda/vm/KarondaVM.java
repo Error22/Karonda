@@ -97,14 +97,6 @@ public class KarondaVM {
 				new MethodSignature(autoStartClass.getName(), "__InitVM", PrimitiveType.Void), 0, false, false, false);
 
 		ArrayList<IInstruction> instructions = new ArrayList<IInstruction>();
-		for (String clazz : Arrays.asList("java/lang/System", "java/lang/ThreadGroup", "java/lang/Thread",
-				"sun/misc/VM")) {
-			KMethod method = instancePool.staticInit(classPool.bootstrapResolve(clazz));
-			if (method != null) {
-				MethodSignature signature = method.getSignature();
-				instructions.add(new InvokeInstruction(InvokeType.Static, signature, false));
-			}
-		}
 
 		// Create thread groups
 		KClass threadGroupClass = classPool.bootstrapResolve(ObjectType.THREAD_GROUP_TYPE.getName());
